@@ -93,7 +93,6 @@ export const homeContainer = {
     position: 'absolute',
     height: '100%',
     width: '100%',
-    backgroundColor: '#E4E5E6',
 };
 
 export const navBarStyles = {
@@ -123,4 +122,14 @@ export const invCardHeader = {
 export const saleFormGroup = {
     marginBottom: '15px',
     marginTop: '25px',
+};
+
+export const addNewStyleHeader = {
+    backgroundColor: '#2980B9',
+    color: 'white',
+};
+
+export const updateSaleStyleHeader = {
+    backgroundColor: '#2980B9',
+    color: 'white',
 };

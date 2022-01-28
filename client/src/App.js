@@ -11,6 +11,9 @@ import NotFound from './pages/NotFound';
 import ResetPassword from './pages/ResetPassword';
 import Register from './pages/Register';
 
+import AddNewSale from './components/sales/AddNewSale';
+import UpdateSale from './components/sales/UpdateSale';
+
 class App extends Component {
 	render() {
 		return (
@@ -20,6 +23,8 @@ class App extends Component {
 					<Route exact path='/reset-password' component={ResetPassword} />
 					<Route exact path='/register' component={Register} />
 					<PrivateRoute exact path='/home' component={Home} />
+					<PrivateRoute exact path='/home/add-new-sale' component={AddNewSale} />
+					<PrivateRoute exact path='/home/update-sale' component={UpdateSale} />
 					<Route exact path='*' component={NotFound} />
 				</Switch>
 			</BrowserRouter>

@@ -173,7 +173,7 @@ module.exports = {
                 results.password = undefined;
                 
                 const jsontoken = sign({ result: results }, key.JSTOKEN_SECRET_KEY, {
-                    expiresIn: "1h"
+                    // expiresIn: "1h"
                 });
 
                 return res.json({
