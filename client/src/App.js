@@ -13,6 +13,15 @@ import Register from './pages/Register';
 
 import AddNewSale from './components/sales/AddNewSale';
 import UpdateSale from './components/sales/UpdateSale';
+import RemoveSale from './components/sales/RemoveSale';
+
+import AddNewProduct from './components/products/AddNewProduct';
+import UpdateProduct from './components/products/UpdateProduct';
+import RemoveProduct from './components/products/RemoveProduct';
+
+import AddNewPurchase from './components/purchase/AddNewPurchase';
+import UpdatePurchase from './components/purchase/UpdatePurchase';
+import RemovePurchase from './components/purchase/RemovePurchase';
 
 class App extends Component {
 	render() {
@@ -25,6 +34,13 @@ class App extends Component {
 					<PrivateRoute exact path='/home' component={Home} />
 					<PrivateRoute exact path='/home/add-new-sale' component={AddNewSale} />
 					<PrivateRoute exact path='/home/update-sale' component={UpdateSale} />
+					<PrivateRoute exact path='/home/remove-sale' component={RemoveSale} />
+					<PrivateRoute exact path='/home/add-new-product' component={AddNewProduct} />
+					<PrivateRoute exact path='/home/update-product' component={UpdateProduct} />
+					<PrivateRoute exact path='/home/remove-product' component={RemoveProduct} />
+					<PrivateRoute exact path='/home/add-new-purchase' component={AddNewPurchase} />
+					<PrivateRoute exact path='/home/update-purchase' component={UpdatePurchase} />
+					<PrivateRoute exact path='/home/remove-purchase' component={RemovePurchase} />
 					<Route exact path='*' component={NotFound} />
 				</Switch>
 			</BrowserRouter>

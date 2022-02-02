@@ -15,17 +15,17 @@ import {
     Navbar,
     Container,
     Alert,
+    Modal,
 } from 'react-bootstrap';
 
 import { homeContainer, navBarStyles, navBarBrand, spanIms, cardStyleHeader } from '../../css/styles';
 
-export default function UpdateSale() {
+export default function RemoveSale() {
     const history = useHistory();
     const [salesList, setSalesList] = useState([]);
     const [saleDetails, setSaleDetails] = useState([]);
-    const [cxList, setCxList] = useState([]);
-    const [prodList, setProdList] = useState([]);
     const [notif, setNotif] = useState({ status: false });
+    const [modalShow, setModalShow] = useState(false);
 
     useEffect(() => {
         axios.get('/api/inv/getAllSales',
@@ -39,42 +39,29 @@ export default function UpdateSale() {
 
                 return setSalesList(salesArr);
             }).catch(error => setSalesList({ key: error.name, text: error.message }));
+    }, [saleDetails.saleId]);
 
-        axios.get('/api/inv/getCustomerDatabase',
-            { headers: { Authorization: getJwt() } })
-            .then(res => {
-                let cxArr = [];
-                res.data.message.map((cx, index) => {
-                    const { customerID, fullName, gender, email, mobile, phone2, address, address2, city, district } = cx;
-                    cxArr.push({ key: index, customerId: customerID, fullName: fullName, gender: gender, email: email, mobile: mobile, phone2: phone2, address: address, address2: address2, city: city, district: district });
-                });
-
-                return setCxList(cxArr);
-
-            }).catch(error => setCxList({ key: error.name, text: error.message }));
-
-        axios.get('/api/inv/getAllProducts',
-            { headers: { Authorization: getJwt() } })
-            .then(res => {
-                let prodArr = [];
-                res.data.message.map((prod, index) => {
-                    const { productID, itemNumber, itemName, discount, stock, unitPrice, imageURL, status, description } = prod;
-                    prodArr.push({ key: index, prodId: productID, itemNumber: itemNumber, itemName: itemName, discount: discount, stock: stock, unitPrice: unitPrice, image: imageURL, status: status, desc: description });
-                });
-    
-                return setProdList(prodArr);
-            }).catch(error => setProdList({ key: error.name, text: error.message }));
-    }, []);
-
-    const updateSaleBySaleId = () => {
+    const deleteSaleBySaleId = () => {
         if (saleDetails.saleId !== undefined) {
-            console.log(saleDetails);
-            axios.patch('/api/inv/updateSaleBySaleId', saleDetails,
-                { headers: { Authorization: getJwt() } })
-                .then(() => setNotif({ status: true, variant: 'success', message: 'Sale Updated!' }))
-                .catch(() => setNotif({ status: true, variant: 'danger', message: 'Something is wrong.' }));
+            handleModalClose();
 
-                setSaleDetails({ saleId: '', customerName: '', itemName: '', itemNumber: '', saleDate: '', discount: '', quantity: '', unitPrice: '' });
+            axios.delete('/api/inv/deleteSaleBySaleId',
+                { params: { id: saleDetails.saleId },
+                headers: { Authorization: getJwt() } })
+                .then(() => setNotif({ status: true, variant: 'success', message: 'Sale Deleted!' }))
+                .catch(() => setNotif({ status: true, variant: 'danger', message: 'Something is wrong.' }))
+
+            setSaleDetails({ saleId: '', customerName: '', itemName: '', itemNumber: '', saleDate: '', discount: '', quantity: '', unitPrice: '' });
+        };
+
+        setTimeout(function() {
+            setNotif({ ...notif, status: false });
+        }, 3000);
+    };
+    
+    const handleDeleteConfirmation = () => {
+        if (saleDetails.saleId !== undefined) {
+            setModalShow(true);
         } else {
             setNotif({ status: true, variant: 'danger', message: 'Fill-up all the required fields.' });
         };
@@ -83,7 +70,7 @@ export default function UpdateSale() {
             setNotif({ ...notif, status: false });
         }, 3000);
     };
-
+    
     const handleSaleIdChange = (e) => {
         salesList.find(x => {
             if (x.saleId === Number(e.target.value)) {
@@ -96,15 +83,7 @@ export default function UpdateSale() {
         };
     };
 
-    const handleItemNameChange = (e) => {
-        setSaleDetails({ ...saleDetails, itemName: e.target.value });
-        
-        prodList.find(x => {
-            if (x.itemName === e.target.value) {
-                setSaleDetails({ ...saleDetails, itemName: e.target.value, itemNumber: x.itemNumber, unitPrice: x.unitPrice, stock: x.stock });
-            };
-        });
-    };
+    const handleModalClose = () => setModalShow(false);
 
     const logOut = () => {
         localStorage.clear('jwt');
@@ -149,10 +128,20 @@ export default function UpdateSale() {
                     <Col sm={6}>
                         <Tab.Content>
                             <Tab.Pane eventKey="first">
+                                <Modal size="md" aria-labelledby="contained-modal-title-vcenter" centered show={modalShow} onHide={handleModalClose} animation={true}>
+                                    <Modal.Header closeButton>
+                                        <Modal.Title><h5>Delete Confirmation</h5></Modal.Title>
+                                    </Modal.Header>
+                                    <Modal.Body>Do you really want to delete this sale?</Modal.Body>
+                                    <Modal.Footer>
+                                        <Button variant="outline-secondary" size="sm" onClick={handleModalClose}>Cancel</Button>
+                                        <Button variant="danger" size="sm" onClick={() => deleteSaleBySaleId()}>Remove</Button>
+                                    </Modal.Footer>
+                                </Modal>
                                 <CardGroup>
                                     <Card>
                                         <Card.Header style={cardStyleHeader}>
-                                            Edit Sale 
+                                            Remove Sale 
                                         </Card.Header>
                                         <Card.Body>
                                             <Form>
@@ -182,14 +171,7 @@ export default function UpdateSale() {
                                                             list="customerName"
                                                             disabled
                                                             value={saleDetails.customerName}
-                                                            onChange={e => setSaleDetails({ ...saleDetails, customerName: e.target.value })}
                                                         />
-                                                        <datalist id="customerName">
-                                                            {cxList.length >= 1 ? cxList.map((cx, index) => {
-                                                                const { fullName } = cx;
-                                                                return <option key={index} value={fullName} />
-                                                            }): ''}
-                                                        </datalist>
                                                     </Form.Group>
                                                 </Row>
                                             </Form>
@@ -200,17 +182,11 @@ export default function UpdateSale() {
                                                         <Form.Label>Item Name</Form.Label>
                                                         <Form.Control
                                                             type="text"
-                                                            placeholder="Select Item Name"
+                                                            placeholder=""
                                                             list='itemName'
+                                                            disabled
                                                             value={saleDetails.itemName}
-                                                            onChange={e => handleItemNameChange(e)}
                                                         />
-                                                        <datalist id="itemName">
-                                                            {prodList.length >= 1 ? prodList.map((prod, index) => {
-                                                                const { itemName } = prod;
-                                                                return <option key={index} value={itemName} />
-                                                            }): ''}
-                                                        </datalist>
                                                     </Form.Group>
                                                     <Form.Group as={Col} className="mb-3">
                                                         <Form.Label>Item Number</Form.Label>
@@ -229,8 +205,8 @@ export default function UpdateSale() {
                                                             type="number"
                                                             placeholder=""
                                                             min={0}
+                                                            disabled
                                                             value={saleDetails.quantity}
-                                                            onChange={e => setSaleDetails({ ...saleDetails, quantity: e.target.value })}
                                                         />
                                                     </Form.Group>
                                                     <Form.Group as={Col} sm={3} className="mb-3">
@@ -239,8 +215,8 @@ export default function UpdateSale() {
                                                             type="number"
                                                             placeholder=""
                                                             min={0}
+                                                            disabled
                                                             value={saleDetails.discount}
-                                                            onChange={e => setSaleDetails({ ...saleDetails, discount: e.target.value })}
                                                         />
                                                     </Form.Group>
                                                     <Form.Group as={Col} sm={3} className="mb-3">
@@ -262,16 +238,15 @@ export default function UpdateSale() {
                                                         />
                                                     </Form.Group>
                                                 </Row>
-                                                <p>Total Price: <b style={{ color: 'red' }}>₱ {saleDetails.unitPrice === undefined ? 0: saleDetails.quantity * saleDetails.unitPrice}</b></p>
                                             </Form>
                                             <Button
                                                 type='submit'
-                                                variant="primary"
+                                                variant="danger"
                                                 size="sm"
                                                 style={{ marginRight: '5px', float: 'left' }}
-                                                onClick={updateSaleBySaleId}
+                                                onClick={handleDeleteConfirmation}
                                             >
-                                                Update
+                                                Delete
                                             </Button>
                                             <Link to="/home"><Button size="sm" variant="outline-secondary">Go Back</Button></Link>
                                         </Card.Body>

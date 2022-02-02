@@ -15,9 +15,10 @@ import {
     Navbar,
     Container,
     Table,
+    Alert,
 } from 'react-bootstrap';
 
-import { homeContainer, navBarStyles, navBarBrand, spanIms, addNewStyleHeader } from '../../css/styles';
+import { homeContainer, navBarStyles, navBarBrand, spanIms, cardStyleHeader } from '../../css/styles';
 
 export default function AddNewSale() {
     const history = useHistory();
@@ -31,29 +32,29 @@ export default function AddNewSale() {
 
     useEffect(() => {
         axios.get('/api/inv/getAllProducts',
-        { headers: { Authorization: getJwt() } })
-        .then(res => {
-            let prodArr = [];
-            res.data.message.map((prod, index) => {
-                const { productID, itemNumber, itemName, discount, stock, unitPrice, imageURL, status, description } = prod;
-                prodArr.push({ key: index, prodId: productID, itemNumber: itemNumber, itemName: itemName, discount: discount, stock: stock, unitPrice: unitPrice, image: imageURL, status: status, desc: description });
-            });
+            { headers: { Authorization: getJwt() } })
+            .then(res => {
+                let prodArr = [];
+                res.data.message.map((prod, index) => {
+                    const { productID, itemNumber, itemName, discount, stock, unitPrice, imageURL, status, description } = prod;
+                    prodArr.push({ key: index, prodId: productID, itemNumber: itemNumber, itemName: itemName, discount: discount, stock: stock, unitPrice: unitPrice, image: imageURL, status: status, desc: description });
+                });
 
-            return setProdList(prodArr);
-        }).catch(error => setProdList({ key: error.name, text: error.message }));
+                return setProdList(prodArr);
+            }).catch(error => setProdList({ key: error.name, text: error.message }));
 
         axios.get('/api/inv/getCustomerDatabase',
-        { headers: { Authorization: getJwt() } })
-        .then(res => {
-            let cxArr = [];
-            res.data.message.map((cx, index) => {
-                const { customerID, fullName, gender, email, mobile, phone2, address, address2, city, district } = cx;
-                cxArr.push({ key: index, customerId: customerID, fullName: fullName, gender: gender, email: email, mobile: mobile, phone2: phone2, address: address, address2: address2, city: city, district: district })
-            });
+            { headers: { Authorization: getJwt() } })
+            .then(res => {
+                let cxArr = [];
+                res.data.message.map((cx, index) => {
+                    const { customerID, fullName, gender, email, mobile, phone2, address, address2, city, district } = cx;
+                    cxArr.push({ key: index, customerId: customerID, fullName: fullName, gender: gender, email: email, mobile: mobile, phone2: phone2, address: address, address2: address2, city: city, district: district })
+                });
 
-            return setCxList(cxArr);
+                return setCxList(cxArr);
 
-        }).catch(error => setCxList({ key: error.name, text: error.message }));
+            }).catch(error => setCxList({ key: error.name, text: error.message }));
     }, []);
 
     const handleCustomerNameChange = (e) => {
@@ -67,7 +68,7 @@ export default function AddNewSale() {
     const handleItemNameChange = (e) => {
         prodList.find(x => {
             if (x.itemName === e.target.value) {
-                setItemDetails({ itemName: x.itemName, itemNumber: x.itemNumber, unitPrice: x.unitPrice, stock: x.stock });
+                setItemDetails({ productId: x.prodId, itemName: x.itemName, itemNumber: x.itemNumber, unitPrice: x.unitPrice, stock: x.stock });
             };
         });
 
@@ -77,7 +78,7 @@ export default function AddNewSale() {
     };
 
     const handleAddToList = () => {
-        const { itemName, itemNumber, unitPrice, qty, discount } = itemDetails;
+        const { productId, itemName, itemNumber, unitPrice, qty, discount, stock } = itemDetails;
         let tempDisc;
 
         if (itemName !== undefined && qty !== undefined) {
@@ -91,10 +92,25 @@ export default function AddNewSale() {
             };
 
             setAmountDue(partAmountDue);
-            setAddedSaleList([...addedSaleList, { customerName: addedCx.fullName, customerId: addedCx.customerId, itemName: itemName, itemNumber: itemNumber, unitPrice: unitPrice, qty: qty, discount: tempDisc, saleDate: new Date() }]);
+            setAddedSaleList([...addedSaleList, { productId: productId, stock: stock, customerName: addedCx.fullName, customerId: addedCx.customerId, itemName: itemName, itemNumber: itemNumber, unitPrice: unitPrice, qty: qty, discount: tempDisc, saleDate: new Date() }]);
             
             resetForm();
         };
+    };
+
+    const handleQtyChange = (e) => {
+        const currStock = Number(itemDetails.stock || 0);
+        const currValue = Number(e.target.value || 0)
+        const currQty = Number(itemDetails.qty || 0)
+        const qtyDiff = Math.abs(currQty - currValue)
+        
+        let presStock = currQty > currValue
+            ? currStock + qtyDiff
+            : currStock - qtyDiff;
+        if (presStock < 0) {
+            return
+        }
+        setItemDetails({ ...itemDetails, qty: currValue, stock: presStock });
     };
 
     const handleRemoveSale = (e, itemName, deductAmount) => {
@@ -105,15 +121,30 @@ export default function AddNewSale() {
     };
 
     const submitOrderSale = () => {
-        console.log(addedSaleList);
         axios.post('/api/inv/createSale', addedSaleList,
-        { headers: { Authorization: getJwt() } })
-        .then(() => {
-            setNotif({ status: true, variant: 'success', message: 'This Order Sale was already submitted!' });
-        })
-        .catch(() => {
-            setNotif({ status: true, variant: 'danger', message: 'Something is wrong going on in the backend.' });
-        });
+            { headers: { Authorization: getJwt() } })
+            .then(() => {
+                setNotif({ status: true, variant: 'success', message: 'Sale Submitted!' });
+
+                addedSaleList.map(sale => {
+                    let stockObj = {};
+
+                    stockObj.stock = sale.stock;
+                    stockObj.productId = sale.productId;
+
+                    return axios.patch('/api/inv/updateStockByProdId', stockObj,
+                        { headers: { Authorization: getJwt() } })
+                        .then()
+                        .catch(() => setNotif({ status: true, variant: 'danger', message: 'Total Stock was not updated.' }))
+                })
+            })
+            .catch(() => setNotif({ status: true, variant: 'danger', message: 'Something is wrong.' }))
+
+        setTimeout(function() {
+            setNotif({ ...notif, status: false });
+        }, 2000);
+
+        printOrderSlip();
     };
     
     const printOrderSlip = () => {
@@ -180,17 +211,17 @@ export default function AddNewSale() {
                             <Tab.Pane eventKey="first">
                                 <CardGroup>
                                     <Card>
-                                        <Card.Header style={addNewStyleHeader}>
+                                        <Card.Header style={cardStyleHeader}>
                                             Add New Sale 
                                         </Card.Header>
                                         <Card.Body>
                                             <Form>
                                                 <Row>
                                                     <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label>Customer Name</Form.Label>
+                                                        <Form.Label>Customer Name<span style={{ color: 'red' }}>*</span></Form.Label>
                                                         <Form.Control
                                                             type="text"
-                                                            placeholder=""
+                                                            placeholder="Select Customer Name"
                                                             list="customerName"
                                                             onChange={e => handleCustomerNameChange(e)}
                                                         />
@@ -207,10 +238,10 @@ export default function AddNewSale() {
                                                 <hr />
                                                 <Row className="mb-3">
                                                     <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label>Item Name</Form.Label>
+                                                        <Form.Label>Item Name<span style={{ color: 'red' }}>*</span></Form.Label>
                                                         <Form.Control
                                                             type="text"
-                                                            placeholder=""
+                                                            placeholder="Select Item Name"
                                                             list='itemName'
                                                             onChange={e => handleItemNameChange(e)}
                                                         />
@@ -233,11 +264,14 @@ export default function AddNewSale() {
                                                 </Row>
                                                 <Row className="mb-3">
                                                     <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label>Quantity</Form.Label>
+                                                        <Form.Label>Quantity<span style={{ color: 'red' }}>*</span></Form.Label>
                                                         <Form.Control
                                                             type="number"
                                                             placeholder=""
-                                                            onChange={e => setItemDetails({ ...itemDetails, qty: e.target.value })}
+                                                            min={0}
+                                                            value={itemDetails.qty}
+                                                            disabled={itemDetails.stock > 0 ? false : true}
+                                                            onChange={e => handleQtyChange(e)}
                                                         />
                                                     </Form.Group>
                                                     <Form.Group as={Col} sm={3} className="mb-3">
@@ -292,12 +326,17 @@ export default function AddNewSale() {
                             <Card>
                                 <Card.Header style={{ backgroundColor: '#2980B9', color: 'white' }}>Order Slip</Card.Header>
                                 <Card.Body id="orderSlip">
-                                    <h5 style={{ textAlign: 'center' }}>ExpertCare Pharmacy - Order Slip</h5>
-                                    <p style={{ textAlign: 'center' }}>Tudtud, Nasipit Road, Talamban, Cebu City, Philippines 6000</p>
+                                    <Alert variant={notif.variant} show={notif.status} onClose={() => setNotif({ status: false })} dismissible>{notif.message}</Alert>
+                                    <h5 style={{ textAlign: 'center', color: '#1976D2', fontWeight: 'bolder' }}>
+                                        ExpertCare Pharmacy - Order Slip
+                                    </h5>
+                                    <p style={{ textAlign: 'center'}}>
+                                        Tudtud, Nasipit Road, Talamban, Cebu City, Philippines 6000
+                                    </p>
                                     <br />
-                                    <p>Customer Name: <b>{addedCx.fullName}</b></p>
-                                    <p>Ordered Date: <b>{moment(new Date()).format('MM/DD/YY h:mm:ss a')}</b></p>
-                                    <Table striped hover size="sm" id="orderSlip">
+                                    <p><b>Customer Name:</b> {addedCx.fullName}</p>
+                                    <p><b>Ordered Date:</b> {moment(new Date()).format('MM/DD/YY h:mm:ss a')}</p>
+                                    <Table striped hover size="sm" id="orderSlip" style={{ marginBottom: '35px' }}>
                                         <thead>
                                             <tr>
                                                 <th></th>
@@ -331,11 +370,10 @@ export default function AddNewSale() {
                                             </tr>
                                         </tfoot>
                                     </Table>
-                                    <p style={{ fontWeight: 'bold', color: 'green', textAlign: 'center', fontSize: '15px' }}>{notif.message}</p>
                                 </Card.Body>
                                 <Card.Footer>
-                                    <Button size="sm" variant="success" style={{ marginRight: '5px' }} onClick={submitOrderSale}>Submit</Button>
-                                    <Button size="sm" variant="primary" onClick={printOrderSlip}>Print Slip</Button>
+                                    <Button size="sm" variant="success" style={{ marginRight: '5px' }} onClick={submitOrderSale}>Submit & Print</Button>
+                                    <Link to="/home"><Button size="sm" variant="outline-secondary">Go Back</Button></Link>
                                 </Card.Footer>
                             </Card>
                         </CardGroup>

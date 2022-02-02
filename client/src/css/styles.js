@@ -119,17 +119,12 @@ export const invCardHeader = {
     color: 'white',
 };
 
-export const saleFormGroup = {
+export const formGroup = {
     marginBottom: '15px',
     marginTop: '25px',
 };
 
-export const addNewStyleHeader = {
-    backgroundColor: '#2980B9',
-    color: 'white',
-};
-
-export const updateSaleStyleHeader = {
+export const cardStyleHeader = {
     backgroundColor: '#2980B9',
     color: 'white',
 };

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, Link } from 'react-router-dom';
 import axios from 'axios';
-import moment from 'moment';
 import getJwt from '../../helper/getJwt';
 import {
     Card,
@@ -21,60 +20,36 @@ import { homeContainer, navBarStyles, navBarBrand, spanIms, cardStyleHeader } fr
 
 export default function UpdateSale() {
     const history = useHistory();
-    const [salesList, setSalesList] = useState([]);
-    const [saleDetails, setSaleDetails] = useState([]);
-    const [cxList, setCxList] = useState([]);
     const [prodList, setProdList] = useState([]);
+    const [prodDetails, setProdDetails] = useState([]);
     const [notif, setNotif] = useState({ status: false });
 
     useEffect(() => {
-        axios.get('/api/inv/getAllSales',
-            { headers: { Authorization: getJwt() } })
-            .then(res => {
-                let salesArr = [];
-                res.data.message.map((sale, index) => {
-                    const { saleID, customerName, itemName, itemNumber, saleDate, discount, quantity, unitPrice } = sale;
-                    salesArr.push({ saleId: saleID, customerName: customerName, itemName: itemName, itemNumber: itemNumber, saleDate: saleDate, discount: discount, quantity: quantity, unitPrice: unitPrice });
-                });
-
-                return setSalesList(salesArr);
-            }).catch(error => setSalesList({ key: error.name, text: error.message }));
-
-        axios.get('/api/inv/getCustomerDatabase',
-            { headers: { Authorization: getJwt() } })
-            .then(res => {
-                let cxArr = [];
-                res.data.message.map((cx, index) => {
-                    const { customerID, fullName, gender, email, mobile, phone2, address, address2, city, district } = cx;
-                    cxArr.push({ key: index, customerId: customerID, fullName: fullName, gender: gender, email: email, mobile: mobile, phone2: phone2, address: address, address2: address2, city: city, district: district });
-                });
-
-                return setCxList(cxArr);
-
-            }).catch(error => setCxList({ key: error.name, text: error.message }));
-
         axios.get('/api/inv/getAllProducts',
             { headers: { Authorization: getJwt() } })
             .then(res => {
                 let prodArr = [];
                 res.data.message.map((prod, index) => {
-                    const { productID, itemNumber, itemName, discount, stock, unitPrice, imageURL, status, description } = prod;
-                    prodArr.push({ key: index, prodId: productID, itemNumber: itemNumber, itemName: itemName, discount: discount, stock: stock, unitPrice: unitPrice, image: imageURL, status: status, desc: description });
+                    const { productID, itemName, itemNumber, units, unitPrice, stock, discount, description } = prod;
+                    prodArr.push({ productId: productID, itemName: itemName, itemNumber: itemNumber, units: units, unitPrice: unitPrice, stock: stock, discount: discount, description: description });
                 });
     
                 return setProdList(prodArr);
             }).catch(error => setProdList({ key: error.name, text: error.message }));
     }, []);
 
-    const updateSaleBySaleId = () => {
-        if (saleDetails.saleId !== undefined) {
-            console.log(saleDetails);
-            axios.patch('/api/inv/updateSaleBySaleId', saleDetails,
-                { headers: { Authorization: getJwt() } })
-                .then(() => setNotif({ status: true, variant: 'success', message: 'Sale Updated!' }))
-                .catch(() => setNotif({ status: true, variant: 'danger', message: 'Something is wrong.' }));
+    const updateProductById = () => {
+        if (prodDetails.itemName !== undefined) {
+            if (prodDetails.itemName !== "") {
+                axios.patch('/api/inv/updateProductById', prodDetails,
+                    { headers: { Authorization: getJwt() } })
+                    .then(() => setNotif({ status: true, variant: 'success', message: 'Product Updated!' }))
+                    .catch(() => setNotif({ status: true, variant: 'danger', message: 'Something is wrong.' }));
 
-                setSaleDetails({ saleId: '', customerName: '', itemName: '', itemNumber: '', saleDate: '', discount: '', quantity: '', unitPrice: '' });
+                setProdDetails({ productId: '', itemName: '', itemNumber: '', units: '', unitPrice: '', stock: '', discount: '', description: '' });
+            } else {
+                setNotif({ status: true, variant: 'danger', message: 'Fill-up all the required fields.' });
+            };
         } else {
             setNotif({ status: true, variant: 'danger', message: 'Fill-up all the required fields.' });
         };
@@ -84,26 +59,17 @@ export default function UpdateSale() {
         }, 3000);
     };
 
-    const handleSaleIdChange = (e) => {
-        salesList.find(x => {
-            if (x.saleId === Number(e.target.value)) {
-                setSaleDetails({ saleId: x.saleId, customerName: x.customerName, itemName: x.itemName, itemNumber: x.itemNumber, saleDate: moment(x.saleDate).format('MM/DD/YYYY'), discount: x.discount, quantity: x.quantity, unitPrice: x.unitPrice });
+    const handleItemNameChange = (e) => {
+        setProdDetails({ ...prodDetails, itemName: e.target.value });
+        prodList.find(x => {
+            if (x.itemName === e.target.value) {
+                setProdDetails({ ...prodDetails, productId: x.productId, itemName: x.itemName, itemNumber: x.itemNumber, units: x.units, unitPrice: x.unitPrice, stock: x.stock, discount: x.discount, description: x.description });
             };
         });
 
         if (e.target.value === "") {
-            setSaleDetails({ customerName: '', itemName: '', itemNumber: '', saleDate: '', discount: '', quantity: '', unitPrice: '' });
+            setProdDetails({ productId: '', itemName: '', itemNumber: '', units: '', unitPrice: '', stock: '', discount: '', description: '' });
         };
-    };
-
-    const handleItemNameChange = (e) => {
-        setSaleDetails({ ...saleDetails, itemName: e.target.value });
-        
-        prodList.find(x => {
-            if (x.itemName === e.target.value) {
-                setSaleDetails({ ...saleDetails, itemName: e.target.value, itemNumber: x.itemNumber, unitPrice: x.unitPrice, stock: x.stock });
-            };
-        });
     };
 
     const logOut = () => {
@@ -152,62 +118,24 @@ export default function UpdateSale() {
                                 <CardGroup>
                                     <Card>
                                         <Card.Header style={cardStyleHeader}>
-                                            Edit Sale 
+                                            Edit Product 
                                         </Card.Header>
                                         <Card.Body>
                                             <Form>
                                                 <Alert variant={notif.variant} show={notif.status} onClose={() => setNotif({ status: false })} dismissible>{notif.message}</Alert>
                                                 <Row>
                                                     <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label>Sale ID<span style={{ color: 'red' }}>*</span></Form.Label>
-                                                        <Form.Control
-                                                            type="text"
-                                                            placeholder="Select Sale ID"
-                                                            list="saleId"
-                                                            value={saleDetails.saleId}
-                                                            onChange={e => handleSaleIdChange(e)}
-                                                        />
-                                                        <datalist id="saleId">
-                                                            {salesList.length >= 1 ? salesList.map((sale, index) => {
-                                                                const { saleId  } = sale;
-                                                                return <option key={index} value={saleId} />
-                                                            }): ''}
-                                                        </datalist>
-                                                    </Form.Group>
-                                                    <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label>Customer Name</Form.Label>
-                                                        <Form.Control
-                                                            type="text"
-                                                            placeholder=""
-                                                            list="customerName"
-                                                            disabled
-                                                            value={saleDetails.customerName}
-                                                            onChange={e => setSaleDetails({ ...saleDetails, customerName: e.target.value })}
-                                                        />
-                                                        <datalist id="customerName">
-                                                            {cxList.length >= 1 ? cxList.map((cx, index) => {
-                                                                const { fullName } = cx;
-                                                                return <option key={index} value={fullName} />
-                                                            }): ''}
-                                                        </datalist>
-                                                    </Form.Group>
-                                                </Row>
-                                            </Form>
-                                            <Form id="updateSaleForm">
-                                                <hr />
-                                                <Row className="mb-3">
-                                                    <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label>Item Name</Form.Label>
+                                                        <Form.Label>Item Name<span style={{ color: 'red' }}>*</span></Form.Label>
                                                         <Form.Control
                                                             type="text"
                                                             placeholder="Select Item Name"
-                                                            list='itemName'
-                                                            value={saleDetails.itemName}
+                                                            list="itemName"
+                                                            value={prodDetails.itemName}
                                                             onChange={e => handleItemNameChange(e)}
                                                         />
                                                         <datalist id="itemName">
                                                             {prodList.length >= 1 ? prodList.map((prod, index) => {
-                                                                const { itemName } = prod;
+                                                                const { itemName  } = prod;
                                                                 return <option key={index} value={itemName} />
                                                             }): ''}
                                                         </datalist>
@@ -217,20 +145,44 @@ export default function UpdateSale() {
                                                         <Form.Control
                                                             type="text"
                                                             placeholder=""
-                                                            value={saleDetails.itemNumber}
-                                                            disabled
+                                                            value={prodDetails.itemNumber}
+                                                            onChange={e => setProdDetails({ ...prodDetails, itemNumber: e.target.value })}
                                                         />
                                                     </Form.Group>
                                                 </Row>
+                                            </Form>
+                                            <Form id="updateProductForm">
                                                 <Row className="mb-3">
-                                                    <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label>Quantity</Form.Label>
+                                                    <Form.Group as={Col} className="mb-3">
+                                                        <Form.Label>Units</Form.Label>
+                                                        <Form.Control
+                                                            type="text"
+                                                            placeholder=""
+                                                            value={prodDetails.units}
+                                                            onChange={e => setProdDetails({ ...prodDetails, units: e.target.value })}
+                                                        />
+                                                    </Form.Group>
+                                                    <Form.Group as={Col} className="mb-3">
+                                                        <Form.Label>Unit Price</Form.Label>
                                                         <Form.Control
                                                             type="number"
                                                             placeholder=""
                                                             min={0}
-                                                            value={saleDetails.quantity}
-                                                            onChange={e => setSaleDetails({ ...saleDetails, quantity: e.target.value })}
+                                                            value={prodDetails.unitPrice}
+                                                            onChange={e => setProdDetails({ ...prodDetails, unitPrice: e.target.value })}
+                                                        />
+                                                    </Form.Group>
+                                                </Row>
+                                                <hr />
+                                                <Row className="mb-3">
+                                                    <Form.Group as={Col} sm={3} className="mb-3">
+                                                        <Form.Label>Stock</Form.Label>
+                                                        <Form.Control
+                                                            type="number"
+                                                            placeholder=""
+                                                            min={0}
+                                                            value={prodDetails.stock}
+                                                            onChange={e => setProdDetails({ ...prodDetails, stock: e.target.value })}
                                                         />
                                                     </Form.Group>
                                                     <Form.Group as={Col} sm={3} className="mb-3">
@@ -239,37 +191,29 @@ export default function UpdateSale() {
                                                             type="number"
                                                             placeholder=""
                                                             min={0}
-                                                            value={saleDetails.discount}
-                                                            onChange={e => setSaleDetails({ ...saleDetails, discount: e.target.value })}
+                                                            value={prodDetails.discount}
+                                                            onChange={e => setProdDetails({ ...prodDetails, discount: e.target.value })}
                                                         />
                                                     </Form.Group>
-                                                    <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label>Unit Price</Form.Label>
+                                                    <Form.Group as={Col} sm={6} className="mb-3">
+                                                        <Form.Label>Description</Form.Label>
                                                         <Form.Control
-                                                            type="number"
-                                                            placeholder=""
-                                                            disabled
-                                                            value={saleDetails.unitPrice}
-                                                        />
-                                                    </Form.Group>
-                                                    <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label>Sale Date</Form.Label>
-                                                        <Form.Control
+                                                            as="textarea"
                                                             type="text"
                                                             placeholder=""
-                                                            disabled
-                                                            value={saleDetails.saleDate}
+                                                            rows={5}
+                                                            value={prodDetails.description}
+                                                            onChange={e => setProdDetails({ ...prodDetails, description: e.target.value })}
                                                         />
                                                     </Form.Group>
                                                 </Row>
-                                                <p>Total Price: <b style={{ color: 'red' }}>₱ {saleDetails.unitPrice === undefined ? 0: saleDetails.quantity * saleDetails.unitPrice}</b></p>
                                             </Form>
                                             <Button
                                                 type='submit'
                                                 variant="primary"
                                                 size="sm"
                                                 style={{ marginRight: '5px', float: 'left' }}
-                                                onClick={updateSaleBySaleId}
+                                                onClick={updateProductById}
                                             >
                                                 Update
                                             </Button>
