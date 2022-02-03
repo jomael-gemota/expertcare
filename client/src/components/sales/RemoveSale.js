@@ -16,9 +16,17 @@ import {
     Container,
     Alert,
     Modal,
+    Badge,
 } from 'react-bootstrap';
 
-import { homeContainer, navBarStyles, navBarBrand, spanIms, cardStyleHeader } from '../../css/styles';
+import {
+    homeContainer,
+    navBarStyles,
+    navBarBrand,
+    spanIms,
+    cardStyleHeader,
+    formLabel
+} from '../../css/styles';
 
 export default function RemoveSale() {
     const history = useHistory();
@@ -34,10 +42,20 @@ export default function RemoveSale() {
                 let salesArr = [];
                 res.data.message.map((sale, index) => {
                     const { saleID, customerName, itemName, itemNumber, saleDate, discount, quantity, unitPrice } = sale;
-                    salesArr.push({ saleId: saleID, customerName: customerName, itemName: itemName, itemNumber: itemNumber, saleDate: saleDate, discount: discount, quantity: quantity, unitPrice: unitPrice });
+                    salesArr.push({
+                        saleId: saleID,
+                        customerName: customerName,
+                        itemName: itemName,
+                        itemNumber: itemNumber,
+                        saleDate: saleDate,
+                        discount: discount,
+                        quantity: quantity,
+                        unitPrice: unitPrice
+                    });
                 });
 
                 return setSalesList(salesArr);
+
             }).catch(error => setSalesList({ key: error.name, text: error.message }));
     }, [saleDetails.saleId]);
 
@@ -51,7 +69,16 @@ export default function RemoveSale() {
                 .then(() => setNotif({ status: true, variant: 'success', message: 'Sale Deleted!' }))
                 .catch(() => setNotif({ status: true, variant: 'danger', message: 'Something is wrong.' }))
 
-            setSaleDetails({ saleId: '', customerName: '', itemName: '', itemNumber: '', saleDate: '', discount: '', quantity: '', unitPrice: '' });
+            setSaleDetails({
+                saleId: '',
+                customerName: '',
+                itemName: '',
+                itemNumber: '',
+                saleDate: '',
+                discount: '',
+                quantity: '',
+                unitPrice: ''
+            });
         };
 
         setTimeout(function() {
@@ -74,12 +101,29 @@ export default function RemoveSale() {
     const handleSaleIdChange = (e) => {
         salesList.find(x => {
             if (x.saleId === Number(e.target.value)) {
-                setSaleDetails({ saleId: x.saleId, customerName: x.customerName, itemName: x.itemName, itemNumber: x.itemNumber, saleDate: moment(x.saleDate).format('MM/DD/YYYY'), discount: x.discount, quantity: x.quantity, unitPrice: x.unitPrice });
+                setSaleDetails({
+                    saleId: x.saleId,
+                    customerName: x.customerName,
+                    itemName: x.itemName,
+                    itemNumber: x.itemNumber,
+                    saleDate: moment(x.saleDate).format('MM/DD/YYYY'),
+                    discount: x.discount,
+                    quantity: x.quantity,
+                    unitPrice: x.unitPrice
+                });
             };
         });
 
         if (e.target.value === "") {
-            setSaleDetails({ customerName: '', itemName: '', itemNumber: '', saleDate: '', discount: '', quantity: '', unitPrice: '' });
+            setSaleDetails({
+                customerName: '',
+                itemName: '',
+                itemNumber: '',
+                saleDate: '',
+                discount: '',
+                quantity: '',
+                unitPrice: ''
+            });
         };
     };
 
@@ -97,7 +141,9 @@ export default function RemoveSale() {
                     <Col>
                         <Navbar fixed="top" expand="lg" style={navBarStyles}>
                             <Container fluid>
-                                <Navbar.Brand href="/home" style={navBarBrand}>EXPERT CARE <span style={spanIms}>Inventory Management System Pharmacy</span></Navbar.Brand>
+                                <Navbar.Brand href="/home" style={navBarBrand}>
+                                    EXPERT CARE <span style={spanIms}>Inventory Management System Pharmacy</span>
+                                </Navbar.Brand>
                                 <Navbar.Toggle aria-controls="navbarScroll" />
                                 <Navbar.Collapse id="navbarScroll">
                                     <Nav
@@ -106,7 +152,9 @@ export default function RemoveSale() {
                                         navbarScroll
                                     >
                                     </Nav>
-                                    <span style={{ color: 'white' }}>Welcome Staff! | <Button size="sm" variant="danger" onClick={logOut}>Log Out</Button></span>
+                                    <span style={{ color: 'white' }}>
+                                        Welcome Staff! | <Button size="sm" variant="danger" onClick={logOut}>Log Out</Button>
+                                    </span>
                                 </Navbar.Collapse>
                             </Container>
                         </Navbar>
@@ -128,7 +176,14 @@ export default function RemoveSale() {
                     <Col sm={6}>
                         <Tab.Content>
                             <Tab.Pane eventKey="first">
-                                <Modal size="md" aria-labelledby="contained-modal-title-vcenter" centered show={modalShow} onHide={handleModalClose} animation={true}>
+                                <Modal
+                                    size="md"
+                                    aria-labelledby="contained-modal-title-vcenter"
+                                    centered
+                                    show={modalShow}
+                                    onHide={handleModalClose}
+                                    animation={true}
+                                >
                                     <Modal.Header closeButton>
                                         <Modal.Title><h5>Delete Confirmation</h5></Modal.Title>
                                     </Modal.Header>
@@ -140,18 +195,21 @@ export default function RemoveSale() {
                                 </Modal>
                                 <CardGroup>
                                     <Card>
-                                        <Card.Header style={cardStyleHeader}>
-                                            Remove Sale 
-                                        </Card.Header>
+                                        <Card.Header style={cardStyleHeader}>Remove Sale</Card.Header>
                                         <Card.Body>
                                             <Form>
-                                                <Alert variant={notif.variant} show={notif.status} onClose={() => setNotif({ status: false })} dismissible>{notif.message}</Alert>
+                                                <Alert
+                                                    dismissible
+                                                    variant={notif.variant}
+                                                    show={notif.status}
+                                                    onClose={() => setNotif({ status: false })}
+                                                >{notif.message}</Alert>
                                                 <Row>
                                                     <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label>Sale ID<span style={{ color: 'red' }}>*</span></Form.Label>
+                                                        <Form.Label style={formLabel}>Sale ID <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
-                                                            placeholder="Select Sale ID"
+                                                            placeholder=""
                                                             list="saleId"
                                                             value={saleDetails.saleId}
                                                             onChange={e => handleSaleIdChange(e)}
@@ -164,7 +222,7 @@ export default function RemoveSale() {
                                                         </datalist>
                                                     </Form.Group>
                                                     <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label>Customer Name</Form.Label>
+                                                        <Form.Label style={formLabel}>Customer Name <Badge bg="secondary">Generated</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
                                                             placeholder=""
@@ -179,7 +237,7 @@ export default function RemoveSale() {
                                                 <hr />
                                                 <Row className="mb-3">
                                                     <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label>Item Name</Form.Label>
+                                                        <Form.Label style={formLabel}>Item Name <Badge bg="secondary">Generated</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
                                                             placeholder=""
@@ -189,7 +247,7 @@ export default function RemoveSale() {
                                                         />
                                                     </Form.Group>
                                                     <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label>Item Number</Form.Label>
+                                                        <Form.Label style={formLabel}>Item Number <Badge bg="secondary">Generated</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
                                                             placeholder=""
@@ -200,7 +258,7 @@ export default function RemoveSale() {
                                                 </Row>
                                                 <Row className="mb-3">
                                                     <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label>Quantity</Form.Label>
+                                                        <Form.Label style={formLabel}>Quantity <Badge bg="secondary">Generated</Badge></Form.Label>
                                                         <Form.Control
                                                             type="number"
                                                             placeholder=""
@@ -210,7 +268,7 @@ export default function RemoveSale() {
                                                         />
                                                     </Form.Group>
                                                     <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label>Discount %</Form.Label>
+                                                        <Form.Label style={formLabel}>Disc. % <Badge bg="secondary">Generated</Badge></Form.Label>
                                                         <Form.Control
                                                             type="number"
                                                             placeholder=""
@@ -220,7 +278,7 @@ export default function RemoveSale() {
                                                         />
                                                     </Form.Group>
                                                     <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label>Unit Price</Form.Label>
+                                                        <Form.Label style={formLabel}>Unit Price <Badge bg="secondary">Generated</Badge></Form.Label>
                                                         <Form.Control
                                                             type="number"
                                                             placeholder=""
@@ -229,7 +287,7 @@ export default function RemoveSale() {
                                                         />
                                                     </Form.Group>
                                                     <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label>Sale Date</Form.Label>
+                                                        <Form.Label style={formLabel}>Sale Date <Badge bg="secondary">Generated</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
                                                             placeholder=""
@@ -239,6 +297,8 @@ export default function RemoveSale() {
                                                     </Form.Group>
                                                 </Row>
                                             </Form>
+                                        </Card.Body>
+                                        <Card.Footer>
                                             <Button
                                                 type='submit'
                                                 variant="danger"
@@ -246,10 +306,10 @@ export default function RemoveSale() {
                                                 style={{ marginRight: '5px', float: 'left' }}
                                                 onClick={handleDeleteConfirmation}
                                             >
-                                                Delete
+                                                Delete Sale
                                             </Button>
                                             <Link to="/home"><Button size="sm" variant="outline-secondary">Go Back</Button></Link>
-                                        </Card.Body>
+                                        </Card.Footer>
                                     </Card>
                                 </CardGroup>
                             </Tab.Pane>

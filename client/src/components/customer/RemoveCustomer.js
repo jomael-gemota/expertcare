@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, Link } from 'react-router-dom';
 import axios from 'axios';
-import moment from 'moment';
 import getJwt from '../../helper/getJwt';
 import {
     Card,
@@ -15,8 +14,8 @@ import {
     Navbar,
     Container,
     Alert,
-    Modal,
     Badge,
+    Modal,
 } from 'react-bootstrap';
 
 import {
@@ -28,60 +27,82 @@ import {
     formLabel
 } from '../../css/styles';
 
-export default function RemovePurchase() {
+export default function RemoveCustomer() {
     const history = useHistory();
     const [notif, setNotif] = useState({ status: false });
-    const [purDetails, setPurDetails] = useState({});
-    const [purList, setPurList] = useState([]);
+    const [cxDetails, setCxDetails] = useState({});
+    const [cxList, setCxList] = useState([]);
     const [modalShow, setModalShow] = useState(false);
 
     useEffect(() => {
-        axios.get('/api/inv/getAllPurchase',
+        axios.get('/api/inv/getCustomerDatabase',
             { headers: { Authorization: getJwt() } })
             .then(res => {
-                let purArr = [];
-                res.data.message.map(pur => {
-                    purArr.push({
-                        purchaseId: pur.purchaseID,
-                        itemName: pur.itemName,
-                        itemNumber: pur.itemNumber,
-                        quantity: pur.quantity,
-                        unitPrice: pur.unitPrice,
-                        vendorId: pur.vendorID,
-                        vendorName: pur.vendorName,
-                        purchaseDate: pur.purchaseDate
+                let cxArr = [];
+                res.data.message.map(cx => {
+                    cxArr.push({
+                        customerId: cx.customerID,
+                        fullName: cx.fullName,
+                        illness: cx.illness,
+                        email: cx.email,
+                        mobile: cx.mobile,
+                        phone: cx.phone2,
+                        address: cx.address,
+                        city: cx.city,
+                        district: cx.district
                     });
                 });
     
-                return setPurList(purArr);
+                return setCxList(cxArr);
 
-            }).catch(error => setPurList({ key: error.name, text: error.message }));
-    }, [purDetails.purchaseId]);
+            }).catch(error => setCxList({ key: error.name, text: error.message }));
+    }, [cxDetails.customerId]);
 
-    const deletePurchaseById = () => {
-        if (purDetails.purchaseId !== undefined) {
-            if (purDetails.purchaseId !== "") {
+    const handleCustomerIdChange = (e) => {
+        setCxDetails({ ...cxDetails, customerId: e.target.value });
+        cxList.find(x => {
+            if (x.customerId === Number(e.target.value)) {
+                setCxDetails({
+                    customerId: x.customerId,
+                    fullName: x.fullName,
+                    illness: x.illness,
+                    email: x.email,
+                    mobile: x.mobile,
+                    phone: x.phone,
+                    address: x.address,
+                    city: x.city,
+                    district: x.district
+                });
+            };
+        });
+
+        if (e.target.value === "") resetForm();
+    };
+
+    const deleteCustomerById = () => {
+        if (cxDetails.customerId !== undefined) {
+            if (cxDetails.customerId !== "") {
                 handleModalClose();
 
-                axios.delete('/api/inv/deletePurchaseById',
-                    { params: { id: purDetails.purchaseId },
+                axios.delete('/api/inv/deleteCustomerById',
+                    { params: { id: cxDetails.customerId },
                     headers: { Authorization: getJwt() } })
                     .then(() => {
-                        setNotif({ status: true, variant: 'success', message: 'Purchase Deleted!' });
+                        setNotif({ status: true, variant: 'success', message: 'Customer Information Deleted!' });
                         resetForm();
                     })
                     .catch(() => setNotif({ status: true, variant: 'danger', message: 'Something is wrong.' }))
-            };
-        };
+            } else setNotif({ status: true, variant: 'danger', message: 'Fill-up all the required fields.' });
+        } else setNotif({ status: true, variant: 'danger', message: 'Fill-up all the required fields.' });
 
         setTimeout(function() {
             setNotif({ ...notif, status: false });
-        }, 3000);
+        }, 2000);
     };
 
     const handleDeleteConfirmation = () => {
-        if (purDetails.purchaseId !== undefined) {
-            if (purDetails.purchaseId !== "") {
+        if (cxDetails.customerId !== undefined) {
+            if (cxDetails.customerId !== "") {
                 setModalShow(true);
             } else setNotif({ status: true, variant: 'danger', message: 'Fill-up all the required fields.' });
         } else setNotif({ status: true, variant: 'danger', message: 'Fill-up all the required fields.' });
@@ -91,51 +112,22 @@ export default function RemovePurchase() {
         }, 3000);
     };
 
-    const handlePurchaseIDChange = (e) => {
-        setPurDetails({ ...purDetails, purchaseId: e.target.value });
-        purList.find(x => {
-            if (x.purchaseId === Number(e.target.value)) {
-                setPurDetails({
-                    purchaseId: x.purchaseId,
-                    itemName: x.itemName,
-                    itemNumber: x.itemNumber,
-                    quantity: x.quantity,
-                    unitPrice: x.unitPrice,
-                    vendorId: x.vendorId,
-                    vendorName: x.vendorName,
-                    purchaseDate: moment(x.purchaseDate).format('YYYY-MM-DD')
-                });
-            };
-
-            if (e.target.value === "") {
-                setPurDetails({
-                    itemName: '',
-                    itemNumber: '',
-                    quantity: '',
-                    unitPrice: '',
-                    vendorId: '',
-                    vendorName: '',
-                    purchaseDate: ''
-                });
-            };
-        });
-    };
+    const handleModalClose = () => setModalShow(false);
 
     const resetForm = () => {
-        document.getElementById("removePurForm").reset();
-        setPurDetails({
-            purchaseId: '',
-            itemName: '',
-            itemNumber: '',
-            quantity: '',
-            unitPrice: '',
-            vendorName: '',
-            vendorId: '',
-            purchaseDate: ''
+        document.getElementById("deleteCustomerForm").reset();
+        setCxDetails({
+            customerId: '',
+            fullName: '',
+            illness: '',
+            email: '',
+            mobile: '',
+            phone: '',
+            address: '',
+            city: '',
+            district: ''
         });
     };
-    
-    const handleModalClose = () => setModalShow(false);
 
     const logOut = () => {
         localStorage.clear('jwt');
@@ -195,19 +187,20 @@ export default function RemovePurchase() {
                                     <Modal.Header closeButton>
                                         <Modal.Title><h5>Delete Confirmation</h5></Modal.Title>
                                     </Modal.Header>
-                                    <Modal.Body>Do you really want to delete this purchase?</Modal.Body>
+                                    <Modal.Body>Do you really want to delete this customer information?</Modal.Body>
                                     <Modal.Footer>
                                         <Button variant="outline-secondary" size="sm" onClick={handleModalClose}>Cancel</Button>
-                                        <Button variant="danger" size="sm" onClick={() => deletePurchaseById()}>Remove</Button>
+                                        <Button variant="danger" size="sm" onClick={() => deleteCustomerById()}>Remove</Button>
                                     </Modal.Footer>
                                 </Modal>
                                 <CardGroup>
                                     <Card>
-                                        <Card.Header style={cardStyleHeader}>Remove Purchase</Card.Header>
+                                        <Card.Header style={cardStyleHeader}>
+                                            Delete Vendor
+                                        </Card.Header>
                                         <Card.Body>
-                                            <Form id="removePurForm">
+                                            <Form id="deleteCustomerForm">
                                                 <Alert
-                                                    dismissible
                                                     variant={notif.variant}
                                                     show={notif.status}
                                                     onClose={() => setNotif({ status: false })}
@@ -216,92 +209,107 @@ export default function RemovePurchase() {
                                                 </Alert>
                                                 <Row>
                                                     <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label style={formLabel}>Purchase ID <Badge bg="danger">Required</Badge></Form.Label>
+                                                        <Form.Label style={formLabel}>Customer ID <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
                                                             placeholder=""
-                                                            list="purchaseId"
-                                                            value={purDetails.purchaseId}
-                                                            onChange={e => handlePurchaseIDChange(e)}
+                                                            list="customerId"
+                                                            value={cxDetails.customerId}
+                                                            onChange={e => handleCustomerIdChange(e)}
                                                         />
-                                                        <datalist id="purchaseId">
-                                                            {purList.length >= 1 ? purList.map((pur, index) => {
-                                                                return <option key={index} value={pur.purchaseId} />
+                                                        <datalist id="customerId">
+                                                            {cxList.length >= 1 ? cxList.map((cx, index) => {
+                                                                return <option key={index} value={cx.customerId} />
                                                             }): ''}
                                                         </datalist>
                                                     </Form.Group>
-                                                    <Form.Group as={Col} sm={5} className="mb-3">
-                                                        <Form.Label style={formLabel}>Item Name <Badge bg="secondary">Generated</Badge></Form.Label>
+                                                    <Form.Group as={Col} sm={3} className="mb-3">
+                                                        <Form.Label style={formLabel}>Illness <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
                                                             placeholder=""
                                                             disabled
-                                                            value={purDetails.itemName}
+                                                            value={cxDetails.illness}
+                                                            onChange={e => setCxDetails({ ...cxDetails, illness: e.target.value })}
                                                         />
                                                     </Form.Group>
                                                     <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label style={formLabel}>Item Number <Badge bg="secondary">Generated</Badge></Form.Label>
+                                                        <Form.Label style={formLabel}>Full Name <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
                                                             placeholder=""
                                                             disabled
-                                                            value={purDetails.itemNumber}
+                                                            value={cxDetails.fullName}
+                                                            onChange={e => setCxDetails({ ...cxDetails, fullName: e.target.value })}
                                                         />
                                                     </Form.Group>
                                                 </Row>
                                             </Form>
                                             <Form>
                                                 <Row className="mb-3">
-                                                    <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label style={formLabel}>Quantity <Badge bg="secondary">Generated</Badge></Form.Label>
+                                                    <Form.Group as={Col} sm={4} className="mb-3">
+                                                        <Form.Label style={formLabel}>Email Address <Badge bg="info">Optional</Badge></Form.Label>
                                                         <Form.Control
-                                                            type="number"
+                                                            type="email"
                                                             placeholder=""
                                                             disabled
-                                                            min={0}
-                                                            value={purDetails.quantity}
+                                                            value={cxDetails.email}
+                                                            onChange={e => setCxDetails({ ...cxDetails, email: e.target.value })}
                                                         />
                                                     </Form.Group>
-                                                    <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label style={formLabel}>Unit Price <Badge bg="secondary">Generated</Badge></Form.Label>
+                                                    <Form.Group as={Col} className="mb-3">
+                                                        <Form.Label style={formLabel}>Mobile No. <Badge bg="info">Optional</Badge></Form.Label>
                                                         <Form.Control
                                                             type="number"
                                                             placeholder=""
                                                             disabled
-                                                            min={0}
-                                                            value={purDetails.unitPrice}
+                                                            value={cxDetails.mobile}
+                                                            onChange={e => setCxDetails({ ...cxDetails, mobile: e.target.value })}
+                                                        />
+                                                    </Form.Group>
+                                                    <Form.Group as={Col} className="mb-3">
+                                                        <Form.Label style={formLabel}>Phone No. <Badge bg="info">Optional</Badge></Form.Label>
+                                                        <Form.Control
+                                                            type="number"
+                                                            placeholder=""
+                                                            disabled
+                                                            value={cxDetails.phone}
+                                                            onChange={e => setCxDetails({ ...cxDetails, phone: e.target.value })}
                                                         />
                                                     </Form.Group>
                                                 </Row>
                                                 <hr />
                                                 <Row className="mb-3">
+                                                    <Form.Group as={Col} className="mb-3">
+                                                        <Form.Label style={formLabel}>Full Address <Badge bg="danger">Required</Badge></Form.Label>
+                                                        <Form.Control
+                                                            type="text"
+                                                            placeholder=""
+                                                            disabled
+                                                            value={cxDetails.address}
+                                                            onChange={e => setCxDetails({ ...cxDetails, address: e.target.value })}
+                                                        />
+                                                    </Form.Group>
+                                                </Row>
+                                                <Row className="mb-3">
                                                     <Form.Group as={Col} sm={6} className="mb-3">
-                                                        <Form.Label style={formLabel}>Vendor Name <Badge bg="secondary">Generated</Badge></Form.Label>
+                                                        <Form.Label style={formLabel}>City <Badge bg="info">Optional</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
                                                             placeholder=""
                                                             disabled
-                                                            min={0}
-                                                            value={purDetails.vendorName}
+                                                            value={cxDetails.city}
+                                                            onChange={e => setCxDetails({ ...cxDetails, city: e.target.value })}
                                                         />
                                                     </Form.Group>
-                                                    <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label style={formLabel}>Vendor ID <Badge bg="secondary">Generated</Badge></Form.Label>
-                                                        <Form.Control
-                                                            type="text"
-                                                            placeholder=""
-                                                            min={0}
-                                                            disabled
-                                                            value={purDetails.vendorId}
-                                                        />
-                                                    </Form.Group>
-                                                    <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label style={formLabel}>Date <Badge bg="secondary">Generated</Badge></Form.Label>
+                                                    <Form.Group as={Col} sm={6} className="mb-3">
+                                                        <Form.Label style={formLabel}>District <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
                                                             placeholder=""
                                                             disabled
-                                                            value={purDetails.purchaseDate}
+                                                            value={cxDetails.district}
+                                                            onChange={e => setCxDetails({ ...cxDetails, district: e.target.value })}
                                                         />
                                                     </Form.Group>
                                                 </Row>
@@ -313,9 +321,9 @@ export default function RemovePurchase() {
                                                 variant="danger"
                                                 size="sm"
                                                 style={{ marginRight: '5px', float: 'left' }}
-                                                onClick={handleDeleteConfirmation}
+                                                onClick={() => handleDeleteConfirmation()}
                                             >
-                                                Delete Purchase
+                                                Remove Customer Info
                                             </Button>
                                             <Link to="/home"><Button size="sm" variant="outline-secondary">Go Back</Button></Link>
                                         </Card.Footer>

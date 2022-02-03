@@ -1,19 +1,28 @@
 import React, { useState } from 'react';
 import { useHistory, Link } from 'react-router-dom';
-import { Card, Button, Form, Alert, CardGroup, Badge, Spinner} from 'react-bootstrap';
+import {
+    Card,
+    Button,
+    Form,
+    Alert,
+    CardGroup,
+    Spinner
+} from 'react-bootstrap';
 import axios from 'axios';
 
-import { loginBody, loginCard, loginHeader, loginForgotPass, loginAlert, btnBadge } from '../css/styles';
+import {
+    loginBody,
+    loginCard,
+    loginHeader,
+    loginForgotPass,
+    loginAlert,
+} from '../css/styles';
 
 export default function Login() {
     const [credential, setCredential] = useState({ email: '', password: '' });
     const [notif, setNotif] = useState({ header: '', content: '', status: false });
     const [isLoading, setLoading] = useState(false);
     const history = useHistory();
-
-    const resetForm = () => {
-        document.getElementById("loginForm").reset();
-    };
 
     const signIn = () => {
         setLoading(true);
@@ -25,9 +34,7 @@ export default function Login() {
                 if (success) {
                     localStorage.setItem('jwt', token);
                     history.push('/home');
-                } else {
-                    setNotif({ header: name, content: message, status: true });
-                };
+                } else setNotif({ header: name, content: message, status: true });
 
                 setLoading(false);
 
@@ -50,10 +57,7 @@ export default function Login() {
             </Alert>
             <CardGroup style={loginCard}>
                 <Card>
-                    <Card.Header style={loginHeader}>
-                        Sign in to ExpertCare 
-                        <Badge bg="warning" style={btnBadge} onClick={resetForm}>Clear Form</Badge>
-                    </Card.Header>
+                    <Card.Header style={loginHeader}>Sign in to Expert Care</Card.Header>
                     <Card.Body>
                         <Form id="loginForm">
                             <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
@@ -82,9 +86,17 @@ export default function Login() {
                             style={{ marginRight: '5px', float: 'left' }}
                             onClick={signIn}
                         >
-                            {isLoading ? <div><Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> Loading...</div> : 'Sign In'}
+                            {isLoading
+                                ? <div><Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> Loading...</div>
+                                : 'Sign In'}
                         </Button>
-                        <Link to='/register' onClick={ (event) => event.preventDefault() } style={{ cursor: 'not-allowed' }}><Button variant="warning" size="sm" disabled>Register</Button></Link>
+                        <Link
+                            to='/register'
+                            onClick={ (event) => event.preventDefault() }
+                            style={{ cursor: 'not-allowed' }}
+                        >
+                            <Button variant="warning" size="sm" disabled>Register</Button>
+                        </Link>
                         <p style={loginForgotPass}>Forgot Password? <Link to='/reset-password'>Click Here!</Link></p>
                     </Card.Body>
                 </Card>

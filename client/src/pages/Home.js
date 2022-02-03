@@ -14,6 +14,7 @@ import {
     FormGroup,
     Dropdown,
     DropdownButton,
+    Spinner,
 } from 'react-bootstrap';
 import { useHistory, Link } from 'react-router-dom';
 import axios from 'axios';
@@ -37,7 +38,10 @@ export default function Home() {
     const [prodList, setProdList] = useState([]);
     const [purList, setPurList] = useState([]);
     const [vendList, setVendList] = useState([]);
+    const [cxList, setCxList] = useState([]);
     const [isUpdate, setIsUpdate] = useState(false);
+    const [isLoadingRefresh, setIsLoadingRefresh] = useState(false);
+    const [defActiveKey, setDefActiveKey] = useState('sales');
 
     window.alert = function () {};
     
@@ -96,7 +100,7 @@ export default function Home() {
                         $('#prodTable').DataTable({
                             order: [[ 1, "asc" ]],
                             "columnDefs": [
-                                {"className": "dt-center", "targets": [3, 4, 5]}
+                                {"className": "dt-center", "targets": [0, 4, 5, 6]}
                             ]
                         });
                     });
@@ -124,7 +128,7 @@ export default function Home() {
 
                     $(document).ready( function () {
                         $('#purTable').DataTable({
-                            order: [[ 1, "asc" ]],
+                            order: [[ 2, "asc" ]],
                             "columnDefs": [
                                 {"className": "dt-center", "targets": [0, 3, 4, 6]}
                             ]
@@ -164,11 +168,47 @@ export default function Home() {
                     return setVendList(vendArr);
 
                 }).catch(error => setVendList({ key: error.name, text: error.message }));
+
+            axios.get('/api/inv/getCustomerDatabase',
+                { headers: { Authorization: getJwt() } })
+                .then(res => {
+                    let cxArr = [];
+                    res.data.message.map(cx => {
+                        cxArr.push({
+                            customerId: cx.customerID,
+                            fullName: cx.fullName,
+                            illness: cx.illness,
+                            email: cx.email,
+                            mobile: cx.mobile,
+                            phone: cx.phone2,
+                            address: cx.address,
+                            city: cx.city,
+                            district: cx.district
+                        });
+                    });
+
+                    $(document).ready( function () {
+                        $('#cxTable').DataTable({
+                            order: [[ 1, "asc" ]],
+                            "columnDefs": [
+                                {"className": "dt-center", "targets": [0, 4, 5]}
+                            ]
+                        });
+                    });
+
+                    return setCxList(cxArr);
+
+                }).catch(error => setCxList({ key: error.name, text: error.message }));
                 
     }, [isUpdate]);
 
     const refresh = () => {
-        setIsUpdate(!isUpdate)
+        setIsLoadingRefresh(true);
+        setIsUpdate(!isUpdate);
+
+        setTimeout(function() {
+            setIsLoadingRefresh(false);
+        }, 2000);
     };
 
     const logOut = () => {
@@ -218,12 +258,22 @@ export default function Home() {
                                     <Card>
                                         <Card.Header style={invCardHeader}>
                                             Manage Inventory
-                                            <Button size="sm" variant="info" style={{ float: 'right' }} onClick={refresh}>Refresh</Button>
+                                            <Button
+                                                size="sm"
+                                                variant="info"
+                                                disabled={isLoadingRefresh}
+                                                style={{ float: 'right', color: 'white'}}
+                                                onClick={refresh}
+                                            >
+                                                {isLoadingRefresh
+                                                    ? <div><Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> Refreshing...</div>
+                                                    : 'Refresh Table'}
+                                            </Button>
                                         </Card.Header>
                                         <Card.Body>
-                                            <Tabs defaultActiveKey="sales" id="uncontrolled-tab-example" className="mb-3">
-                                                <Tab eventKey="sales" title="Sales">
-                                                    <h3>Sales Inventory</h3>
+                                            <Tabs defaultActiveKey={defActiveKey} id="uncontrolled-tab-example" className="mb-3">
+                                                <Tab eventKey="sales" title="Sales" onClick={() => setDefActiveKey('sales')}>
+                                                    <h4>Sales Inventory</h4>
                                                     <p>This is where you can see all of the sales that are being added per customer.</p>
                                                     <FormGroup style={formGroup}>
                                                         <Link to='/home/add-new-sale'><Button size="sm" variant="success" style={{ marginRight: '5px' }}>Add New Sale</Button></Link>
@@ -271,13 +321,12 @@ export default function Home() {
                                                                     <td></td>
                                                                     <td></td>
                                                                     <td></td>
-                                                                    <td></td>
                                                                 </tr>}
                                                         </tbody>
                                                     </Table>
                                                 </Tab>
-                                                <Tab eventKey="products" title="Products">
-                                                    <h3>Products Inventory</h3>
+                                                <Tab eventKey="products" title="Products" onClick={() => setDefActiveKey('products')}>
+                                                    <h4>Products Inventory</h4>
                                                     <p>This is where you can manage all the inventory of your products.</p>
                                                     <FormGroup style={formGroup}>
                                                         <Link to='/home/add-new-product'><Button size="sm" variant="success" style={{ marginRight: '5px' }}>Add New Product</Button></Link>
@@ -294,6 +343,7 @@ export default function Home() {
                                                     <Table striped bordered hover size='sm' id='prodTable'>
                                                         <thead>
                                                             <tr>
+                                                                <th>Product ID</th>
                                                                 <th>Item No.</th>
                                                                 <th>Item Name</th>
                                                                 <th>Units</th>
@@ -306,6 +356,7 @@ export default function Home() {
                                                         <tbody>
                                                             {prodList.length >= 1 ? prodList.map((prod, index) => {
                                                                 return <tr key={index} style={{ fontSize: '14px' }}>
+                                                                    <td>{prod.productId}</td>
                                                                     <td>{prod.itemNumber}</td>
                                                                     <td>{prod.itemName}</td>
                                                                     <td>{prod.units}</td>
@@ -322,12 +373,13 @@ export default function Home() {
                                                                     <td></td>
                                                                     <td></td>
                                                                     <td></td>
+                                                                    <td></td>
                                                                 </tr>}
                                                         </tbody>
                                                     </Table>
                                                 </Tab>
-                                                <Tab eventKey="purchase" title="Purchase">
-                                                    <h3>Purchasing Inventory</h3>
+                                                <Tab eventKey="purchase" title="Purchase" onClick={() => setDefActiveKey('purchase')}>
+                                                    <h4>Purchasing Inventory</h4>
                                                     <p>This is where you can manage all of your purchases.</p>
                                                     <FormGroup style={formGroup}>
                                                         <Link to='/home/add-new-purchase'><Button size="sm" variant="success" style={{ marginRight: '5px' }}>Add New Purchase</Button></Link>
@@ -376,8 +428,8 @@ export default function Home() {
                                                         </tbody>
                                                     </Table>
                                                 </Tab>
-                                                <Tab eventKey="vendors" title="Vendors">
-                                                    <h3>Vendors Inventory</h3>
+                                                <Tab eventKey="vendors" title="Vendors" onClick={() => setDefActiveKey('vendors')}>
+                                                    <h4>Vendors Inventory</h4>
                                                     <p>This is where you can manage all of your available vendors.</p>
                                                     <FormGroup style={formGroup}>
                                                         <Link to='/home/add-new-vendor'><Button size="sm" variant="success" style={{ marginRight: '5px' }}>Add New Vendor</Button></Link>
@@ -393,20 +445,12 @@ export default function Home() {
                                                     </FormGroup>
                                                     <Table striped bordered hover size='sm' id='vendTable'>
                                                         <thead>
-                                                        {/* vendorId: vend.vendorID,
-                                                        fullName: vend.fullName,
-                                                        email: vend.email,
-                                                        mobile: vend.mobile,
-                                                        phone: vend.phone2,
-                                                        address: vend.address,
-                                                        city: vend.city,
-                                                        district: vend.district */}
                                                             <tr>
                                                                 <th>Vendor ID</th>
                                                                 <th>Full Name</th>
                                                                 <th>Email Address</th>
-                                                                <th>Mobile #</th>
-                                                                <th>Phone #</th>
+                                                                <th>Mobile No.</th>
+                                                                <th>Phone No.</th>
                                                                 <th>Address</th>
                                                                 <th>City</th>
                                                                 <th>District</th>
@@ -419,7 +463,7 @@ export default function Home() {
                                                                     <td>{vend.fullName}</td>
                                                                     <td>{vend.email}</td>
                                                                     <td>{vend.mobile}</td>
-                                                                    <td>{vend.phone}</td>
+                                                                    <td>{vend.phone === '0' ? '' : vend.phone}</td>
                                                                     <td>{vend.address}</td>
                                                                     <td>{vend.city}</td>
                                                                     <td>{vend.district}</td>
@@ -437,8 +481,61 @@ export default function Home() {
                                                         </tbody>
                                                     </Table>
                                                 </Tab>
-                                                <Tab eventKey="customer-database" title="Customer Database">
-                                                    <p>Customer Database</p>
+                                                <Tab eventKey="customer-database" title="Customer Database" onClick={() => setDefActiveKey('customer-database')}>
+                                                    <h4>Customer Database</h4>
+                                                    <p>This is where you can manage all of your customer information.</p>
+                                                    <FormGroup style={formGroup}>
+                                                        <Link to='/home/add-new-customer'><Button size="sm" variant="success" style={{ marginRight: '5px' }}>Add New Customer</Button></Link>
+                                                        <Link to='/home/update-customer'><Button size="sm" variant="warning" style={{ marginRight: '5px' }}>Edit Customer Info</Button></Link>
+                                                        <Link to='/home/remove-customer'><Button size="sm" variant="outline-danger">Remove Customer</Button></Link>
+                                                        <DropdownButton size="sm" id="dropdown-basic-button" title="Export Reports" style={{ float: 'right' }}>
+                                                            <Dropdown.Item href="#/action-1">Copy to Cliboard</Dropdown.Item>
+                                                            <Dropdown.Item href="#/action-2">CSV</Dropdown.Item>
+                                                            <Dropdown.Item href="#/action-3">Excel</Dropdown.Item>
+                                                            <Dropdown.Item href="#/action-3">PDF</Dropdown.Item>
+                                                            <Dropdown.Item href="#/action-3">Print</Dropdown.Item>
+                                                        </DropdownButton>
+                                                    </FormGroup>
+                                                    <Table striped bordered hover size='sm' id='cxTable'>
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Customer ID</th>
+                                                                <th>Full Name</th>
+                                                                <th>Illness</th>
+                                                                <th>Email Address</th>
+                                                                <th>Mobile No.</th>
+                                                                <th>Phone No.</th>
+                                                                <th>Address</th>
+                                                                <th>City</th>
+                                                                <th>District</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {cxList.length >= 1 ? cxList.map((cx, index) => {
+                                                                return <tr key={index} style={{ fontSize: '14px' }}>
+                                                                    <td>{cx.customerId}</td>
+                                                                    <td>{cx.fullName}</td>
+                                                                    <td>{cx.illness}</td>
+                                                                    <td>{cx.email}</td>
+                                                                    <td>{cx.mobile}</td>
+                                                                    <td>{cx.phone === '0' ? '' : cx.phone}</td>
+                                                                    <td>{cx.address}</td>
+                                                                    <td>{cx.city}</td>
+                                                                    <td>{cx.district}</td>
+                                                                </tr>
+                                                            }): <tr>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                </tr>}
+                                                        </tbody>
+                                                    </Table>
                                                 </Tab>
                                             </Tabs>
                                         </Card.Body>

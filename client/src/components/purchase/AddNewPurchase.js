@@ -15,6 +15,7 @@ import {
     Navbar,
     Container,
     Alert,
+    Badge,
 } from 'react-bootstrap';
 
 import {
@@ -22,10 +23,11 @@ import {
     navBarStyles,
     navBarBrand,
     spanIms,
-    cardStyleHeader
+    cardStyleHeader,
+    formLabel
 } from '../../css/styles';
 
-export default function AddNewProduct() {
+export default function AddNewPurchase() {
     const history = useHistory();
     const [notif, setNotif] = useState({ status: false });
     const [purDetails, setPurDetails] = useState({});
@@ -85,12 +87,8 @@ export default function AddNewProduct() {
                         resetForm();
                     })
                     .catch(() => setNotif({ status: true, variant: 'danger', message: 'Something is wrong.' }))
-            } else {
-                setNotif({ status: true, variant: 'danger', message: 'Fill-up all the required fields.' });
-            };
-        } else {
-            setNotif({ status: true, variant: 'danger', message: 'Fill-up all the required fields.' });
-        };
+            } else setNotif({ status: true, variant: 'danger', message: 'Fill-up all the required fields.' });
+        } else setNotif({ status: true, variant: 'danger', message: 'Fill-up all the required fields.' });
 
         setTimeout(function() {
             setNotif({ ...notif, status: false });
@@ -101,7 +99,11 @@ export default function AddNewProduct() {
         setPurDetails({ ...purDetails, itemName: e.target.value });
         prodList.find(x => {
             if (x.itemName === e.target.value) {
-                setPurDetails({ ...purDetails, itemName: x.itemName, itemNumber: x.itemNumber });
+                setPurDetails({
+                    ...purDetails,
+                    itemName: x.itemName,
+                    itemNumber: x.itemNumber
+                });
             };
         });
 
@@ -121,7 +123,11 @@ export default function AddNewProduct() {
         setPurDetails({ ...purDetails, vendorName: e.target.value });
         vendList.find(x => {
             if (x.vendorName === e.target.value) {
-                setPurDetails({ ...purDetails, vendorName: x.vendorName, vendorId: x.vendorId });
+                setPurDetails({
+                    ...purDetails,
+                    vendorName: x.vendorName,
+                    vendorId: x.vendorId
+                });
             };
         });
     };
@@ -150,7 +156,9 @@ export default function AddNewProduct() {
                     <Col>
                         <Navbar fixed="top" expand="lg" style={navBarStyles}>
                             <Container fluid>
-                                <Navbar.Brand href="/home" style={navBarBrand}>EXPERT CARE <span style={spanIms}>Inventory Management System Pharmacy</span></Navbar.Brand>
+                                <Navbar.Brand href="/home" style={navBarBrand}>
+                                    EXPERT CARE <span style={spanIms}>Inventory Management System Pharmacy</span>
+                                </Navbar.Brand>
                                 <Navbar.Toggle aria-controls="navbarScroll" />
                                 <Navbar.Collapse id="navbarScroll">
                                     <Nav
@@ -159,7 +167,9 @@ export default function AddNewProduct() {
                                         navbarScroll
                                     >
                                     </Nav>
-                                    <span style={{ color: 'white' }}>Welcome Staff! | <Button size="sm" variant="danger" onClick={logOut}>Log Out</Button></span>
+                                    <span style={{ color: 'white' }}>
+                                        Welcome Staff! | <Button size="sm" variant="danger" onClick={logOut}>Log Out</Button>
+                                    </span>
                                 </Navbar.Collapse>
                             </Container>
                         </Navbar>
@@ -188,13 +198,20 @@ export default function AddNewProduct() {
                                         </Card.Header>
                                         <Card.Body>
                                             <Form id="addNewPurForm">
-                                                <Alert variant={notif.variant} show={notif.status} onClose={() => setNotif({ status: false })} dismissible>{notif.message}</Alert>
+                                                <Alert
+                                                    dismissible
+                                                    variant={notif.variant}
+                                                    show={notif.status}
+                                                    onClose={() => setNotif({ status: false })}
+                                                >
+                                                    {notif.message}
+                                                </Alert>
                                                 <Row>
                                                     <Form.Group as={Col} sm={7} className="mb-3">
-                                                        <Form.Label>Item Name<span style={{ color: 'red' }}>*</span></Form.Label>
+                                                        <Form.Label style={formLabel}>Item Name <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
-                                                            placeholder="Enter Item Name"
+                                                            placeholder=""
                                                             list="itemName"
                                                             value={purDetails.itemName}
                                                             onChange={e => handleItemNameChange(e)}
@@ -206,7 +223,7 @@ export default function AddNewProduct() {
                                                         </datalist>
                                                     </Form.Group>
                                                     <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label>Item Number<span style={{ color: 'red' }}>*</span></Form.Label>
+                                                        <Form.Label style={formLabel}>Item Number <Badge bg="secondary">Generated</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
                                                             placeholder=""
@@ -219,20 +236,20 @@ export default function AddNewProduct() {
                                             <Form>
                                                 <Row className="mb-3">
                                                     <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label>Quantity<span style={{ color: 'red' }}>*</span></Form.Label>
+                                                        <Form.Label style={formLabel}>Quantity <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="number"
-                                                            placeholder="Enter Quantity"
+                                                            placeholder=""
                                                             min={0}
                                                             value={purDetails.quantity}
                                                             onChange={e => setPurDetails({ ...purDetails, quantity: e.target.value })}
                                                         />
                                                     </Form.Group>
                                                     <Form.Group as={Col} sm={4} className="mb-3">
-                                                        <Form.Label>Unit Price<span style={{ color: 'red' }}>*</span></Form.Label>
+                                                        <Form.Label style={formLabel}>Unit Price <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="number"
-                                                            placeholder="Enter Unit Price"
+                                                            placeholder=""
                                                             min={0}
                                                             value={purDetails.unitPrice}
                                                             onChange={e => setPurDetails({ ...purDetails, unitPrice: e.target.value })}
@@ -242,10 +259,10 @@ export default function AddNewProduct() {
                                                 <hr />
                                                 <Row className="mb-3">
                                                     <Form.Group as={Col} sm={7} className="mb-3">
-                                                        <Form.Label>Vendor Name<span style={{ color: 'red' }}>*</span></Form.Label>
+                                                        <Form.Label style={formLabel}>Vendor Name <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
-                                                            placeholder="Enter Vendor Name"
+                                                            placeholder=""
                                                             list="vendorName"
                                                             min={0}
                                                             value={purDetails.vendorName}
@@ -258,19 +275,21 @@ export default function AddNewProduct() {
                                                         </datalist>
                                                     </Form.Group>
                                                     <Form.Group as={Col} sm={5} className="mb-3">
-                                                        <Form.Label>Purchase Date<span style={{ color: 'red' }}>*</span></Form.Label>
+                                                        <Form.Label style={formLabel}>Purchase Date <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="date"
-                                                            placeholder="Enter Purchase Date"
+                                                            placeholder=""
                                                             value={purDetails.purchaseDate}
                                                             onChange={e => setPurDetails({ ...purDetails, purchaseDate: e.target.value })}
                                                         />
                                                     </Form.Group>
                                                 </Row>
                                             </Form>
+                                        </Card.Body>
+                                        <Card.Footer>
                                             <Button
                                                 type='submit'
-                                                variant="primary"
+                                                variant="success"
                                                 size="sm"
                                                 style={{ marginRight: '5px', float: 'left' }}
                                                 onClick={addNewPurchase}
@@ -278,7 +297,7 @@ export default function AddNewProduct() {
                                                 Add Purchase
                                             </Button>
                                             <Link to="/home"><Button size="sm" variant="outline-secondary">Go Back</Button></Link>
-                                        </Card.Body>
+                                        </Card.Footer>
                                     </Card>
                                 </CardGroup>
                             </Tab.Pane>

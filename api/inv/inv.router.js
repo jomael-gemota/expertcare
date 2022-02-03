@@ -14,6 +14,12 @@ const {
     addNewPurchase,
     updatePurchaseById,
     deletePurchaseById,
+    addNewVendor,
+    updateVendorById,
+    deleteVendorById,
+    addNewCustomer,
+    updateCustomerById,
+    deleteCustomerById,
 } = require('./inv.controller');
 
 const router = require('express').Router();
@@ -37,5 +43,13 @@ router.patch('/updateProductById', checkToken, updateProductById);
 router.post('/addNewPurchase', checkToken, addNewPurchase);
 router.patch('/updatePurchaseById', checkToken, updatePurchaseById);
 router.delete('/deletePurchaseById', checkToken, deletePurchaseById);
+
+router.post('/addNewVendor', checkToken, addNewVendor);
+router.patch('/updateVendorById', checkToken, updateVendorById);
+router.delete('/deleteVendorById', checkToken, deleteVendorById);
+
+router.post('/addNewCustomer', checkToken, addNewCustomer);
+router.patch('/updateCustomerById', checkToken, updateCustomerById);
+router.delete('/deleteCustomerById', checkToken, deleteCustomerById);
 
 module.exports = router;

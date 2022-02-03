@@ -128,3 +128,9 @@ export const cardStyleHeader = {
     backgroundColor: '#2980B9',
     color: 'white',
 };
+
+export const formLabel = {
+    fontWeight: 'bolder',
+    fontSize: '13px',
+    color: '#34495E',
+};

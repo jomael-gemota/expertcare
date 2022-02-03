@@ -26,101 +26,92 @@ import {
     formLabel
 } from '../../css/styles';
 
-export default function UpdateProduct() {
+export default function UpdateVendor() {
     const history = useHistory();
-    const [prodList, setProdList] = useState([]);
-    const [prodDetails, setProdDetails] = useState([]);
     const [notif, setNotif] = useState({ status: false });
+    const [vendDetails, setVendDetails] = useState({});
+    const [vendList, setVendList] = useState([]);
 
     useEffect(() => {
-        axios.get('/api/inv/getAllProducts',
+        axios.get('/api/inv/getAllVendors',
             { headers: { Authorization: getJwt() } })
             .then(res => {
-                let prodArr = [];
-                res.data.message.map(prod => {
-                    prodArr.push({
-                        productId: prod.productID,
-                        itemName: prod.itemName,
-                        itemNumber: prod.itemNumber,
-                        units: prod.units,
-                        unitPrice: prod.unitPrice,
-                        stock: prod.stock,
-                        discount: prod.discount,
-                        description: prod.description
+                let vendArr = [];
+                res.data.message.map(vendor => {
+                    vendArr.push({
+                        vendorId: vendor.vendorID,
+                        fullName: vendor.fullName,
+                        email: vendor.email,
+                        mobile: vendor.mobile,
+                        phone: vendor.phone2,
+                        address: vendor.address,
+                        city: vendor.city,
+                        district: vendor.district
                     });
                 });
     
-                return setProdList(prodArr);
+                return setVendList(vendArr);
 
-            }).catch(error => setProdList({ key: error.name, text: error.message }));
-    }, [prodDetails.productId]);
+            }).catch(error => setVendList({ key: error.name, text: error.message }));
+    }, [vendDetails.vendorId]);
 
-    const updateProductById = () => {
-        const {
-            productId,
-            itemName,
-            itemNumber,
-            units,
-            unitPrice,
-            stock,
-        } = prodDetails;
-
-        if (productId !== undefined && itemName !== undefined && itemNumber !== undefined && units !== undefined && unitPrice !== undefined && stock !== undefined) {
-            if (productId !== "" && itemName !== "" && itemNumber !== "" && units !== "" && unitPrice !== "" && stock !== "") {
-                axios.patch('/api/inv/updateProductById', prodDetails,
-                    { headers: { Authorization: getJwt() } })
-                    .then(() => setNotif({ status: true, variant: 'success', message: 'Product Updated!' }))
-                    .catch(() => setNotif({ status: true, variant: 'danger', message: 'Something is wrong.' }));
-
-                setProdDetails({
-                    productId: '',
-                    itemName: '',
-                    itemNumber: '',
-                    units: '',
-                    unitPrice: '',
-                    stock: '',
-                    discount: '',
-                    description: ''
+    const handleVendorIdChange = (e) => {
+        setVendDetails({ ...vendDetails, vendorId: e.target.value });
+        vendList.find(x => {
+            if (x.vendorId === Number(e.target.value)) {
+                setVendDetails({
+                    vendorId: x.vendorId,
+                    fullName: x.fullName,
+                    email: x.email,
+                    mobile: x.mobile,
+                    phone: x.phone,
+                    address: x.address,
+                    city: x.city,
+                    district: x.district
                 });
+            };
+        });
 
+        if (e.target.value === "") resetForm();
+    };
+
+    const updateVendorById = () => {
+        const {
+            vendorId,
+            fullName,
+            address,
+            district,
+        } = vendDetails;
+
+        if (vendorId !== undefined && fullName !== undefined && address !== undefined && district !== undefined) {
+            if (vendorId !== "" && fullName !== "" && address !== "" && district !== "") {
+                axios.patch('/api/inv/updateVendorById', vendDetails,
+                    { headers: { Authorization: getJwt() } })
+                    .then(() => {
+                        setNotif({ status: true, variant: 'success', message: 'Vendor Updated!' });
+                        resetForm();
+                    })
+                    .catch(() => setNotif({ status: true, variant: 'danger', message: 'Something is wrong.' }))
             } else setNotif({ status: true, variant: 'danger', message: 'Fill-up all the required fields.' });
         } else setNotif({ status: true, variant: 'danger', message: 'Fill-up all the required fields.' });
 
         setTimeout(function() {
             setNotif({ ...notif, status: false });
-        }, 3000);
+        }, 2000);
     };
 
-    const handleProductIdChange = (e) => {
-        setProdDetails({ ...prodDetails, productId: e.target.value });
-        prodList.find(x => {
-            if (x.productId === Number(e.target.value)) {
-                setProdDetails({
-                    ...prodDetails,
-                    productId: x.productId,
-                    itemName: x.itemName,
-                    itemNumber: x.itemNumber,
-                    units: x.units,
-                    unitPrice: x.unitPrice,
-                    stock: x.stock,
-                    discount: x.discount,
-                    description: x.description
-                });
-            };
+    const resetForm = () => {
+        document.getElementById("updateVendorForm").reset();
+        setVendDetails({
+            vendorId: '',
+            fullName: '',
+            email: '',
+            mobile: '',
+            phone: '',
+            address: '',
+            city: '',
+            district: ''
         });
-
-        if (e.target.value === "") {
-            setProdDetails({
-                productId: '',
-                itemName: '',
-                itemNumber: '',
-                units: '',
-                unitPrice: '',
-                stock: '',
-                discount: '',
-                description: ''
-            });
-        };
     };
 
     const logOut = () => {
@@ -173,12 +164,11 @@ export default function UpdateProduct() {
                                 <CardGroup>
                                     <Card>
                                         <Card.Header style={cardStyleHeader}>
-                                            Edit Product 
+                                            Edit Vendor
                                         </Card.Header>
                                         <Card.Body>
-                                            <Form>
+                                            <Form id="updateVendorForm">
                                                 <Alert
-                                                    dismissible
                                                     variant={notif.variant}
                                                     show={notif.status}
                                                     onClose={() => setNotif({ status: false })}
@@ -187,94 +177,91 @@ export default function UpdateProduct() {
                                                 </Alert>
                                                 <Row>
                                                     <Form.Group as={Col} sm={4} className="mb-3">
-                                                        <Form.Label style={formLabel}>Product ID <Badge bg="danger">Required</Badge></Form.Label>
+                                                        <Form.Label style={formLabel}>Vendor ID <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
                                                             placeholder=""
-                                                            list="productId"
-                                                            value={prodDetails.productId}
-                                                            onChange={e => handleProductIdChange(e)}
+                                                            list="vendorId"
+                                                            value={vendDetails.vendorId}
+                                                            onChange={e => handleVendorIdChange(e)}
                                                         />
-                                                        <datalist id="productId">
-                                                            {prodList.length >= 1 ? prodList.map((prod, index) => {
-                                                                const { productId  } = prod;
-                                                                return <option key={index} value={productId} />
+                                                        <datalist id="vendorId">
+                                                            {vendList.length >= 1 ? vendList.map((vend, index) => {
+                                                                return <option key={index} value={vend.vendorId} />
                                                             }): ''}
                                                         </datalist>
                                                     </Form.Group>
                                                     <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label style={formLabel}>Item Name <Badge bg="danger">Required</Badge></Form.Label>
+                                                        <Form.Label style={formLabel}>Full Name <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
                                                             placeholder=""
-                                                            value={prodDetails.itemName}
-                                                            onChange={e => setProdDetails({ ...prodDetails, itemName: e.target.value })}
+                                                            value={vendDetails.fullName}
+                                                            onChange={e => setVendDetails({ ...vendDetails, fullName: e.target.value })}
                                                         />
                                                     </Form.Group>
                                                 </Row>
                                             </Form>
-                                            <Form id="updateProductForm">
+                                            <Form>
                                                 <Row className="mb-3">
                                                     <Form.Group as={Col} sm={4} className="mb-3">
-                                                        <Form.Label style={formLabel}>Item Number <Badge bg="danger">Required</Badge></Form.Label>
+                                                        <Form.Label style={formLabel}>Email Address <Badge bg="info">Optional</Badge></Form.Label>
                                                         <Form.Control
-                                                            type="text"
+                                                            type="email"
                                                             placeholder=""
-                                                            value={prodDetails.itemNumber}
-                                                            onChange={e => setProdDetails({ ...prodDetails, itemNumber: e.target.value })}
+                                                            min={0}
+                                                            value={vendDetails.email}
+                                                            onChange={e => setVendDetails({ ...vendDetails, email: e.target.value })}
                                                         />
                                                     </Form.Group>
                                                     <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label style={formLabel}>Units <Badge bg="danger">Required</Badge></Form.Label>
-                                                        <Form.Control
-                                                            type="text"
-                                                            placeholder=""
-                                                            value={prodDetails.units}
-                                                            onChange={e => setProdDetails({ ...prodDetails, units: e.target.value })}
-                                                        />
-                                                    </Form.Group>
-                                                    <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label style={formLabel}>Unit Price <Badge bg="danger">Required</Badge></Form.Label>
+                                                        <Form.Label style={formLabel}>Mobile No. <Badge bg="info">Optional</Badge></Form.Label>
                                                         <Form.Control
                                                             type="number"
                                                             placeholder=""
-                                                            min={0}
-                                                            value={prodDetails.unitPrice}
-                                                            onChange={e => setProdDetails({ ...prodDetails, unitPrice: e.target.value })}
+                                                            value={vendDetails.mobile}
+                                                            onChange={e => setVendDetails({ ...vendDetails, mobile: e.target.value })}
+                                                        />
+                                                    </Form.Group>
+                                                    <Form.Group as={Col} className="mb-3">
+                                                        <Form.Label style={formLabel}>Phone No. <Badge bg="info">Optional</Badge></Form.Label>
+                                                        <Form.Control
+                                                            type="number"
+                                                            placeholder=""
+                                                            value={vendDetails.phone}
+                                                            onChange={e => setVendDetails({ ...vendDetails, phone: e.target.value })}
                                                         />
                                                     </Form.Group>
                                                 </Row>
                                                 <hr />
                                                 <Row className="mb-3">
-                                                    <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label style={formLabel}>Stock <Badge bg="danger">Required</Badge></Form.Label>
+                                                    <Form.Group as={Col} className="mb-3">
+                                                        <Form.Label style={formLabel}>Full Address <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
-                                                            type="number"
+                                                            type="text"
                                                             placeholder=""
-                                                            min={0}
-                                                            value={prodDetails.stock}
-                                                            onChange={e => setProdDetails({ ...prodDetails, stock: e.target.value })}
+                                                            value={vendDetails.address}
+                                                            onChange={e => setVendDetails({ ...vendDetails, address: e.target.value })}
                                                         />
                                                     </Form.Group>
-                                                    <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label style={formLabel}>Disc. % <Badge bg="info">Optional</Badge></Form.Label>
+                                                </Row>
+                                                <Row className="mb-3">
+                                                    <Form.Group as={Col} sm={6} className="mb-3">
+                                                        <Form.Label style={formLabel}>City <Badge bg="info">Optional</Badge></Form.Label>
                                                         <Form.Control
-                                                            type="number"
+                                                            type="text"
                                                             placeholder=""
-                                                            min={0}
-                                                            value={prodDetails.discount}
-                                                            onChange={e => setProdDetails({ ...prodDetails, discount: e.target.value })}
+                                                            value={vendDetails.city}
+                                                            onChange={e => setVendDetails({ ...vendDetails, city: e.target.value })}
                                                         />
                                                     </Form.Group>
                                                     <Form.Group as={Col} sm={6} className="mb-3">
-                                                        <Form.Label style={formLabel}>Description <Badge bg="info">Optional</Badge></Form.Label>
+                                                        <Form.Label style={formLabel}>District <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
-                                                            as="textarea"
                                                             type="text"
                                                             placeholder=""
-                                                            rows={5}
-                                                            value={prodDetails.description}
-                                                            onChange={e => setProdDetails({ ...prodDetails, description: e.target.value })}
+                                                            value={vendDetails.district}
+                                                            onChange={e => setVendDetails({ ...vendDetails, district: e.target.value })}
                                                         />
                                                     </Form.Group>
                                                 </Row>
@@ -286,9 +273,9 @@ export default function UpdateProduct() {
                                                 variant="success"
                                                 size="sm"
                                                 style={{ marginRight: '5px', float: 'left' }}
-                                                onClick={updateProductById}
+                                                onClick={() => updateVendorById()}
                                             >
-                                                Update Product
+                                                Update Vendor
                                             </Button>
                                             <Link to="/home"><Button size="sm" variant="outline-secondary">Go Back</Button></Link>
                                         </Card.Footer>

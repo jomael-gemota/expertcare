@@ -15,6 +15,12 @@ const {
     addNewPurchase,
     updatePurchaseById,
     deletePurchaseById,
+    addNewVendor,
+    updateVendorById,
+    deleteVendorById,
+    addNewCustomer,
+    updateCustomerById,
+    deleteCustomerById,
 } = require('./inv.service');
 
 module.exports = {
@@ -264,6 +270,114 @@ module.exports = {
         const query = req.query;
 
         deletePurchaseById(query, (error, results) => {
+            if (error) {
+                return res.json({
+                    success: 0,
+                    message: error
+                });
+            };
+
+            return res.json({
+                success: 1,
+                message: results
+            });
+        });
+    },
+
+    addNewVendor: (req, res) => {
+        const body = req.body;
+
+        addNewVendor(body, (error, results) => {
+            if (error) {
+                return res.json({
+                    success: 0,
+                    message: error
+                });
+            };
+
+            return res.json({
+                success: 1,
+                message: results
+            });
+        });
+    },
+    
+    updateVendorById: (req, res) => {
+        const body = req.body;
+
+        updateVendorById(body, (error, results) => {
+            if (error) {
+                return res.json({
+                    success: 0,
+                    message: error
+                });
+            };
+
+            return res.json({
+                success: 1,
+                message: results
+            });
+        });
+    },
+
+    deleteVendorById: (req, res) => {
+        const query = req.query;
+
+        deleteVendorById(query, (error, results) => {
+            if (error) {
+                return res.json({
+                    success: 0,
+                    message: error
+                });
+            };
+
+            return res.json({
+                success: 1,
+                message: results
+            });
+        });
+    },
+
+    addNewCustomer: (req, res) => {
+        const body = req.body;
+
+        addNewCustomer(body, (error, results) => {
+            if (error) {
+                return res.json({
+                    success: 0,
+                    message: error
+                });
+            };
+
+            return res.json({
+                success: 1,
+                message: results
+            });
+        });
+    },
+
+    updateCustomerById: (req, res) => {
+        const body = req.body;
+
+        updateCustomerById(body, (error, results) => {
+            if (error) {
+                return res.json({
+                    success: 0,
+                    message: error
+                });
+            };
+
+            return res.json({
+                success: 1,
+                message: results
+            });
+        });
+    },
+
+    deleteCustomerById: (req, res) => {
+        const query = req.query;
+
+        deleteCustomerById(query, (error, results) => {
             if (error) {
                 return res.json({
                     success: 0,

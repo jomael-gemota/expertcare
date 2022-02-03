@@ -16,9 +16,17 @@ import {
     Container,
     Table,
     Alert,
+    Badge,
 } from 'react-bootstrap';
 
-import { homeContainer, navBarStyles, navBarBrand, spanIms, cardStyleHeader } from '../../css/styles';
+import {
+    homeContainer,
+    navBarStyles,
+    navBarBrand,
+    spanIms,
+    cardStyleHeader,
+    formLabel
+} from '../../css/styles';
 
 export default function AddNewSale() {
     const history = useHistory();
@@ -36,20 +44,40 @@ export default function AddNewSale() {
             .then(res => {
                 let prodArr = [];
                 res.data.message.map((prod, index) => {
-                    const { productID, itemNumber, itemName, discount, stock, unitPrice, imageURL, status, description } = prod;
-                    prodArr.push({ key: index, prodId: productID, itemNumber: itemNumber, itemName: itemName, discount: discount, stock: stock, unitPrice: unitPrice, image: imageURL, status: status, desc: description });
+                    prodArr.push({
+                        prodId: prod.productID,
+                        itemNumber: prod.itemNumber,
+                        itemName: prod.itemName,
+                        discount: prod.discount,
+                        stock: prod.stock,
+                        unitPrice: prod.unitPrice,
+                        image: prod.imageURL,
+                        status: prod.status,
+                        desc: prod.description
+                    });
                 });
 
                 return setProdList(prodArr);
+
             }).catch(error => setProdList({ key: error.name, text: error.message }));
 
         axios.get('/api/inv/getCustomerDatabase',
             { headers: { Authorization: getJwt() } })
             .then(res => {
                 let cxArr = [];
-                res.data.message.map((cx, index) => {
-                    const { customerID, fullName, gender, email, mobile, phone2, address, address2, city, district } = cx;
-                    cxArr.push({ key: index, customerId: customerID, fullName: fullName, gender: gender, email: email, mobile: mobile, phone2: phone2, address: address, address2: address2, city: city, district: district })
+                res.data.message.map(cx => {
+                    cxArr.push({
+                        customerId: cx.customerID,
+                        fullName: cx.fullName,
+                        gender: cx.gender,
+                        email: cx.email,
+                        mobile: cx.mobile,
+                        phone2: cx.phone2,
+                        address: cx.address,
+                        address2: cx.address2,
+                        city: cx.city,
+                        district: cx.district
+                    });
                 });
 
                 return setCxList(cxArr);
@@ -60,7 +88,10 @@ export default function AddNewSale() {
     const handleCustomerNameChange = (e) => {
         cxList.find(x => {
             if (x.fullName === e.target.value) {
-                setAddedCx({ customerId: x.customerId, fullName: x.fullName });
+                setAddedCx({
+                    customerId: x.customerId,
+                    fullName: x.fullName
+                });
             };
         });
     };
@@ -68,17 +99,35 @@ export default function AddNewSale() {
     const handleItemNameChange = (e) => {
         prodList.find(x => {
             if (x.itemName === e.target.value) {
-                setItemDetails({ productId: x.prodId, itemName: x.itemName, itemNumber: x.itemNumber, unitPrice: x.unitPrice, stock: x.stock });
+                setItemDetails({
+                    productId: x.prodId,
+                    itemName: x.itemName,
+                    itemNumber: x.itemNumber,
+                    unitPrice: x.unitPrice,
+                    stock: x.stock
+                });
             };
         });
 
         if (e.target.value === "") {
-            setItemDetails({ itemNumber: '', unitPrice: '', stock: '' });
+            setItemDetails({
+                itemNumber: '',
+                unitPrice: '',
+                stock: ''
+            });
         };
     };
 
     const handleAddToList = () => {
-        const { productId, itemName, itemNumber, unitPrice, qty, discount, stock } = itemDetails;
+        const {
+            productId,
+            itemName,
+            itemNumber,
+            unitPrice,
+            qty,
+            discount,
+            stock
+        } = itemDetails;
         let tempDisc;
 
         if (itemName !== undefined && qty !== undefined) {
@@ -87,12 +136,24 @@ export default function AddNewSale() {
 
             if (discount === undefined) {
                 tempDisc = 0;
-            } else {
-                tempDisc = discount;
-            };
+            } else tempDisc = discount;
 
             setAmountDue(partAmountDue);
-            setAddedSaleList([...addedSaleList, { productId: productId, stock: stock, customerName: addedCx.fullName, customerId: addedCx.customerId, itemName: itemName, itemNumber: itemNumber, unitPrice: unitPrice, qty: qty, discount: tempDisc, saleDate: new Date() }]);
+            setAddedSaleList([
+                ...addedSaleList,
+                {
+                    productId: productId,
+                    stock: stock,
+                    customerName: addedCx.fullName,
+                    customerId: addedCx.customerId,
+                    itemName: itemName,
+                    itemNumber: itemNumber,
+                    unitPrice: unitPrice,
+                    qty: qty,
+                    discount: tempDisc,
+                    saleDate: new Date()
+                }
+            ]);
             
             resetForm();
         };
@@ -124,7 +185,11 @@ export default function AddNewSale() {
         axios.post('/api/inv/createSale', addedSaleList,
             { headers: { Authorization: getJwt() } })
             .then(() => {
-                setNotif({ status: true, variant: 'success', message: 'Sale Submitted!' });
+                setNotif({
+                    status: true,
+                    variant: 'success',
+                    message: 'Sale Submitted!'
+                });
 
                 addedSaleList.map(sale => {
                     let stockObj = {};
@@ -135,7 +200,11 @@ export default function AddNewSale() {
                     return axios.patch('/api/inv/updateStockByProdId', stockObj,
                         { headers: { Authorization: getJwt() } })
                         .then()
-                        .catch(() => setNotif({ status: true, variant: 'danger', message: 'Total Stock was not updated.' }))
+                        .catch(() => setNotif({
+                            status: true,
+                            variant: 'danger',
+                            message: 'Total Stock was not updated.'
+                        }))
                 })
             })
             .catch(() => setNotif({ status: true, variant: 'danger', message: 'Something is wrong.' }))
@@ -163,7 +232,12 @@ export default function AddNewSale() {
 
     const resetForm = () => {
         document.getElementById("addNewSaleForm").reset();
-        setItemDetails({ itemName: '', itemNumber: '', unitPrice: '', stock: '' });
+        setItemDetails({
+            itemName: '',
+            itemNumber: '',
+            unitPrice: '',
+            stock: ''
+        });
     };
 
     const logOut = () => {
@@ -178,7 +252,9 @@ export default function AddNewSale() {
                     <Col>
                         <Navbar fixed="top" expand="lg" style={navBarStyles}>
                             <Container fluid>
-                                <Navbar.Brand href="/home" style={navBarBrand}>EXPERT CARE <span style={spanIms}>Inventory Management System Pharmacy</span></Navbar.Brand>
+                                <Navbar.Brand href="/home" style={navBarBrand}>
+                                    EXPERT CARE <span style={spanIms}>Inventory Management System Pharmacy</span>
+                                </Navbar.Brand>
                                 <Navbar.Toggle aria-controls="navbarScroll" />
                                 <Navbar.Collapse id="navbarScroll">
                                     <Nav
@@ -187,7 +263,9 @@ export default function AddNewSale() {
                                         navbarScroll
                                     >
                                     </Nav>
-                                    <span style={{ color: 'white' }}>Welcome Staff! | <Button size="sm" variant="danger" onClick={logOut}>Log Out</Button></span>
+                                    <span style={{ color: 'white' }}>
+                                        Welcome Staff! | <Button size="sm" variant="danger" onClick={logOut}>Log Out</Button>
+                                    </span>
                                 </Navbar.Collapse>
                             </Container>
                         </Navbar>
@@ -218,10 +296,10 @@ export default function AddNewSale() {
                                             <Form>
                                                 <Row>
                                                     <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label>Customer Name<span style={{ color: 'red' }}>*</span></Form.Label>
+                                                        <Form.Label style={formLabel}>Customer Name <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
-                                                            placeholder="Select Customer Name"
+                                                            placeholder=""
                                                             list="customerName"
                                                             onChange={e => handleCustomerNameChange(e)}
                                                         />
@@ -238,10 +316,10 @@ export default function AddNewSale() {
                                                 <hr />
                                                 <Row className="mb-3">
                                                     <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label>Item Name<span style={{ color: 'red' }}>*</span></Form.Label>
+                                                        <Form.Label style={formLabel}>Item Name <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
-                                                            placeholder="Select Item Name"
+                                                            placeholder=""
                                                             list='itemName'
                                                             onChange={e => handleItemNameChange(e)}
                                                         />
@@ -253,7 +331,7 @@ export default function AddNewSale() {
                                                         </datalist>
                                                     </Form.Group>
                                                     <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label>Item Number</Form.Label>
+                                                        <Form.Label style={formLabel}>Item Number  <Badge bg="secondary">Generated</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
                                                             placeholder=""
@@ -264,7 +342,7 @@ export default function AddNewSale() {
                                                 </Row>
                                                 <Row className="mb-3">
                                                     <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label>Quantity<span style={{ color: 'red' }}>*</span></Form.Label>
+                                                        <Form.Label style={formLabel}>Quantity <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="number"
                                                             placeholder=""
@@ -275,7 +353,7 @@ export default function AddNewSale() {
                                                         />
                                                     </Form.Group>
                                                     <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label>Discount %</Form.Label>
+                                                        <Form.Label style={formLabel}>Disc. % <Badge bg="info">Optional</Badge></Form.Label>
                                                         <Form.Control
                                                             type="number"
                                                             placeholder=""
@@ -283,7 +361,7 @@ export default function AddNewSale() {
                                                         />
                                                     </Form.Group>
                                                     <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label>Unit Price</Form.Label>
+                                                        <Form.Label style={formLabel}>Unit Price <Badge bg="secondary">Generated</Badge></Form.Label>
                                                         <Form.Control
                                                             type="number"
                                                             placeholder=""
@@ -292,7 +370,7 @@ export default function AddNewSale() {
                                                         />
                                                     </Form.Group>
                                                     <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label>Total Stock</Form.Label>
+                                                        <Form.Label style={formLabel}>Total Stock  <Badge bg="secondary">Generated</Badge></Form.Label>
                                                         <Form.Control
                                                             type="number"
                                                             placeholder=""
@@ -302,6 +380,8 @@ export default function AddNewSale() {
                                                     </Form.Group>
                                                 </Row>
                                             </Form>
+                                        </Card.Body>
+                                        <Card.Footer>
                                             <Button
                                                 type='submit'
                                                 variant="primary"
@@ -312,7 +392,7 @@ export default function AddNewSale() {
                                                 Add Sale
                                             </Button>
                                             <Link to="/home"><Button size="sm" variant="outline-secondary">Cancel</Button></Link>
-                                        </Card.Body>
+                                        </Card.Footer>
                                     </Card>
                                 </CardGroup>
                             </Tab.Pane>
@@ -326,22 +406,32 @@ export default function AddNewSale() {
                             <Card>
                                 <Card.Header style={{ backgroundColor: '#2980B9', color: 'white' }}>Order Slip</Card.Header>
                                 <Card.Body id="orderSlip">
-                                    <Alert variant={notif.variant} show={notif.status} onClose={() => setNotif({ status: false })} dismissible>{notif.message}</Alert>
-                                    <h5 style={{ textAlign: 'center', color: '#1976D2', fontWeight: 'bolder' }}>
-                                        ExpertCare Pharmacy - Order Slip
-                                    </h5>
-                                    <p style={{ textAlign: 'center'}}>
-                                        Tudtud, Nasipit Road, Talamban, Cebu City, Philippines 6000
-                                    </p>
+                                    <Alert
+                                        variant={notif.variant}
+                                        show={notif.status}
+                                        onClose={() => setNotif({ status: false })}
+                                        dismissible
+                                    >
+                                        {notif.message}
+                                    </Alert>
+                                    <h5 style={{ textAlign: 'center' }}>Expert Care Pharmacy</h5>
+                                    <p style={{ textAlign: 'center'}}>Tudtud, Nasipit Road, Talamban, Cebu City, Philippines 6000</p>
+                                    <h6 style={{ textAlign: 'center', fontWeight: 'bolder' }}>Order Slip</h6>
                                     <br />
-                                    <p><b>Customer Name:</b> {addedCx.fullName}</p>
-                                    <p><b>Ordered Date:</b> {moment(new Date()).format('MM/DD/YY h:mm:ss a')}</p>
-                                    <Table striped hover size="sm" id="orderSlip" style={{ marginBottom: '35px' }}>
+                                    <p><b style={formLabel}>Customer Name:</b> {addedCx.fullName}</p>
+                                    <p><b style={formLabel}>Ordered Date:</b> {moment(new Date()).format('MM/DD/YY h:mm:ss a')}</p>
+                                    <Table
+                                        striped
+                                        hover
+                                        size="sm"
+                                        id="orderSlip"
+                                        style={{ marginBottom: '35px' }}
+                                    >
                                         <thead>
                                             <tr>
                                                 <th></th>
                                                 <th>No.</th>
-                                                <th>Sale Name</th>
+                                                <th>Item No./Name</th>
                                                 <th>Quantity</th>
                                                 <th>Unit Price</th>
                                                 <th>Discount %</th>
@@ -352,7 +442,9 @@ export default function AddNewSale() {
                                             {addedSaleList.length >= 1 ? addedSaleList.map((sale, index) => {
                                                 const { itemName, itemNumber, qty, unitPrice, discount } = sale;
                                                 return <tr key={index}>
-                                                    <td><a href="#/remove" onClick={e => handleRemoveSale(e, itemName, unitPrice * qty)}>Remove</a></td>
+                                                    <td>
+                                                        <a href="#/remove" onClick={e => handleRemoveSale(e, itemName, unitPrice * qty)}>Remove</a>
+                                                    </td>
                                                     <td style={{ textAlign: 'center' }}>{index + 1}</td>
                                                     <td>{itemNumber + '-' + itemName}</td>
                                                     <td>{qty}</td>
@@ -372,7 +464,14 @@ export default function AddNewSale() {
                                     </Table>
                                 </Card.Body>
                                 <Card.Footer>
-                                    <Button size="sm" variant="success" style={{ marginRight: '5px' }} onClick={submitOrderSale}>Submit & Print</Button>
+                                    <Button
+                                        size="sm"
+                                        variant="success"
+                                        style={{ marginRight: '5px' }}
+                                        onClick={submitOrderSale}
+                                    >
+                                        Submit & Print
+                                    </Button>
                                     <Link to="/home"><Button size="sm" variant="outline-secondary">Go Back</Button></Link>
                                 </Card.Footer>
                             </Card>

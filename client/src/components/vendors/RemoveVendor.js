@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, Link } from 'react-router-dom';
 import axios from 'axios';
-import moment from 'moment';
 import getJwt from '../../helper/getJwt';
 import {
     Card,
@@ -15,8 +14,8 @@ import {
     Navbar,
     Container,
     Alert,
-    Modal,
     Badge,
+    Modal,
 } from 'react-bootstrap';
 
 import {
@@ -28,46 +27,66 @@ import {
     formLabel
 } from '../../css/styles';
 
-export default function RemovePurchase() {
+export default function RemoveVendor() {
     const history = useHistory();
     const [notif, setNotif] = useState({ status: false });
-    const [purDetails, setPurDetails] = useState({});
-    const [purList, setPurList] = useState([]);
+    const [vendDetails, setVendDetails] = useState({});
+    const [vendList, setVendList] = useState([]);
     const [modalShow, setModalShow] = useState(false);
 
     useEffect(() => {
-        axios.get('/api/inv/getAllPurchase',
+        axios.get('/api/inv/getAllVendors',
             { headers: { Authorization: getJwt() } })
             .then(res => {
-                let purArr = [];
-                res.data.message.map(pur => {
-                    purArr.push({
-                        purchaseId: pur.purchaseID,
-                        itemName: pur.itemName,
-                        itemNumber: pur.itemNumber,
-                        quantity: pur.quantity,
-                        unitPrice: pur.unitPrice,
-                        vendorId: pur.vendorID,
-                        vendorName: pur.vendorName,
-                        purchaseDate: pur.purchaseDate
+                let vendArr = [];
+                res.data.message.map(vendor => {
+                    vendArr.push({
+                        vendorId: vendor.vendorID,
+                        fullName: vendor.fullName,
+                        email: vendor.email,
+                        mobile: vendor.mobile,
+                        phone: vendor.phone2,
+                        address: vendor.address,
+                        city: vendor.city,
+                        district: vendor.district
                     });
                 });
     
-                return setPurList(purArr);
+                return setVendList(vendArr);
 
-            }).catch(error => setPurList({ key: error.name, text: error.message }));
-    }, [purDetails.purchaseId]);
+            }).catch(error => setVendList({ key: error.name, text: error.message }));
+    }, [vendDetails.vendorId]);
 
-    const deletePurchaseById = () => {
-        if (purDetails.purchaseId !== undefined) {
-            if (purDetails.purchaseId !== "") {
+    const handleVendorIdChange = (e) => {
+        setVendDetails({ ...vendDetails, vendorId: e.target.value });
+        vendList.find(x => {
+            if (x.vendorId === Number(e.target.value)) {
+                setVendDetails({
+                    vendorId: x.vendorId,
+                    fullName: x.fullName,
+                    email: x.email,
+                    mobile: x.mobile,
+                    phone: x.phone,
+                    address: x.address,
+                    city: x.city,
+                    district: x.district
+                });
+            };
+        });
+
+        if (e.target.value === "") resetForm();
+    };
+
+    const deleteVendorById = () => {
+        if (vendDetails.vendorId !== undefined) {
+            if (vendDetails.vendorId !== "") {
                 handleModalClose();
 
-                axios.delete('/api/inv/deletePurchaseById',
-                    { params: { id: purDetails.purchaseId },
+                axios.delete('/api/inv/deleteVendorById',
+                    { params: { id: vendDetails.vendorId },
                     headers: { Authorization: getJwt() } })
                     .then(() => {
-                        setNotif({ status: true, variant: 'success', message: 'Purchase Deleted!' });
+                        setNotif({ status: true, variant: 'success', message: 'Vendor Deleted!' });
                         resetForm();
                     })
                     .catch(() => setNotif({ status: true, variant: 'danger', message: 'Something is wrong.' }))
@@ -80,8 +99,8 @@ export default function RemovePurchase() {
     };
 
     const handleDeleteConfirmation = () => {
-        if (purDetails.purchaseId !== undefined) {
-            if (purDetails.purchaseId !== "") {
+        if (vendDetails.vendorId !== undefined) {
+            if (vendDetails.vendorId !== "") {
                 setModalShow(true);
             } else setNotif({ status: true, variant: 'danger', message: 'Fill-up all the required fields.' });
         } else setNotif({ status: true, variant: 'danger', message: 'Fill-up all the required fields.' });
@@ -91,51 +110,20 @@ export default function RemovePurchase() {
         }, 3000);
     };
 
-    const handlePurchaseIDChange = (e) => {
-        setPurDetails({ ...purDetails, purchaseId: e.target.value });
-        purList.find(x => {
-            if (x.purchaseId === Number(e.target.value)) {
-                setPurDetails({
-                    purchaseId: x.purchaseId,
-                    itemName: x.itemName,
-                    itemNumber: x.itemNumber,
-                    quantity: x.quantity,
-                    unitPrice: x.unitPrice,
-                    vendorId: x.vendorId,
-                    vendorName: x.vendorName,
-                    purchaseDate: moment(x.purchaseDate).format('YYYY-MM-DD')
-                });
-            };
-
-            if (e.target.value === "") {
-                setPurDetails({
-                    itemName: '',
-                    itemNumber: '',
-                    quantity: '',
-                    unitPrice: '',
-                    vendorId: '',
-                    vendorName: '',
-                    purchaseDate: ''
-                });
-            };
-        });
-    };
+    const handleModalClose = () => setModalShow(false);
 
     const resetForm = () => {
-        document.getElementById("removePurForm").reset();
-        setPurDetails({
-            purchaseId: '',
-            itemName: '',
-            itemNumber: '',
-            quantity: '',
-            unitPrice: '',
-            vendorName: '',
-            vendorId: '',
-            purchaseDate: ''
+        document.getElementById("updateVendorForm").reset();
+        setVendDetails({
+            fullName: '',
+            email: '',
+            mobile: '',
+            phone: '',
+            address: '',
+            city: '',
+            district: ''
         });
     };
-    
-    const handleModalClose = () => setModalShow(false);
 
     const logOut = () => {
         localStorage.clear('jwt');
@@ -195,19 +183,20 @@ export default function RemovePurchase() {
                                     <Modal.Header closeButton>
                                         <Modal.Title><h5>Delete Confirmation</h5></Modal.Title>
                                     </Modal.Header>
-                                    <Modal.Body>Do you really want to delete this purchase?</Modal.Body>
+                                    <Modal.Body>Do you really want to delete this vendor?</Modal.Body>
                                     <Modal.Footer>
                                         <Button variant="outline-secondary" size="sm" onClick={handleModalClose}>Cancel</Button>
-                                        <Button variant="danger" size="sm" onClick={() => deletePurchaseById()}>Remove</Button>
+                                        <Button variant="danger" size="sm" onClick={() => deleteVendorById()}>Remove</Button>
                                     </Modal.Footer>
                                 </Modal>
                                 <CardGroup>
                                     <Card>
-                                        <Card.Header style={cardStyleHeader}>Remove Purchase</Card.Header>
+                                        <Card.Header style={cardStyleHeader}>
+                                            Remove Vendor
+                                        </Card.Header>
                                         <Card.Body>
-                                            <Form id="removePurForm">
+                                            <Form id="updateVendorForm">
                                                 <Alert
-                                                    dismissible
                                                     variant={notif.variant}
                                                     show={notif.status}
                                                     onClose={() => setNotif({ status: false })}
@@ -215,93 +204,99 @@ export default function RemovePurchase() {
                                                     {notif.message}
                                                 </Alert>
                                                 <Row>
-                                                    <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label style={formLabel}>Purchase ID <Badge bg="danger">Required</Badge></Form.Label>
+                                                    <Form.Group as={Col} sm={4} className="mb-3">
+                                                        <Form.Label style={formLabel}>Vendor ID <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
                                                             placeholder=""
-                                                            list="purchaseId"
-                                                            value={purDetails.purchaseId}
-                                                            onChange={e => handlePurchaseIDChange(e)}
+                                                            list="vendorId"
+                                                            value={vendDetails.vendorId}
+                                                            onChange={e => handleVendorIdChange(e)}
                                                         />
-                                                        <datalist id="purchaseId">
-                                                            {purList.length >= 1 ? purList.map((pur, index) => {
-                                                                return <option key={index} value={pur.purchaseId} />
+                                                        <datalist id="vendorId">
+                                                            {vendList.length >= 1 ? vendList.map((vend, index) => {
+                                                                return <option key={index} value={vend.vendorId} />
                                                             }): ''}
                                                         </datalist>
                                                     </Form.Group>
-                                                    <Form.Group as={Col} sm={5} className="mb-3">
-                                                        <Form.Label style={formLabel}>Item Name <Badge bg="secondary">Generated</Badge></Form.Label>
-                                                        <Form.Control
-                                                            type="text"
-                                                            placeholder=""
-                                                            disabled
-                                                            value={purDetails.itemName}
-                                                        />
-                                                    </Form.Group>
                                                     <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label style={formLabel}>Item Number <Badge bg="secondary">Generated</Badge></Form.Label>
+                                                        <Form.Label style={formLabel}>Full Name <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
                                                             placeholder=""
                                                             disabled
-                                                            value={purDetails.itemNumber}
+                                                            value={vendDetails.fullName}
+                                                            onChange={e => setVendDetails({ ...vendDetails, fullName: e.target.value })}
                                                         />
                                                     </Form.Group>
                                                 </Row>
                                             </Form>
                                             <Form>
                                                 <Row className="mb-3">
-                                                    <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label style={formLabel}>Quantity <Badge bg="secondary">Generated</Badge></Form.Label>
+                                                    <Form.Group as={Col} sm={4} className="mb-3">
+                                                        <Form.Label style={formLabel}>Email Address <Badge bg="info">Optional</Badge></Form.Label>
                                                         <Form.Control
-                                                            type="number"
+                                                            type="email"
                                                             placeholder=""
                                                             disabled
                                                             min={0}
-                                                            value={purDetails.quantity}
+                                                            value={vendDetails.email}
+                                                            onChange={e => setVendDetails({ ...vendDetails, email: e.target.value })}
                                                         />
                                                     </Form.Group>
-                                                    <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label style={formLabel}>Unit Price <Badge bg="secondary">Generated</Badge></Form.Label>
+                                                    <Form.Group as={Col} className="mb-3">
+                                                        <Form.Label style={formLabel}>Mobile No. <Badge bg="info">Optional</Badge></Form.Label>
                                                         <Form.Control
                                                             type="number"
                                                             placeholder=""
                                                             disabled
-                                                            min={0}
-                                                            value={purDetails.unitPrice}
+                                                            value={vendDetails.mobile}
+                                                            onChange={e => setVendDetails({ ...vendDetails, mobile: e.target.value })}
+                                                        />
+                                                    </Form.Group>
+                                                    <Form.Group as={Col} className="mb-3">
+                                                        <Form.Label style={formLabel}>Phone No. <Badge bg="info">Optional</Badge></Form.Label>
+                                                        <Form.Control
+                                                            type="number"
+                                                            placeholder=""
+                                                            disabled
+                                                            value={vendDetails.phone}
+                                                            onChange={e => setVendDetails({ ...vendDetails, phone: e.target.value })}
                                                         />
                                                     </Form.Group>
                                                 </Row>
                                                 <hr />
                                                 <Row className="mb-3">
+                                                    <Form.Group as={Col} className="mb-3">
+                                                        <Form.Label style={formLabel}>Full Address <Badge bg="danger">Required</Badge></Form.Label>
+                                                        <Form.Control
+                                                            type="text"
+                                                            placeholder=""
+                                                            disabled
+                                                            value={vendDetails.address}
+                                                            onChange={e => setVendDetails({ ...vendDetails, address: e.target.value })}
+                                                        />
+                                                    </Form.Group>
+                                                </Row>
+                                                <Row className="mb-3">
                                                     <Form.Group as={Col} sm={6} className="mb-3">
-                                                        <Form.Label style={formLabel}>Vendor Name <Badge bg="secondary">Generated</Badge></Form.Label>
+                                                        <Form.Label style={formLabel}>City <Badge bg="info">Optional</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
                                                             placeholder=""
                                                             disabled
-                                                            min={0}
-                                                            value={purDetails.vendorName}
+                                                            value={vendDetails.city}
+                                                            onChange={e => setVendDetails({ ...vendDetails, city: e.target.value })}
                                                         />
                                                     </Form.Group>
-                                                    <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label style={formLabel}>Vendor ID <Badge bg="secondary">Generated</Badge></Form.Label>
-                                                        <Form.Control
-                                                            type="text"
-                                                            placeholder=""
-                                                            min={0}
-                                                            disabled
-                                                            value={purDetails.vendorId}
-                                                        />
-                                                    </Form.Group>
-                                                    <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label style={formLabel}>Date <Badge bg="secondary">Generated</Badge></Form.Label>
+                                                    <Form.Group as={Col} sm={6} className="mb-3">
+                                                        <Form.Label style={formLabel}>District <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
                                                             placeholder=""
                                                             disabled
-                                                            value={purDetails.purchaseDate}
+                                                            value={vendDetails.district}
+                                                            onChange={e => setVendDetails({ ...vendDetails, district: e.target.value })}
                                                         />
                                                     </Form.Group>
                                                 </Row>
@@ -313,9 +308,9 @@ export default function RemovePurchase() {
                                                 variant="danger"
                                                 size="sm"
                                                 style={{ marginRight: '5px', float: 'left' }}
-                                                onClick={handleDeleteConfirmation}
+                                                onClick={() => handleDeleteConfirmation()}
                                             >
-                                                Delete Purchase
+                                                Delete Vendor
                                             </Button>
                                             <Link to="/home"><Button size="sm" variant="outline-secondary">Go Back</Button></Link>
                                         </Card.Footer>

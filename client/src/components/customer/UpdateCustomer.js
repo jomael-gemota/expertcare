@@ -26,101 +26,96 @@ import {
     formLabel
 } from '../../css/styles';
 
-export default function UpdateProduct() {
+export default function UpdateCustomer() {
     const history = useHistory();
-    const [prodList, setProdList] = useState([]);
-    const [prodDetails, setProdDetails] = useState([]);
     const [notif, setNotif] = useState({ status: false });
+    const [cxDetails, setCxDetails] = useState({});
+    const [cxList, setCxList] = useState([]);
 
     useEffect(() => {
-        axios.get('/api/inv/getAllProducts',
+        axios.get('/api/inv/getCustomerDatabase',
             { headers: { Authorization: getJwt() } })
             .then(res => {
-                let prodArr = [];
-                res.data.message.map(prod => {
-                    prodArr.push({
-                        productId: prod.productID,
-                        itemName: prod.itemName,
-                        itemNumber: prod.itemNumber,
-                        units: prod.units,
-                        unitPrice: prod.unitPrice,
-                        stock: prod.stock,
-                        discount: prod.discount,
-                        description: prod.description
+                let cxArr = [];
+                res.data.message.map(cx => {
+                    cxArr.push({
+                        customerId: cx.customerID,
+                        fullName: cx.fullName,
+                        illness: cx.illness,
+                        email: cx.email,
+                        mobile: cx.mobile,
+                        phone: cx.phone2,
+                        address: cx.address,
+                        city: cx.city,
+                        district: cx.district
                     });
                 });
     
-                return setProdList(prodArr);
+                return setCxList(cxArr);
 
-            }).catch(error => setProdList({ key: error.name, text: error.message }));
-    }, [prodDetails.productId]);
+            }).catch(error => setCxList({ key: error.name, text: error.message }));
+    }, [cxDetails.customerId]);
 
-    const updateProductById = () => {
+    const updateCustomerById = () => {
         const {
-            productId,
-            itemName,
-            itemNumber,
-            units,
-            unitPrice,
-            stock,
-        } = prodDetails;
+            customerId,
+            fullName,
+            illness,
+            address,
+            district,
+        } = cxDetails;
 
-        if (productId !== undefined && itemName !== undefined && itemNumber !== undefined && units !== undefined && unitPrice !== undefined && stock !== undefined) {
-            if (productId !== "" && itemName !== "" && itemNumber !== "" && units !== "" && unitPrice !== "" && stock !== "") {
-                axios.patch('/api/inv/updateProductById', prodDetails,
+        if (customerId !== undefined && illness !== undefined && fullName !== undefined && address !== undefined && district !== undefined) {
+            if (customerId !== "" && illness !== "" && fullName !== "" && address !== "" && district !== "") {
+                axios.patch('/api/inv/updateCustomerById', cxDetails,
                     { headers: { Authorization: getJwt() } })
-                    .then(() => setNotif({ status: true, variant: 'success', message: 'Product Updated!' }))
-                    .catch(() => setNotif({ status: true, variant: 'danger', message: 'Something is wrong.' }));
-
-                setProdDetails({
-                    productId: '',
-                    itemName: '',
-                    itemNumber: '',
-                    units: '',
-                    unitPrice: '',
-                    stock: '',
-                    discount: '',
-                    description: ''
-                });
-
+                    .then(() => {
+                        setNotif({ status: true, variant: 'success', message: 'Customer Information Updated!' });
+                        resetForm();
+                    })
+                    .catch(() => setNotif({ status: true, variant: 'danger', message: 'Something is wrong.' }))
             } else setNotif({ status: true, variant: 'danger', message: 'Fill-up all the required fields.' });
         } else setNotif({ status: true, variant: 'danger', message: 'Fill-up all the required fields.' });
 
         setTimeout(function() {
             setNotif({ ...notif, status: false });
-        }, 3000);
+        }, 2000);
     };
 
-    const handleProductIdChange = (e) => {
-        setProdDetails({ ...prodDetails, productId: e.target.value });
-        prodList.find(x => {
-            if (x.productId === Number(e.target.value)) {
-                setProdDetails({
-                    ...prodDetails,
-                    productId: x.productId,
-                    itemName: x.itemName,
-                    itemNumber: x.itemNumber,
-                    units: x.units,
-                    unitPrice: x.unitPrice,
-                    stock: x.stock,
-                    discount: x.discount,
-                    description: x.description
+    const handleCustomerIdChange = (e) => {
+        setCxDetails({ ...cxDetails, customerId: e.target.value });
+        cxList.find(x => {
+            if (x.customerId === Number(e.target.value)) {
+                setCxDetails({
+                    customerId: x.customerId,
+                    fullName: x.fullName,
+                    illness: x.illness,
+                    email: x.email,
+                    mobile: x.mobile,
+                    phone: x.phone,
+                    address: x.address,
+                    city: x.city,
+                    district: x.district
                 });
             };
         });
 
-        if (e.target.value === "") {
-            setProdDetails({
-                productId: '',
-                itemName: '',
-                itemNumber: '',
-                units: '',
-                unitPrice: '',
-                stock: '',
-                discount: '',
-                description: ''
-            });
-        };
+        if (e.target.value === "") resetForm();
+    };
+
+    const resetForm = () => {
+        document.getElementById("updateCustomerForm").reset();
+        setCxDetails({
+            customerId: '',
+            fullName: '',
+            illness: '',
+            email: '',
+            mobile: '',
+            phone: '',
+            address: '',
+            city: '',
+            district: ''
+        });
     };
 
     const logOut = () => {
@@ -173,12 +168,11 @@ export default function UpdateProduct() {
                                 <CardGroup>
                                     <Card>
                                         <Card.Header style={cardStyleHeader}>
-                                            Edit Product 
+                                            Edit Vendor
                                         </Card.Header>
                                         <Card.Body>
-                                            <Form>
+                                            <Form id="updateCustomerForm">
                                                 <Alert
-                                                    dismissible
                                                     variant={notif.variant}
                                                     show={notif.status}
                                                     onClose={() => setNotif({ status: false })}
@@ -186,95 +180,100 @@ export default function UpdateProduct() {
                                                     {notif.message}
                                                 </Alert>
                                                 <Row>
-                                                    <Form.Group as={Col} sm={4} className="mb-3">
-                                                        <Form.Label style={formLabel}>Product ID <Badge bg="danger">Required</Badge></Form.Label>
+                                                    <Form.Group as={Col} sm={3} className="mb-3">
+                                                        <Form.Label style={formLabel}>Customer ID <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
                                                             placeholder=""
-                                                            list="productId"
-                                                            value={prodDetails.productId}
-                                                            onChange={e => handleProductIdChange(e)}
+                                                            list="customerId"
+                                                            value={cxDetails.customerId}
+                                                            onChange={e => handleCustomerIdChange(e)}
                                                         />
-                                                        <datalist id="productId">
-                                                            {prodList.length >= 1 ? prodList.map((prod, index) => {
-                                                                const { productId  } = prod;
-                                                                return <option key={index} value={productId} />
+                                                        <datalist id="customerId">
+                                                            {cxList.length >= 1 ? cxList.map((cx, index) => {
+                                                                return <option key={index} value={cx.customerId} />
                                                             }): ''}
                                                         </datalist>
                                                     </Form.Group>
-                                                    <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label style={formLabel}>Item Name <Badge bg="danger">Required</Badge></Form.Label>
+                                                    <Form.Group as={Col} sm={3} className="mb-3">
+                                                        <Form.Label style={formLabel}>Illness <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
                                                             placeholder=""
-                                                            value={prodDetails.itemName}
-                                                            onChange={e => setProdDetails({ ...prodDetails, itemName: e.target.value })}
+                                                            value={cxDetails.illness}
+                                                            onChange={e => setCxDetails({ ...cxDetails, illness: e.target.value })}
+                                                        />
+                                                    </Form.Group>
+                                                    <Form.Group as={Col} className="mb-3">
+                                                        <Form.Label style={formLabel}>Full Name <Badge bg="danger">Required</Badge></Form.Label>
+                                                        <Form.Control
+                                                            type="text"
+                                                            placeholder=""
+                                                            value={cxDetails.fullName}
+                                                            onChange={e => setCxDetails({ ...cxDetails, fullName: e.target.value })}
                                                         />
                                                     </Form.Group>
                                                 </Row>
                                             </Form>
-                                            <Form id="updateProductForm">
+                                            <Form>
                                                 <Row className="mb-3">
                                                     <Form.Group as={Col} sm={4} className="mb-3">
-                                                        <Form.Label style={formLabel}>Item Number <Badge bg="danger">Required</Badge></Form.Label>
+                                                        <Form.Label style={formLabel}>Email Address <Badge bg="info">Optional</Badge></Form.Label>
                                                         <Form.Control
-                                                            type="text"
+                                                            type="email"
                                                             placeholder=""
-                                                            value={prodDetails.itemNumber}
-                                                            onChange={e => setProdDetails({ ...prodDetails, itemNumber: e.target.value })}
+                                                            value={cxDetails.email}
+                                                            onChange={e => setCxDetails({ ...cxDetails, email: e.target.value })}
                                                         />
                                                     </Form.Group>
                                                     <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label style={formLabel}>Units <Badge bg="danger">Required</Badge></Form.Label>
-                                                        <Form.Control
-                                                            type="text"
-                                                            placeholder=""
-                                                            value={prodDetails.units}
-                                                            onChange={e => setProdDetails({ ...prodDetails, units: e.target.value })}
-                                                        />
-                                                    </Form.Group>
-                                                    <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label style={formLabel}>Unit Price <Badge bg="danger">Required</Badge></Form.Label>
+                                                        <Form.Label style={formLabel}>Mobile No. <Badge bg="info">Optional</Badge></Form.Label>
                                                         <Form.Control
                                                             type="number"
                                                             placeholder=""
-                                                            min={0}
-                                                            value={prodDetails.unitPrice}
-                                                            onChange={e => setProdDetails({ ...prodDetails, unitPrice: e.target.value })}
+                                                            value={cxDetails.mobile}
+                                                            onChange={e => setCxDetails({ ...cxDetails, mobile: e.target.value })}
+                                                        />
+                                                    </Form.Group>
+                                                    <Form.Group as={Col} className="mb-3">
+                                                        <Form.Label style={formLabel}>Phone No. <Badge bg="info">Optional</Badge></Form.Label>
+                                                        <Form.Control
+                                                            type="number"
+                                                            placeholder=""
+                                                            value={cxDetails.phone}
+                                                            onChange={e => setCxDetails({ ...cxDetails, phone: e.target.value })}
                                                         />
                                                     </Form.Group>
                                                 </Row>
                                                 <hr />
                                                 <Row className="mb-3">
-                                                    <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label style={formLabel}>Stock <Badge bg="danger">Required</Badge></Form.Label>
+                                                    <Form.Group as={Col} className="mb-3">
+                                                        <Form.Label style={formLabel}>Full Address <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
-                                                            type="number"
+                                                            type="text"
                                                             placeholder=""
-                                                            min={0}
-                                                            value={prodDetails.stock}
-                                                            onChange={e => setProdDetails({ ...prodDetails, stock: e.target.value })}
+                                                            value={cxDetails.address}
+                                                            onChange={e => setCxDetails({ ...cxDetails, address: e.target.value })}
                                                         />
                                                     </Form.Group>
-                                                    <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label style={formLabel}>Disc. % <Badge bg="info">Optional</Badge></Form.Label>
+                                                </Row>
+                                                <Row className="mb-3">
+                                                    <Form.Group as={Col} sm={6} className="mb-3">
+                                                        <Form.Label style={formLabel}>City <Badge bg="info">Optional</Badge></Form.Label>
                                                         <Form.Control
-                                                            type="number"
+                                                            type="text"
                                                             placeholder=""
-                                                            min={0}
-                                                            value={prodDetails.discount}
-                                                            onChange={e => setProdDetails({ ...prodDetails, discount: e.target.value })}
+                                                            value={cxDetails.city}
+                                                            onChange={e => setCxDetails({ ...cxDetails, city: e.target.value })}
                                                         />
                                                     </Form.Group>
                                                     <Form.Group as={Col} sm={6} className="mb-3">
-                                                        <Form.Label style={formLabel}>Description <Badge bg="info">Optional</Badge></Form.Label>
+                                                        <Form.Label style={formLabel}>District <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
-                                                            as="textarea"
                                                             type="text"
                                                             placeholder=""
-                                                            rows={5}
-                                                            value={prodDetails.description}
-                                                            onChange={e => setProdDetails({ ...prodDetails, description: e.target.value })}
+                                                            value={cxDetails.district}
+                                                            onChange={e => setCxDetails({ ...cxDetails, district: e.target.value })}
                                                         />
                                                     </Form.Group>
                                                 </Row>
@@ -286,9 +285,9 @@ export default function UpdateProduct() {
                                                 variant="success"
                                                 size="sm"
                                                 style={{ marginRight: '5px', float: 'left' }}
-                                                onClick={updateProductById}
+                                                onClick={() => updateCustomerById()}
                                             >
-                                                Update Product
+                                                Update Customer Info
                                             </Button>
                                             <Link to="/home"><Button size="sm" variant="outline-secondary">Go Back</Button></Link>
                                         </Card.Footer>

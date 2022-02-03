@@ -15,11 +15,19 @@ import {
     Container,
     Alert,
     Modal,
+    Badge,
 } from 'react-bootstrap';
 
-import { homeContainer, navBarStyles, navBarBrand, spanIms, cardStyleHeader } from '../../css/styles';
+import {
+    homeContainer,
+    navBarStyles,
+    navBarBrand,
+    spanIms,
+    cardStyleHeader,
+    formLabel
+} from '../../css/styles';
 
-export default function UpdateSale() {
+export default function RemoveProduct() {
     const history = useHistory();
     const [prodList, setProdList] = useState([]);
     const [prodDetails, setProdDetails] = useState([]);
@@ -31,17 +39,26 @@ export default function UpdateSale() {
             { headers: { Authorization: getJwt() } })
             .then(res => {
                 let prodArr = [];
-                res.data.message.map((prod, index) => {
-                    const { productID, itemName, itemNumber, units, unitPrice, stock, discount, description } = prod;
-                    prodArr.push({ productId: productID, itemName: itemName, itemNumber: itemNumber, units: units, unitPrice: unitPrice, stock: stock, discount: discount, description: description });
+                res.data.message.map(prod => {
+                    prodArr.push({
+                        productId: prod.productID,
+                        itemName: prod.itemName,
+                        itemNumber: prod.itemNumber,
+                        units: prod.units,
+                        unitPrice: prod.unitPrice,
+                        stock: prod.stock,
+                        discount: prod.discount,
+                        description: prod.description
+                    });
                 });
     
                 return setProdList(prodArr);
+
             }).catch(error => setProdList({ key: error.name, text: error.message }));
-    }, [prodDetails.itemName]);
+    }, [prodDetails.productId]);
 
     const deleteProductById = () => {
-        if (prodDetails.itemName !== undefined) {
+        if (prodDetails.productId !== undefined) {
             handleModalClose();
 
             axios.delete('/api/inv/deleteProdByProdId',
@@ -54,26 +71,58 @@ export default function UpdateSale() {
                 setNotif({ ...notif, status: false });
             }, 3000);
 
-            setProdDetails({ productId: '', itemName: '', itemNumber: '', units: '', unitPrice: '', stock: '', discount: '', description: '' });
-        };
+            setProdDetails({
+                productId: '',
+                itemName: '',
+                itemNumber: '',
+                units: '',
+                unitPrice: '',
+                stock: '',
+                discount: '',
+                description: ''
+            });
+        } else setNotif({ status: true, variant: 'danger', message: 'Fill-up all the required fields.' });
     };
 
     const handleDeleteConfirmation = () => {
         if (prodDetails.itemName !== undefined) {
             setModalShow(true);
-        };
+        } else setNotif({ status: true, variant: 'danger', message: 'Fill-up all the required fields.' });
+
+        setTimeout(function() {
+            setNotif({ ...notif, status: false });
+        }, 3000);
     };
 
-    const handleItemNameChange = (e) => {
-        setProdDetails({ ...prodDetails, itemName: e.target.value });
+    const handleProductIdChange = (e) => {
+        setProdDetails({ ...prodDetails, productId: e.target.value });
         prodList.find(x => {
-            if (x.itemName === e.target.value) {
-                setProdDetails({ ...prodDetails, productId: x.productId, itemName: x.itemName, itemNumber: x.itemNumber, units: x.units, unitPrice: x.unitPrice, stock: x.stock, discount: x.discount, description: x.description });
+            if (x.productId === Number(e.target.value)) {
+                setProdDetails({
+                    ...prodDetails,
+                    productId: x.productId,
+                    itemName: x.itemName,
+                    itemNumber: x.itemNumber,
+                    units: x.units,
+                    unitPrice: x.unitPrice,
+                    stock: x.stock,
+                    discount: x.discount,
+                    description: x.description
+                });
             };
         });
 
         if (e.target.value === "") {
-            setProdDetails({ productId: '', itemName: '', itemNumber: '', units: '', unitPrice: '', stock: '', discount: '', description: '' });
+            setProdDetails({
+                productId: '',
+                itemName: '',
+                itemNumber: '',
+                units: '',
+                unitPrice: '',
+                stock: '',
+                discount: '',
+                description: ''
+            });
         };
     };
 
@@ -91,7 +140,9 @@ export default function UpdateSale() {
                     <Col>
                         <Navbar fixed="top" expand="lg" style={navBarStyles}>
                             <Container fluid>
-                                <Navbar.Brand href="/home" style={navBarBrand}>EXPERT CARE <span style={spanIms}>Inventory Management System Pharmacy</span></Navbar.Brand>
+                                <Navbar.Brand href="/home" style={navBarBrand}>
+                                    EXPERT CARE <span style={spanIms}>Inventory Management System Pharmacy</span>
+                                </Navbar.Brand>
                                 <Navbar.Toggle aria-controls="navbarScroll" />
                                 <Navbar.Collapse id="navbarScroll">
                                     <Nav
@@ -100,7 +151,9 @@ export default function UpdateSale() {
                                         navbarScroll
                                     >
                                     </Nav>
-                                    <span style={{ color: 'white' }}>Welcome Staff! | <Button size="sm" variant="danger" onClick={logOut}>Log Out</Button></span>
+                                    <span style={{ color: 'white' }}>
+                                        Welcome Staff! | <Button size="sm" variant="danger" onClick={logOut}>Log Out</Button>
+                                    </span>
                                 </Navbar.Collapse>
                             </Container>
                         </Navbar>
@@ -122,7 +175,14 @@ export default function UpdateSale() {
                     <Col sm={6}>
                         <Tab.Content>
                             <Tab.Pane eventKey="first">
-                                <Modal size="md" aria-labelledby="contained-modal-title-vcenter" centered show={modalShow} onHide={handleModalClose} animation={true}>
+                                <Modal
+                                    size="md"
+                                    aria-labelledby="contained-modal-title-vcenter"
+                                    centered
+                                    show={modalShow}
+                                    onHide={handleModalClose}
+                                    animation={true}
+                                >
                                     <Modal.Header closeButton>
                                         <Modal.Title><h5>Delete Confirmation</h5></Modal.Title>
                                     </Modal.Header>
@@ -139,26 +199,47 @@ export default function UpdateSale() {
                                         </Card.Header>
                                         <Card.Body>
                                             <Form>
-                                                <Alert variant={notif.variant} show={notif.status} onClose={() => setNotif({ status: false })} dismissible>{notif.message}</Alert>
+                                                <Alert
+                                                    dismissible
+                                                    variant={notif.variant}
+                                                    show={notif.status}
+                                                    onClose={() => setNotif({ status: false })}
+                                                >
+                                                    {notif.message}
+                                                </Alert>
                                                 <Row>
-                                                    <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label>Item Name<span style={{ color: 'red' }}>*</span></Form.Label>
+                                                    <Form.Group as={Col} sm={4} className="mb-3">
+                                                        <Form.Label style={formLabel}>Product ID <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
-                                                            type="text:"
-                                                            placeholder="Select Item Name"
-                                                            list="itemName"
-                                                            value={prodDetails.itemName}
-                                                            onChange={e => handleItemNameChange(e)}
+                                                            type="text"
+                                                            placeholder=""
+                                                            list="productId"
+                                                            value={prodDetails.productId}
+                                                            onChange={e => handleProductIdChange(e)}
                                                         />
-                                                        <datalist id="itemName">
+                                                        <datalist id="productId">
                                                             {prodList.length >= 1 ? prodList.map((prod, index) => {
-                                                                const { itemName  } = prod;
-                                                                return <option key={index} value={itemName} />
+                                                                const { productId  } = prod;
+                                                                return <option key={index} value={productId} />
                                                             }): ''}
                                                         </datalist>
                                                     </Form.Group>
                                                     <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label>Item Number</Form.Label>
+                                                        <Form.Label style={formLabel}>Item Name <Badge bg="danger">Required</Badge></Form.Label>
+                                                        <Form.Control
+                                                            type="text"
+                                                            placeholder=""
+                                                            disabled
+                                                            value={prodDetails.itemName}
+                                                            onChange={e => setProdDetails({ ...prodDetails, itemName: e.target.value })}
+                                                        />
+                                                    </Form.Group>
+                                                </Row>
+                                            </Form>
+                                            <Form>
+                                                <Row className="mb-3">
+                                                    <Form.Group as={Col} sm={4} className="mb-3">
+                                                        <Form.Label style={formLabel}>Item Number  <Badge bg="secondary">Generated</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
                                                             placeholder=""
@@ -167,12 +248,8 @@ export default function UpdateSale() {
                                                             onChange={e => setProdDetails({ ...prodDetails, itemNumber: e.target.value })}
                                                         />
                                                     </Form.Group>
-                                                </Row>
-                                            </Form>
-                                            <Form id="updateProductForm">
-                                                <Row className="mb-3">
                                                     <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label>Units</Form.Label>
+                                                        <Form.Label style={formLabel}>Units <Badge bg="secondary">Generated</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
                                                             placeholder=""
@@ -182,7 +259,7 @@ export default function UpdateSale() {
                                                         />
                                                     </Form.Group>
                                                     <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label>Unit Price</Form.Label>
+                                                        <Form.Label style={formLabel}>Unit Price <Badge bg="secondary">Generated</Badge></Form.Label>
                                                         <Form.Control
                                                             type="number"
                                                             placeholder=""
@@ -196,7 +273,7 @@ export default function UpdateSale() {
                                                 <hr />
                                                 <Row className="mb-3">
                                                     <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label>Stock</Form.Label>
+                                                        <Form.Label style={formLabel}>Stock <Badge bg="secondary">Generated</Badge></Form.Label>
                                                         <Form.Control
                                                             type="number"
                                                             placeholder=""
@@ -207,7 +284,7 @@ export default function UpdateSale() {
                                                         />
                                                     </Form.Group>
                                                     <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label>Discount %</Form.Label>
+                                                        <Form.Label style={formLabel}>Disc. % <Badge bg="secondary">Generated</Badge></Form.Label>
                                                         <Form.Control
                                                             type="number"
                                                             placeholder=""
@@ -218,7 +295,7 @@ export default function UpdateSale() {
                                                         />
                                                     </Form.Group>
                                                     <Form.Group as={Col} sm={6} className="mb-3">
-                                                        <Form.Label>Description</Form.Label>
+                                                        <Form.Label style={formLabel}>Description <Badge bg="secondary">Generated</Badge></Form.Label>
                                                         <Form.Control
                                                             as="textarea"
                                                             type="text"
@@ -231,6 +308,8 @@ export default function UpdateSale() {
                                                     </Form.Group>
                                                 </Row>
                                             </Form>
+                                        </Card.Body>
+                                        <Card.Footer>
                                             <Button
                                                 type='submit'
                                                 variant="danger"
@@ -238,10 +317,10 @@ export default function UpdateSale() {
                                                 style={{ marginRight: '5px', float: 'left' }}
                                                 onClick={handleDeleteConfirmation}
                                             >
-                                                Delete
+                                                Delete Product
                                             </Button>
                                             <Link to="/home"><Button size="sm" variant="outline-secondary">Go Back</Button></Link>
-                                        </Card.Body>
+                                        </Card.Footer>
                                     </Card>
                                 </CardGroup>
                             </Tab.Pane>

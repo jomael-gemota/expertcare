@@ -15,9 +15,17 @@ import {
     Navbar,
     Container,
     Alert,
+    Badge,
 } from 'react-bootstrap';
 
-import { homeContainer, navBarStyles, navBarBrand, spanIms, cardStyleHeader } from '../../css/styles';
+import {
+    homeContainer,
+    navBarStyles,
+    navBarBrand,
+    spanIms,
+    cardStyleHeader,
+    formLabel,
+} from '../../css/styles';
 
 export default function UpdateSale() {
     const history = useHistory();
@@ -32,21 +40,40 @@ export default function UpdateSale() {
             { headers: { Authorization: getJwt() } })
             .then(res => {
                 let salesArr = [];
-                res.data.message.map((sale, index) => {
-                    const { saleID, customerName, itemName, itemNumber, saleDate, discount, quantity, unitPrice } = sale;
-                    salesArr.push({ saleId: saleID, customerName: customerName, itemName: itemName, itemNumber: itemNumber, saleDate: saleDate, discount: discount, quantity: quantity, unitPrice: unitPrice });
+                res.data.message.map(sale => {
+                    salesArr.push({
+                        saleId: sale.saleID,
+                        customerName: sale.customerName,
+                        itemName: sale.itemName,
+                        itemNumber: sale.itemNumber,
+                        saleDate: sale.saleDate,
+                        discount: sale.discount,
+                        quantity: sale.quantity,
+                        unitPrice: sale.unitPrice
+                    });
                 });
 
                 return setSalesList(salesArr);
+
             }).catch(error => setSalesList({ key: error.name, text: error.message }));
 
         axios.get('/api/inv/getCustomerDatabase',
             { headers: { Authorization: getJwt() } })
             .then(res => {
                 let cxArr = [];
-                res.data.message.map((cx, index) => {
-                    const { customerID, fullName, gender, email, mobile, phone2, address, address2, city, district } = cx;
-                    cxArr.push({ key: index, customerId: customerID, fullName: fullName, gender: gender, email: email, mobile: mobile, phone2: phone2, address: address, address2: address2, city: city, district: district });
+                res.data.message.map(cx => {
+                    cxArr.push({
+                        customerId: cx.customerID,
+                        fullName: cx.fullName,
+                        gender: cx.gender,
+                        email: cx.email,
+                        mobile: cx.mobile,
+                        phone2: cx.phone2,
+                        address: cx.address,
+                        address2: cx.address2,
+                        city: cx.city,
+                        district: cx.district
+                    });
                 });
 
                 return setCxList(cxArr);
@@ -57,27 +84,43 @@ export default function UpdateSale() {
             { headers: { Authorization: getJwt() } })
             .then(res => {
                 let prodArr = [];
-                res.data.message.map((prod, index) => {
-                    const { productID, itemNumber, itemName, discount, stock, unitPrice, imageURL, status, description } = prod;
-                    prodArr.push({ key: index, prodId: productID, itemNumber: itemNumber, itemName: itemName, discount: discount, stock: stock, unitPrice: unitPrice, image: imageURL, status: status, desc: description });
+                res.data.message.map(prod => {
+                    prodArr.push({
+                        prodId: prod.productID,
+                        itemNumber: prod.itemNumber,
+                        itemName: prod.itemName,
+                        discount: prod.discount,
+                        stock: prod.stock,
+                        unitPrice: prod.unitPrice,
+                        image: prod.imageURL,
+                        status: prod.status,
+                        desc: prod.description
+                    });
                 });
     
                 return setProdList(prodArr);
+
             }).catch(error => setProdList({ key: error.name, text: error.message }));
-    }, []);
+    }, [saleDetails.saleId]);
 
     const updateSaleBySaleId = () => {
         if (saleDetails.saleId !== undefined) {
-            console.log(saleDetails);
             axios.patch('/api/inv/updateSaleBySaleId', saleDetails,
                 { headers: { Authorization: getJwt() } })
                 .then(() => setNotif({ status: true, variant: 'success', message: 'Sale Updated!' }))
                 .catch(() => setNotif({ status: true, variant: 'danger', message: 'Something is wrong.' }));
 
-                setSaleDetails({ saleId: '', customerName: '', itemName: '', itemNumber: '', saleDate: '', discount: '', quantity: '', unitPrice: '' });
-        } else {
-            setNotif({ status: true, variant: 'danger', message: 'Fill-up all the required fields.' });
-        };
+            setSaleDetails({
+                saleId: '',
+                customerName: '',
+                itemName: '',
+                itemNumber: '',
+                saleDate: '',
+                discount: '',
+                quantity: '',
+                unitPrice: ''
+            });
+        } else setNotif({ status: true, variant: 'danger', message: 'Fill-up all the required fields.' });
 
         setTimeout(function() {
             setNotif({ ...notif, status: false });
@@ -85,14 +128,32 @@ export default function UpdateSale() {
     };
 
     const handleSaleIdChange = (e) => {
+        setSaleDetails({ ...saleDetails, saleId: e.target.value });
         salesList.find(x => {
             if (x.saleId === Number(e.target.value)) {
-                setSaleDetails({ saleId: x.saleId, customerName: x.customerName, itemName: x.itemName, itemNumber: x.itemNumber, saleDate: moment(x.saleDate).format('MM/DD/YYYY'), discount: x.discount, quantity: x.quantity, unitPrice: x.unitPrice });
+                setSaleDetails({
+                    saleId: x.saleId,
+                    customerName: x.customerName,
+                    itemName: x.itemName,
+                    itemNumber: x.itemNumber,
+                    saleDate: moment(x.saleDate).format('MM/DD/YYYY'),
+                    discount: x.discount,
+                    quantity: x.quantity,
+                    unitPrice: x.unitPrice
+                });
             };
         });
 
         if (e.target.value === "") {
-            setSaleDetails({ customerName: '', itemName: '', itemNumber: '', saleDate: '', discount: '', quantity: '', unitPrice: '' });
+            setSaleDetails({
+                customerName: '',
+                itemName: '',
+                itemNumber: '',
+                saleDate: '',
+                discount: '',
+                quantity: '',
+                unitPrice: ''
+            });
         };
     };
 
@@ -101,7 +162,13 @@ export default function UpdateSale() {
         
         prodList.find(x => {
             if (x.itemName === e.target.value) {
-                setSaleDetails({ ...saleDetails, itemName: e.target.value, itemNumber: x.itemNumber, unitPrice: x.unitPrice, stock: x.stock });
+                setSaleDetails({
+                    ...saleDetails,
+                    itemName: e.target.value,
+                    itemNumber: x.itemNumber,
+                    unitPrice: x.unitPrice,
+                    stock: x.stock
+                });
             };
         });
     };
@@ -118,7 +185,9 @@ export default function UpdateSale() {
                     <Col>
                         <Navbar fixed="top" expand="lg" style={navBarStyles}>
                             <Container fluid>
-                                <Navbar.Brand href="/home" style={navBarBrand}>EXPERT CARE <span style={spanIms}>Inventory Management System Pharmacy</span></Navbar.Brand>
+                                <Navbar.Brand href="/home" style={navBarBrand}>
+                                    EXPERT CARE <span style={spanIms}>Inventory Management System Pharmacy</span>
+                                </Navbar.Brand>
                                 <Navbar.Toggle aria-controls="navbarScroll" />
                                 <Navbar.Collapse id="navbarScroll">
                                     <Nav
@@ -127,7 +196,9 @@ export default function UpdateSale() {
                                         navbarScroll
                                     >
                                     </Nav>
-                                    <span style={{ color: 'white' }}>Welcome Staff! | <Button size="sm" variant="danger" onClick={logOut}>Log Out</Button></span>
+                                    <span style={{ color: 'white' }}>
+                                        Welcome Staff! | <Button size="sm" variant="danger" onClick={logOut}>Log Out</Button>
+                                    </span>
                                 </Navbar.Collapse>
                             </Container>
                         </Navbar>
@@ -156,13 +227,20 @@ export default function UpdateSale() {
                                         </Card.Header>
                                         <Card.Body>
                                             <Form>
-                                                <Alert variant={notif.variant} show={notif.status} onClose={() => setNotif({ status: false })} dismissible>{notif.message}</Alert>
+                                                <Alert
+                                                    dismissible
+                                                    variant={notif.variant}
+                                                    show={notif.status}
+                                                    onClose={() => setNotif({ status: false })}
+                                                >
+                                                    {notif.message}
+                                                </Alert>
                                                 <Row>
                                                     <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label>Sale ID<span style={{ color: 'red' }}>*</span></Form.Label>
+                                                        <Form.Label style={formLabel}>Sale ID <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
-                                                            placeholder="Select Sale ID"
+                                                            placeholder=""
                                                             list="saleId"
                                                             value={saleDetails.saleId}
                                                             onChange={e => handleSaleIdChange(e)}
@@ -175,7 +253,7 @@ export default function UpdateSale() {
                                                         </datalist>
                                                     </Form.Group>
                                                     <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label>Customer Name</Form.Label>
+                                                        <Form.Label style={formLabel}>Customer Name <Badge bg="secondary">Generated</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
                                                             placeholder=""
@@ -197,10 +275,10 @@ export default function UpdateSale() {
                                                 <hr />
                                                 <Row className="mb-3">
                                                     <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label>Item Name</Form.Label>
+                                                        <Form.Label style={formLabel}>Item Name <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
-                                                            placeholder="Select Item Name"
+                                                            placeholder=""
                                                             list='itemName'
                                                             value={saleDetails.itemName}
                                                             onChange={e => handleItemNameChange(e)}
@@ -213,7 +291,7 @@ export default function UpdateSale() {
                                                         </datalist>
                                                     </Form.Group>
                                                     <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label>Item Number</Form.Label>
+                                                        <Form.Label style={formLabel}>Item Number <Badge bg="secondary">Generated</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
                                                             placeholder=""
@@ -224,7 +302,7 @@ export default function UpdateSale() {
                                                 </Row>
                                                 <Row className="mb-3">
                                                     <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label>Quantity</Form.Label>
+                                                        <Form.Label style={formLabel}>Quantity <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="number"
                                                             placeholder=""
@@ -234,7 +312,7 @@ export default function UpdateSale() {
                                                         />
                                                     </Form.Group>
                                                     <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label>Discount %</Form.Label>
+                                                        <Form.Label style={formLabel}>Disc. % <Badge bg="info">Optional</Badge></Form.Label>
                                                         <Form.Control
                                                             type="number"
                                                             placeholder=""
@@ -244,7 +322,7 @@ export default function UpdateSale() {
                                                         />
                                                     </Form.Group>
                                                     <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label>Unit Price</Form.Label>
+                                                        <Form.Label style={formLabel}>Unit Price <Badge bg="secondary">Generated</Badge></Form.Label>
                                                         <Form.Control
                                                             type="number"
                                                             placeholder=""
@@ -253,7 +331,7 @@ export default function UpdateSale() {
                                                         />
                                                     </Form.Group>
                                                     <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label>Sale Date</Form.Label>
+                                                        <Form.Label style={formLabel}>Sale Date <Badge bg="secondary">Generated</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
                                                             placeholder=""
@@ -262,19 +340,24 @@ export default function UpdateSale() {
                                                         />
                                                     </Form.Group>
                                                 </Row>
-                                                <p>Total Price: <b style={{ color: 'red' }}>₱ {saleDetails.unitPrice === undefined ? 0: saleDetails.quantity * saleDetails.unitPrice}</b></p>
+                                                <p><span style={formLabel}>Total Price: </span><b style={{ color: 'red' }}>
+                                                         ₱ {saleDetails.unitPrice === undefined
+                                                            ? 0
+                                                            : saleDetails.quantity * saleDetails.unitPrice}</b></p>
                                             </Form>
-                                            <Button
-                                                type='submit'
-                                                variant="primary"
-                                                size="sm"
-                                                style={{ marginRight: '5px', float: 'left' }}
-                                                onClick={updateSaleBySaleId}
-                                            >
-                                                Update
-                                            </Button>
-                                            <Link to="/home"><Button size="sm" variant="outline-secondary">Go Back</Button></Link>
                                         </Card.Body>
+                                        <Card.Footer>
+                                            <Button
+                                                    type='submit'
+                                                    variant="success"
+                                                    size="sm"
+                                                    style={{ marginRight: '5px', float: 'left' }}
+                                                    onClick={updateSaleBySaleId}
+                                                >
+                                                    Update Sale
+                                                </Button>
+                                                <Link to="/home"><Button size="sm" variant="outline-secondary">Go Back</Button></Link>
+                                        </Card.Footer>
                                     </Card>
                                 </CardGroup>
                             </Tab.Pane>
