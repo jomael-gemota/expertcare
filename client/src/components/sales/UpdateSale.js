@@ -17,6 +17,11 @@ import {
     Alert,
     Badge,
 } from 'react-bootstrap';
+import {
+    BsCartFill,
+    BsPencilFill,
+    BsFillArrowLeftCircleFill,
+} from 'react-icons/bs';
 
 import {
     homeContainer,
@@ -223,7 +228,7 @@ export default function UpdateSale() {
                                 <CardGroup>
                                     <Card>
                                         <Card.Header style={cardStyleHeader}>
-                                            Edit Sale 
+                                            <BsCartFill /> Edit Sale 
                                         </Card.Header>
                                         <Card.Body>
                                             <Form>
@@ -354,9 +359,9 @@ export default function UpdateSale() {
                                                     style={{ marginRight: '5px', float: 'left' }}
                                                     onClick={updateSaleBySaleId}
                                                 >
-                                                    Update Sale
+                                                    <BsPencilFill /> Update Sale
                                                 </Button>
-                                                <Link to="/home"><Button size="sm" variant="outline-secondary">Go Back</Button></Link>
+                                                <Link to="/home"><Button size="sm" variant="outline-secondary"><BsFillArrowLeftCircleFill /> Go Back</Button></Link>
                                         </Card.Footer>
                                     </Card>
                                 </CardGroup>

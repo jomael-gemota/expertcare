@@ -17,6 +17,13 @@ import {
     Badge,
     Modal,
 } from 'react-bootstrap';
+import {
+    BsFillPeopleFill,
+    BsTrashFill,
+    BsFillArrowLeftCircleFill,
+    BsFillExclamationCircleFill,
+    BsBackspaceReverseFill,
+} from 'react-icons/bs';
 
 import {
     homeContainer,
@@ -185,18 +192,18 @@ export default function RemoveCustomer() {
                                     animation={true}
                                 >
                                     <Modal.Header closeButton>
-                                        <Modal.Title><h5>Delete Confirmation</h5></Modal.Title>
+                                        <Modal.Title><h5><BsFillExclamationCircleFill /> Delete Confirmation</h5></Modal.Title>
                                     </Modal.Header>
                                     <Modal.Body>Do you really want to delete this customer information?</Modal.Body>
                                     <Modal.Footer>
-                                        <Button variant="outline-secondary" size="sm" onClick={handleModalClose}>Cancel</Button>
-                                        <Button variant="danger" size="sm" onClick={() => deleteCustomerById()}>Remove</Button>
+                                        <Button variant="outline-secondary" size="sm" onClick={handleModalClose}><BsBackspaceReverseFill /> Cancel</Button>
+                                        <Button variant="danger" size="sm" onClick={() => deleteCustomerById()}><BsTrashFill /> Remove</Button>
                                     </Modal.Footer>
                                 </Modal>
                                 <CardGroup>
                                     <Card>
                                         <Card.Header style={cardStyleHeader}>
-                                            Delete Vendor
+                                            <BsFillPeopleFill /> Delete Customer Info
                                         </Card.Header>
                                         <Card.Body>
                                             <Form id="deleteCustomerForm">
@@ -323,9 +330,9 @@ export default function RemoveCustomer() {
                                                 style={{ marginRight: '5px', float: 'left' }}
                                                 onClick={() => handleDeleteConfirmation()}
                                             >
-                                                Remove Customer Info
+                                                <BsTrashFill /> Remove Customer Info
                                             </Button>
-                                            <Link to="/home"><Button size="sm" variant="outline-secondary">Go Back</Button></Link>
+                                            <Link to="/home"><Button size="sm" variant="outline-secondary"><BsFillArrowLeftCircleFill /> Go Back</Button></Link>
                                         </Card.Footer>
                                     </Card>
                                 </CardGroup>

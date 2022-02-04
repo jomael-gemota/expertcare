@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useHistory, Link } from 'react-router-dom';
+import getJwt from '../helper/getJwt';
+import axios from 'axios';
 import {
     Card,
     Button,
@@ -8,8 +10,10 @@ import {
     CardGroup,
     Spinner
 } from 'react-bootstrap';
-import getJwt from '../helper/getJwt';
-import axios from 'axios';
+import {
+    BsPencilFill,
+    BsBackspaceReverseFill,
+} from 'react-icons/bs';
 
 import {
     loginBody,
@@ -112,9 +116,9 @@ export default function ResetPassword() {
                             >
                                 {isLoading
                                     ? <div><Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> Updating...</div>
-                                    : 'Reset Password'}                                
+                                    : <span><BsPencilFill /> Reset Password</span>}                                
                         </Button>
-                        <Link to='/'><Button variant='outline-secondary' size='sm'>Cancel</Button></Link>
+                        <Link to='/'><Button variant='outline-secondary' size='sm'><BsBackspaceReverseFill /> Cancel</Button></Link>
                     </Card.Body>
                 </Card>
             </CardGroup>

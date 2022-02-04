@@ -16,6 +16,11 @@ import {
     Alert,
     Badge,
 } from 'react-bootstrap';
+import {
+    BsFillPeopleFill,
+    BsFillPersonPlusFill,
+    BsFillArrowLeftCircleFill,
+} from 'react-icons/bs';
 
 import {
     homeContainer,
@@ -118,7 +123,7 @@ export default function AddNewCustomer() {
                                 <CardGroup>
                                     <Card>
                                         <Card.Header style={cardStyleHeader}>
-                                            Add New Customer
+                                            <BsFillPeopleFill /> Add New Customer
                                         </Card.Header>
                                         <Card.Body>
                                             <Form id="addNewCustomerForm">
@@ -222,9 +227,9 @@ export default function AddNewCustomer() {
                                                 style={{ marginRight: '5px', float: 'left' }}
                                                 onClick={addNewCustomer}
                                             >
-                                                Add Customer
+                                                <BsFillPersonPlusFill /> Add Customer
                                             </Button>
-                                            <Link to="/home"><Button size="sm" variant="outline-secondary">Go Back</Button></Link>
+                                            <Link to="/home"><Button size="sm" variant="outline-secondary"><BsFillArrowLeftCircleFill /> Go Back</Button></Link>
                                         </Card.Footer>
                                     </Card>
                                 </CardGroup>

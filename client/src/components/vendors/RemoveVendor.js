@@ -17,6 +17,11 @@ import {
     Badge,
     Modal,
 } from 'react-bootstrap';
+import {
+    BsHouseFill,
+    BsTrashFill,
+    BsFillArrowLeftCircleFill,
+} from 'react-icons/bs';
 
 import {
     homeContainer,
@@ -192,7 +197,7 @@ export default function RemoveVendor() {
                                 <CardGroup>
                                     <Card>
                                         <Card.Header style={cardStyleHeader}>
-                                            Remove Vendor
+                                            <BsHouseFill /> Remove Vendor
                                         </Card.Header>
                                         <Card.Body>
                                             <Form id="updateVendorForm">
@@ -310,9 +315,9 @@ export default function RemoveVendor() {
                                                 style={{ marginRight: '5px', float: 'left' }}
                                                 onClick={() => handleDeleteConfirmation()}
                                             >
-                                                Delete Vendor
+                                                <BsTrashFill /> Delete Vendor
                                             </Button>
-                                            <Link to="/home"><Button size="sm" variant="outline-secondary">Go Back</Button></Link>
+                                            <Link to="/home"><Button size="sm" variant="outline-secondary"><BsFillArrowLeftCircleFill /> Go Back</Button></Link>
                                         </Card.Footer>
                                     </Card>
                                 </CardGroup>

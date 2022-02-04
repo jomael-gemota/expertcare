@@ -13,9 +13,21 @@ import {
     Table,
     FormGroup,
     Dropdown,
-    DropdownButton,
     Spinner,
+    ButtonGroup,
 } from 'react-bootstrap';
+import {
+    BsFileEarmarkPdfFill,
+    BsPencilSquare,
+    BsDownload,
+    BsPlusCircleFill,
+    BsTrashFill,
+    BsFileEarmarkExcelFill,
+    BsPrinter,
+    BsGearFill,
+    BsArrowRepeat
+} from 'react-icons/bs';
+
 import { useHistory, Link } from 'react-router-dom';
 import axios from 'axios';
 import getJwt from '../helper/getJwt';
@@ -29,7 +41,7 @@ import {
     navBarBrand,
     spanIms,
     invCardHeader,
-    formGroup
+    cardTools
 } from '../css/styles';
 
 export default function Home() {
@@ -255,9 +267,9 @@ export default function Home() {
                         <Tab.Content>
                             <Tab.Pane eventKey="first">
                                 <CardGroup>
-                                    <Card>
+                                    <Card style={{  boxShadow: '0px 1px 10px #999' }}>
                                         <Card.Header style={invCardHeader}>
-                                            Manage Inventory
+                                            <BsGearFill /> Manage Inventory
                                             <Button
                                                 size="sm"
                                                 variant="info"
@@ -267,26 +279,32 @@ export default function Home() {
                                             >
                                                 {isLoadingRefresh
                                                     ? <div><Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> Refreshing...</div>
-                                                    : 'Refresh Table'}
+                                                    : <span><BsArrowRepeat /> Refresh</span>}
                                             </Button>
                                         </Card.Header>
                                         <Card.Body>
                                             <Tabs defaultActiveKey={defActiveKey} id="uncontrolled-tab-example" className="mb-3">
                                                 <Tab eventKey="sales" title="Sales" onClick={() => setDefActiveKey('sales')}>
-                                                    <h4>Sales Inventory</h4>
-                                                    <p>This is where you can see all of the sales that are being added per customer.</p>
-                                                    <FormGroup style={formGroup}>
-                                                        <Link to='/home/add-new-sale'><Button size="sm" variant="success" style={{ marginRight: '5px' }}>Add New Sale</Button></Link>
-                                                        <Link to='/home/update-sale'><Button size="sm" variant="warning" style={{ marginRight: '5px' }}>Edit Sale</Button></Link>
-                                                        <Link to='/home/remove-sale'><Button size="sm" variant="outline-danger" style={{ marginRight: '5px' }}>Remove Sale</Button></Link>
-                                                        <DropdownButton size="sm" id="dropdown-basic-button" title="Export Reports" style={{ float: 'right' }}>
-                                                            <Dropdown.Item href="#/action-1">Copy to Cliboard</Dropdown.Item>
-                                                            <Dropdown.Item href="#/action-2">CSV</Dropdown.Item>
-                                                            <Dropdown.Item href="#/action-3">Excel</Dropdown.Item>
-                                                            <Dropdown.Item href="#/action-3">PDF</Dropdown.Item>
-                                                            <Dropdown.Item href="#/action-3">Print</Dropdown.Item>
-                                                        </DropdownButton>
-                                                    </FormGroup>
+                                                    <Card style={cardTools}>
+                                                        <Card.Body>
+                                                            <FormGroup>
+                                                                <Link to='/home/add-new-sale'><Button size="sm" variant="success" style={{ marginRight: '5px' }}><BsPlusCircleFill /> Add Sale</Button></Link>
+                                                                <Link to='/home/update-sale'><Button size="sm" variant="warning" style={{ marginRight: '5px' }}><BsPencilSquare /> Edit Sale</Button></Link>
+                                                                <Link to='/home/remove-sale'><Button size="sm" variant="outline-danger" style={{ marginRight: '5px' }}><BsTrashFill /> Remove Sale</Button></Link>
+                                                                <Dropdown size="sm" as={ButtonGroup} style={{ float: 'right' }}>
+                                                                    <Button variant="secondary"><BsDownload /> Export Report</Button>
+                                                                    <Dropdown.Toggle split variant="secondary" id="dropdown-custom-2" />
+                                                                    <Dropdown.Menu>
+                                                                        <Dropdown.Item eventKey="1"><BsFileEarmarkExcelFill /> CSV</Dropdown.Item>
+                                                                        <Dropdown.Item eventKey="2"><BsFileEarmarkPdfFill /> PDF</Dropdown.Item>
+                                                                        <Dropdown.Divider />
+                                                                        <Dropdown.Item eventKey="4"><BsPrinter /> Print</Dropdown.Item>
+                                                                    </Dropdown.Menu>
+                                                                </Dropdown>
+                                                            </FormGroup>
+                                                        </Card.Body>
+                                                    </Card>
+                                                    <br />
                                                     <Table striped bordered hover size='sm' id='saleTable'>
                                                         <thead>
                                                             <tr>
@@ -326,20 +344,26 @@ export default function Home() {
                                                     </Table>
                                                 </Tab>
                                                 <Tab eventKey="products" title="Products" onClick={() => setDefActiveKey('products')}>
-                                                    <h4>Products Inventory</h4>
-                                                    <p>This is where you can manage all the inventory of your products.</p>
-                                                    <FormGroup style={formGroup}>
-                                                        <Link to='/home/add-new-product'><Button size="sm" variant="success" style={{ marginRight: '5px' }}>Add New Product</Button></Link>
-                                                        <Link to='/home/update-product'><Button size="sm" variant="warning" style={{ marginRight: '5px' }}>Edit Product</Button></Link>
-                                                        <Link to='/home/remove-product'><Button size="sm" variant="outline-danger">Remove Product</Button></Link>
-                                                        <DropdownButton size="sm" id="dropdown-basic-button" title="Export Reports" style={{ float: 'right' }}>
-                                                            <Dropdown.Item href="#/action-1">Copy to Cliboard</Dropdown.Item>
-                                                            <Dropdown.Item href="#/action-2">CSV</Dropdown.Item>
-                                                            <Dropdown.Item href="#/action-3">Excel</Dropdown.Item>
-                                                            <Dropdown.Item href="#/action-3">PDF</Dropdown.Item>
-                                                            <Dropdown.Item href="#/action-3">Print</Dropdown.Item>
-                                                        </DropdownButton>
-                                                    </FormGroup>
+                                                    <Card style={cardTools}>
+                                                        <Card.Body>
+                                                            <FormGroup>
+                                                                <Link to='/home/add-new-product'><Button size="sm" variant="success" style={{ marginRight: '5px' }}><BsPlusCircleFill /> Add Product</Button></Link>
+                                                                <Link to='/home/update-product'><Button size="sm" variant="warning" style={{ marginRight: '5px' }}><BsPencilSquare /> Edit Product</Button></Link>
+                                                                <Link to='/home/remove-product'><Button size="sm" variant="outline-danger"><BsTrashFill /> Remove Product</Button></Link>
+                                                                <Dropdown size="sm" as={ButtonGroup} style={{ float: 'right' }}>
+                                                                    <Button variant="secondary"><BsDownload /> Export Report</Button>
+                                                                    <Dropdown.Toggle split variant="secondary" id="dropdown-custom-2" />
+                                                                    <Dropdown.Menu>
+                                                                        <Dropdown.Item eventKey="1"><BsFileEarmarkExcelFill /> CSV</Dropdown.Item>
+                                                                        <Dropdown.Item eventKey="2"><BsFileEarmarkPdfFill /> PDF</Dropdown.Item>
+                                                                        <Dropdown.Divider />
+                                                                        <Dropdown.Item eventKey="4"><BsPrinter /> Print</Dropdown.Item>
+                                                                    </Dropdown.Menu>
+                                                                </Dropdown>
+                                                            </FormGroup>
+                                                        </Card.Body>
+                                                    </Card>
+                                                    <br />
                                                     <Table striped bordered hover size='sm' id='prodTable'>
                                                         <thead>
                                                             <tr>
@@ -379,20 +403,26 @@ export default function Home() {
                                                     </Table>
                                                 </Tab>
                                                 <Tab eventKey="purchase" title="Purchase" onClick={() => setDefActiveKey('purchase')}>
-                                                    <h4>Purchasing Inventory</h4>
-                                                    <p>This is where you can manage all of your purchases.</p>
-                                                    <FormGroup style={formGroup}>
-                                                        <Link to='/home/add-new-purchase'><Button size="sm" variant="success" style={{ marginRight: '5px' }}>Add New Purchase</Button></Link>
-                                                        <Link to='/home/update-purchase'><Button size="sm" variant="warning" style={{ marginRight: '5px' }}>Edit Purchase</Button></Link>
-                                                        <Link to='/home/remove-purchase'><Button size="sm" variant="outline-danger">Remove Purchase</Button></Link>
-                                                        <DropdownButton size="sm" id="dropdown-basic-button" title="Export Reports" style={{ float: 'right' }}>
-                                                            <Dropdown.Item href="#/action-1">Copy to Cliboard</Dropdown.Item>
-                                                            <Dropdown.Item href="#/action-2">CSV</Dropdown.Item>
-                                                            <Dropdown.Item href="#/action-3">Excel</Dropdown.Item>
-                                                            <Dropdown.Item href="#/action-3">PDF</Dropdown.Item>
-                                                            <Dropdown.Item href="#/action-3">Print</Dropdown.Item>
-                                                        </DropdownButton>
-                                                    </FormGroup>
+                                                    <Card style={cardTools}>
+                                                        <Card.Body>
+                                                            <FormGroup>
+                                                                <Link to='/home/add-new-purchase'><Button size="sm" variant="success" style={{ marginRight: '5px' }}><BsPlusCircleFill /> Add Purchase</Button></Link>
+                                                                <Link to='/home/update-purchase'><Button size="sm" variant="warning" style={{ marginRight: '5px' }}><BsPencilSquare /> Edit Purchase</Button></Link>
+                                                                <Link to='/home/remove-purchase'><Button size="sm" variant="outline-danger"><BsTrashFill /> Remove Purchase</Button></Link>
+                                                                <Dropdown size="sm" as={ButtonGroup} style={{ float: 'right' }}>
+                                                                    <Button variant="secondary"><BsDownload /> Export Report</Button>
+                                                                    <Dropdown.Toggle split variant="secondary" id="dropdown-custom-2" />
+                                                                    <Dropdown.Menu>
+                                                                        <Dropdown.Item eventKey="1"><BsFileEarmarkExcelFill /> CSV</Dropdown.Item>
+                                                                        <Dropdown.Item eventKey="2"><BsFileEarmarkPdfFill /> PDF</Dropdown.Item>
+                                                                        <Dropdown.Divider />
+                                                                        <Dropdown.Item eventKey="4"><BsPrinter /> Print</Dropdown.Item>
+                                                                    </Dropdown.Menu>
+                                                                </Dropdown>
+                                                            </FormGroup>
+                                                        </Card.Body>
+                                                    </Card>
+                                                    <br />
                                                     <Table striped bordered hover size='sm' id='purTable'>
                                                         <thead>
                                                             <tr>
@@ -429,20 +459,26 @@ export default function Home() {
                                                     </Table>
                                                 </Tab>
                                                 <Tab eventKey="vendors" title="Vendors" onClick={() => setDefActiveKey('vendors')}>
-                                                    <h4>Vendors Inventory</h4>
-                                                    <p>This is where you can manage all of your available vendors.</p>
-                                                    <FormGroup style={formGroup}>
-                                                        <Link to='/home/add-new-vendor'><Button size="sm" variant="success" style={{ marginRight: '5px' }}>Add New Vendor</Button></Link>
-                                                        <Link to='/home/update-vendor'><Button size="sm" variant="warning" style={{ marginRight: '5px' }}>Edit Vendor</Button></Link>
-                                                        <Link to='/home/remove-vendor'><Button size="sm" variant="outline-danger">Remove Vendor</Button></Link>
-                                                        <DropdownButton size="sm" id="dropdown-basic-button" title="Export Reports" style={{ float: 'right' }}>
-                                                            <Dropdown.Item href="#/action-1">Copy to Cliboard</Dropdown.Item>
-                                                            <Dropdown.Item href="#/action-2">CSV</Dropdown.Item>
-                                                            <Dropdown.Item href="#/action-3">Excel</Dropdown.Item>
-                                                            <Dropdown.Item href="#/action-3">PDF</Dropdown.Item>
-                                                            <Dropdown.Item href="#/action-3">Print</Dropdown.Item>
-                                                        </DropdownButton>
-                                                    </FormGroup>
+                                                    <Card style={cardTools}>
+                                                        <Card.Body>
+                                                            <FormGroup>
+                                                                <Link to='/home/add-new-vendor'><Button size="sm" variant="success" style={{ marginRight: '5px' }}><BsPlusCircleFill /> Add Vendor</Button></Link>
+                                                                <Link to='/home/update-vendor'><Button size="sm" variant="warning" style={{ marginRight: '5px' }}><BsPencilSquare /> Edit Vendor</Button></Link>
+                                                                <Link to='/home/remove-vendor'><Button size="sm" variant="outline-danger"><BsTrashFill /> Remove Vendor</Button></Link>
+                                                                <Dropdown size="sm" as={ButtonGroup} style={{ float: 'right' }}>
+                                                                    <Button variant="secondary"><BsDownload /> Export Report</Button>
+                                                                    <Dropdown.Toggle split variant="secondary" id="dropdown-custom-2" />
+                                                                    <Dropdown.Menu>
+                                                                        <Dropdown.Item eventKey="1"><BsFileEarmarkExcelFill /> CSV</Dropdown.Item>
+                                                                        <Dropdown.Item eventKey="2"><BsFileEarmarkPdfFill /> PDF</Dropdown.Item>
+                                                                        <Dropdown.Divider />
+                                                                        <Dropdown.Item eventKey="4"><BsPrinter /> Print</Dropdown.Item>
+                                                                    </Dropdown.Menu>
+                                                                </Dropdown>
+                                                            </FormGroup>
+                                                        </Card.Body>
+                                                    </Card>
+                                                    <br />
                                                     <Table striped bordered hover size='sm' id='vendTable'>
                                                         <thead>
                                                             <tr>
@@ -482,20 +518,26 @@ export default function Home() {
                                                     </Table>
                                                 </Tab>
                                                 <Tab eventKey="customer-database" title="Customer Database" onClick={() => setDefActiveKey('customer-database')}>
-                                                    <h4>Customer Database</h4>
-                                                    <p>This is where you can manage all of your customer information.</p>
-                                                    <FormGroup style={formGroup}>
-                                                        <Link to='/home/add-new-customer'><Button size="sm" variant="success" style={{ marginRight: '5px' }}>Add New Customer</Button></Link>
-                                                        <Link to='/home/update-customer'><Button size="sm" variant="warning" style={{ marginRight: '5px' }}>Edit Customer Info</Button></Link>
-                                                        <Link to='/home/remove-customer'><Button size="sm" variant="outline-danger">Remove Customer</Button></Link>
-                                                        <DropdownButton size="sm" id="dropdown-basic-button" title="Export Reports" style={{ float: 'right' }}>
-                                                            <Dropdown.Item href="#/action-1">Copy to Cliboard</Dropdown.Item>
-                                                            <Dropdown.Item href="#/action-2">CSV</Dropdown.Item>
-                                                            <Dropdown.Item href="#/action-3">Excel</Dropdown.Item>
-                                                            <Dropdown.Item href="#/action-3">PDF</Dropdown.Item>
-                                                            <Dropdown.Item href="#/action-3">Print</Dropdown.Item>
-                                                        </DropdownButton>
-                                                    </FormGroup>
+                                                    <Card style={cardTools}>
+                                                        <Card.Body>
+                                                            <FormGroup>
+                                                                <Link to='/home/add-new-customer'><Button size="sm" variant="success" style={{ marginRight: '5px' }}><BsPlusCircleFill /> Add Customer</Button></Link>
+                                                                <Link to='/home/update-customer'><Button size="sm" variant="warning" style={{ marginRight: '5px' }}><BsPencilSquare /> Edit Customer</Button></Link>
+                                                                <Link to='/home/remove-customer'><Button size="sm" variant="outline-danger"><BsTrashFill /> Remove Customer</Button></Link>
+                                                                <Dropdown size="sm" as={ButtonGroup} style={{ float: 'right' }}>
+                                                                    <Button variant="secondary"><BsDownload /> Export Report</Button>
+                                                                    <Dropdown.Toggle split variant="secondary" id="dropdown-custom-2" />
+                                                                    <Dropdown.Menu>
+                                                                        <Dropdown.Item eventKey="1"><BsFileEarmarkExcelFill /> CSV</Dropdown.Item>
+                                                                        <Dropdown.Item eventKey="2"><BsFileEarmarkPdfFill /> PDF</Dropdown.Item>
+                                                                        <Dropdown.Divider />
+                                                                        <Dropdown.Item eventKey="4"><BsPrinter /> Print</Dropdown.Item>
+                                                                    </Dropdown.Menu>
+                                                                </Dropdown>
+                                                            </FormGroup>
+                                                        </Card.Body>
+                                                    </Card>
+                                                    <br />
                                                     <Table striped bordered hover size='sm' id='cxTable'>
                                                         <thead>
                                                             <tr>

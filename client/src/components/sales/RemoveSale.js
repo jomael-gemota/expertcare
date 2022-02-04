@@ -18,6 +18,13 @@ import {
     Modal,
     Badge,
 } from 'react-bootstrap';
+import {
+    BsCartFill,
+    BsTrashFill,
+    BsFillArrowLeftCircleFill,
+    BsFillExclamationCircleFill,
+    BsBackspaceReverseFill,
+} from 'react-icons/bs'
 
 import {
     homeContainer,
@@ -185,17 +192,17 @@ export default function RemoveSale() {
                                     animation={true}
                                 >
                                     <Modal.Header closeButton>
-                                        <Modal.Title><h5>Delete Confirmation</h5></Modal.Title>
+                                        <Modal.Title><h5><BsFillExclamationCircleFill /> Delete Confirmation</h5></Modal.Title>
                                     </Modal.Header>
                                     <Modal.Body>Do you really want to delete this sale?</Modal.Body>
                                     <Modal.Footer>
-                                        <Button variant="outline-secondary" size="sm" onClick={handleModalClose}>Cancel</Button>
-                                        <Button variant="danger" size="sm" onClick={() => deleteSaleBySaleId()}>Remove</Button>
+                                        <Button variant="outline-secondary" size="sm" onClick={handleModalClose}><BsBackspaceReverseFill /> Cancel</Button>
+                                        <Button variant="danger" size="sm" onClick={() => deleteSaleBySaleId()}><BsTrashFill /> Remove</Button>
                                     </Modal.Footer>
                                 </Modal>
                                 <CardGroup>
                                     <Card>
-                                        <Card.Header style={cardStyleHeader}>Remove Sale</Card.Header>
+                                        <Card.Header style={cardStyleHeader}><BsCartFill /> Remove Sale</Card.Header>
                                         <Card.Body>
                                             <Form>
                                                 <Alert
@@ -306,9 +313,9 @@ export default function RemoveSale() {
                                                 style={{ marginRight: '5px', float: 'left' }}
                                                 onClick={handleDeleteConfirmation}
                                             >
-                                                Delete Sale
+                                                <BsTrashFill /> Delete Sale
                                             </Button>
-                                            <Link to="/home"><Button size="sm" variant="outline-secondary">Go Back</Button></Link>
+                                            <Link to="/home"><Button size="sm" variant="outline-secondary"><BsFillArrowLeftCircleFill /> Go Back</Button></Link>
                                         </Card.Footer>
                                     </Card>
                                 </CardGroup>

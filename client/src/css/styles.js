@@ -97,6 +97,7 @@ export const homeContainer = {
 
 export const navBarStyles = {
     backgroundColor: '#34495E',
+    boxShadow: '0px 1px 10px #455A64',
 };
 
 export const navBarBrand = {
@@ -119,9 +120,8 @@ export const invCardHeader = {
     color: 'white',
 };
 
-export const formGroup = {
-    marginBottom: '15px',
-    marginTop: '25px',
+export const cardTools = {
+    backgroundColor: '#F5F5F5',
 };
 
 export const cardStyleHeader = {
@@ -133,4 +133,9 @@ export const formLabel = {
     fontWeight: 'bolder',
     fontSize: '13px',
     color: '#34495E',
+};
+
+export const boxShadow = {
+    backgroundColor: '#34495E',
+    boxShadow: '0px 1px 10px #455A64',
 };

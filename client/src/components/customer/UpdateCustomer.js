@@ -16,6 +16,11 @@ import {
     Alert,
     Badge,
 } from 'react-bootstrap';
+import {
+    BsFillPeopleFill,
+    BsFillPencilFill,
+    BsFillArrowLeftCircleFill,
+} from 'react-icons/bs';
 
 import {
     homeContainer,
@@ -168,7 +173,7 @@ export default function UpdateCustomer() {
                                 <CardGroup>
                                     <Card>
                                         <Card.Header style={cardStyleHeader}>
-                                            Edit Vendor
+                                            <BsFillPeopleFill /> Edit Customer Info
                                         </Card.Header>
                                         <Card.Body>
                                             <Form id="updateCustomerForm">
@@ -287,9 +292,9 @@ export default function UpdateCustomer() {
                                                 style={{ marginRight: '5px', float: 'left' }}
                                                 onClick={() => updateCustomerById()}
                                             >
-                                                Update Customer Info
+                                                <BsFillPencilFill /> Update Customer Info
                                             </Button>
-                                            <Link to="/home"><Button size="sm" variant="outline-secondary">Go Back</Button></Link>
+                                            <Link to="/home"><Button size="sm" variant="outline-secondary"><BsFillArrowLeftCircleFill /> Go Back</Button></Link>
                                         </Card.Footer>
                                     </Card>
                                 </CardGroup>

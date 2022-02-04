@@ -16,6 +16,11 @@ import {
     Alert,
     Badge,
 } from 'react-bootstrap';
+import {
+    BsHouseFill,
+    BsPencilFill,
+    BsFillArrowLeftCircleFill,
+} from 'react-icons/bs';
 
 import {
     homeContainer,
@@ -164,7 +169,7 @@ export default function UpdateVendor() {
                                 <CardGroup>
                                     <Card>
                                         <Card.Header style={cardStyleHeader}>
-                                            Edit Vendor
+                                            <BsHouseFill /> Edit Vendor
                                         </Card.Header>
                                         <Card.Body>
                                             <Form id="updateVendorForm">
@@ -275,9 +280,9 @@ export default function UpdateVendor() {
                                                 style={{ marginRight: '5px', float: 'left' }}
                                                 onClick={() => updateVendorById()}
                                             >
-                                                Update Vendor
+                                                <BsPencilFill /> Update Vendor
                                             </Button>
-                                            <Link to="/home"><Button size="sm" variant="outline-secondary">Go Back</Button></Link>
+                                            <Link to="/home"><Button size="sm" variant="outline-secondary"><BsFillArrowLeftCircleFill /> Go Back</Button></Link>
                                         </Card.Footer>
                                     </Card>
                                 </CardGroup>

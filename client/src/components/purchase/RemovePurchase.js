@@ -18,6 +18,13 @@ import {
     Modal,
     Badge,
 } from 'react-bootstrap';
+import {
+    BsBasketFill,
+    BsTrashFill,
+    BsFillArrowLeftCircleFill,
+    BsFillExclamationCircleFill,
+    BsBackspaceReverseFill
+} from 'react-icons/bs';
 
 import {
     homeContainer,
@@ -193,17 +200,17 @@ export default function RemovePurchase() {
                                     animation={true}
                                 >
                                     <Modal.Header closeButton>
-                                        <Modal.Title><h5>Delete Confirmation</h5></Modal.Title>
+                                        <Modal.Title><h5><BsFillExclamationCircleFill /> Delete Confirmation</h5></Modal.Title>
                                     </Modal.Header>
                                     <Modal.Body>Do you really want to delete this purchase?</Modal.Body>
                                     <Modal.Footer>
-                                        <Button variant="outline-secondary" size="sm" onClick={handleModalClose}>Cancel</Button>
-                                        <Button variant="danger" size="sm" onClick={() => deletePurchaseById()}>Remove</Button>
+                                        <Button variant="outline-secondary" size="sm" onClick={handleModalClose}><BsBackspaceReverseFill /> Cancel</Button>
+                                        <Button variant="danger" size="sm" onClick={() => deletePurchaseById()}><BsTrashFill /> Remove</Button>
                                     </Modal.Footer>
                                 </Modal>
                                 <CardGroup>
                                     <Card>
-                                        <Card.Header style={cardStyleHeader}>Remove Purchase</Card.Header>
+                                        <Card.Header style={cardStyleHeader}><BsBasketFill /> Remove Purchase</Card.Header>
                                         <Card.Body>
                                             <Form id="removePurForm">
                                                 <Alert
@@ -315,9 +322,9 @@ export default function RemovePurchase() {
                                                 style={{ marginRight: '5px', float: 'left' }}
                                                 onClick={handleDeleteConfirmation}
                                             >
-                                                Delete Purchase
+                                                <BsTrashFill /> Delete Purchase
                                             </Button>
-                                            <Link to="/home"><Button size="sm" variant="outline-secondary">Go Back</Button></Link>
+                                            <Link to="/home"><Button size="sm" variant="outline-secondary"><BsFillArrowLeftCircleFill /> Go Back</Button></Link>
                                         </Card.Footer>
                                     </Card>
                                 </CardGroup>

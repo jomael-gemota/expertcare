@@ -18,6 +18,13 @@ import {
     Alert,
     Badge,
 } from 'react-bootstrap';
+import {
+    BsPlusCircleFill,
+    BsCartFill,
+    BsBackspaceReverseFill,
+    BsFillPrinterFill,
+    BsFillArrowLeftCircleFill,
+} from 'react-icons/bs'
 
 import {
     homeContainer,
@@ -25,7 +32,7 @@ import {
     navBarBrand,
     spanIms,
     cardStyleHeader,
-    formLabel
+    formLabel,
 } from '../../css/styles';
 
 export default function AddNewSale() {
@@ -290,7 +297,7 @@ export default function AddNewSale() {
                                 <CardGroup>
                                     <Card>
                                         <Card.Header style={cardStyleHeader}>
-                                            Add New Sale 
+                                            <BsCartFill /> Add New Sale 
                                         </Card.Header>
                                         <Card.Body>
                                             <Form>
@@ -389,9 +396,9 @@ export default function AddNewSale() {
                                                 style={{ marginRight: '5px', float: 'left' }}
                                                 onClick={handleAddToList}
                                             >
-                                                Add Sale
+                                                <BsPlusCircleFill /> Add Sale
                                             </Button>
-                                            <Link to="/home"><Button size="sm" variant="outline-secondary">Cancel</Button></Link>
+                                            <Link to="/home"><Button size="sm" variant="outline-secondary"><BsBackspaceReverseFill /> Cancel</Button></Link>
                                         </Card.Footer>
                                     </Card>
                                 </CardGroup>
@@ -404,8 +411,7 @@ export default function AddNewSale() {
                     <Col sm={5}>
                         <CardGroup>
                             <Card>
-                                <Card.Header style={{ backgroundColor: '#2980B9', color: 'white' }}>Order Slip</Card.Header>
-                                <Card.Body id="orderSlip">
+                                <Card.Body id="orderSlip" style={{ border: '1px dotted grey', backgroundColor: '#FFFDE7' }}>
                                     <Alert
                                         variant={notif.variant}
                                         show={notif.status}
@@ -414,9 +420,10 @@ export default function AddNewSale() {
                                     >
                                         {notif.message}
                                     </Alert>
-                                    <h5 style={{ textAlign: 'center' }}>Expert Care Pharmacy</h5>
+                                    <h5 style={{ textAlign: 'center', marginTop: '10px' }}>Expert Care Pharmacy</h5>
                                     <p style={{ textAlign: 'center'}}>Tudtud, Nasipit Road, Talamban, Cebu City, Philippines 6000</p>
                                     <h6 style={{ textAlign: 'center', fontWeight: 'bolder' }}>Order Slip</h6>
+                                    <hr />
                                     <br />
                                     <p><b style={formLabel}>Customer Name:</b> {addedCx.fullName}</p>
                                     <p><b style={formLabel}>Ordered Date:</b> {moment(new Date()).format('MM/DD/YY h:mm:ss a')}</p>
@@ -470,9 +477,9 @@ export default function AddNewSale() {
                                         style={{ marginRight: '5px' }}
                                         onClick={submitOrderSale}
                                     >
-                                        Submit & Print
+                                        <BsFillPrinterFill /> Submit & Print
                                     </Button>
-                                    <Link to="/home"><Button size="sm" variant="outline-secondary">Go Back</Button></Link>
+                                    <Link to="/home"><Button size="sm" variant="outline-secondary"><BsFillArrowLeftCircleFill /> Go Back</Button></Link>
                                 </Card.Footer>
                             </Card>
                         </CardGroup>

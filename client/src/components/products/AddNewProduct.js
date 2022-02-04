@@ -17,6 +17,11 @@ import {
     Alert,
     Badge,
 } from 'react-bootstrap';
+import {
+    BsFillBagFill,
+    BsPlusCircleFill,
+    BsFillArrowLeftCircleFill,
+} from 'react-icons/bs';
 
 import {
     homeContainer,
@@ -123,7 +128,7 @@ export default function AddNewProduct() {
                             <Tab.Pane eventKey="first">
                                 <CardGroup>
                                     <Card>
-                                        <Card.Header style={cardStyleHeader}>Add New Product</Card.Header>
+                                        <Card.Header style={cardStyleHeader}><BsFillBagFill /> Add New Product</Card.Header>
                                         <Card.Body>
                                             <Form id="addNewProdForm">
                                                 <Alert
@@ -220,9 +225,9 @@ export default function AddNewProduct() {
                                                 style={{ marginRight: '5px', float: 'left' }}
                                                 onClick={addNewProduct}
                                             >
-                                                Add Product
+                                                <BsPlusCircleFill /> Add Product
                                             </Button>
-                                            <Link to="/home"><Button size="sm" variant="outline-secondary">Go Back</Button></Link>
+                                            <Link to="/home"><Button size="sm" variant="outline-secondary"><BsFillArrowLeftCircleFill /> Go Back</Button></Link>
                                         </Card.Footer>
                                     </Card>
                                 </CardGroup>

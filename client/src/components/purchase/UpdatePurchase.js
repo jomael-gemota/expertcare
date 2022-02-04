@@ -17,6 +17,11 @@ import {
     Alert,
     Badge,
 } from 'react-bootstrap';
+import {
+    BsBasketFill,
+    BsPencilFill,
+    BsFillArrowLeftCircleFill,
+} from 'react-icons/bs';
 
 import {
     homeContainer,
@@ -237,7 +242,7 @@ export default function UpdatePurchase() {
                                 <CardGroup>
                                     <Card>
                                         <Card.Header style={cardStyleHeader}>
-                                            Edit Purchase
+                                            <BsBasketFill /> Edit Purchase
                                         </Card.Header>
                                         <Card.Body>
                                             <Form id="updatePurForm">
@@ -362,9 +367,9 @@ export default function UpdatePurchase() {
                                                 style={{ marginRight: '5px', float: 'left' }}
                                                 onClick={updatePurchaseById}
                                             >
-                                                Update Purchase
+                                                <BsPencilFill /> Update Purchase
                                             </Button>
-                                            <Link to="/home"><Button size="sm" variant="outline-secondary">Go Back</Button></Link>
+                                            <Link to="/home"><Button size="sm" variant="outline-secondary"><BsFillArrowLeftCircleFill /> Go Back</Button></Link>
                                         </Card.Footer>
                                     </Card>
                                 </CardGroup>

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useHistory, Link } from 'react-router-dom';
+import axios from 'axios';
+import getJwt from '../helper/getJwt';
 import {
     Card,
     Button,
@@ -8,8 +10,11 @@ import {
     CardGroup,
     Spinner
 } from 'react-bootstrap';
-import getJwt from '../helper/getJwt';
-import axios from 'axios';
+import {
+    BsPersonPlusFill,
+    BsBackspaceReverseFill,
+    BsFillExclamationCircleFill,
+} from 'react-icons/bs';
 
 import {
     loginBody,
@@ -82,7 +87,7 @@ export default function ResetPassword() {
                 <Card>
                     <Card.Header style={loginHeader}>Register in Expert Care</Card.Header>
                     <Card.Body>
-                        <Alert dismissible variant='info'>Exclusive for Admin only!</Alert>
+                        <Alert dismissible variant='warning'><BsFillExclamationCircleFill /> <b>Note!</b> Exclusive for Admin only.</Alert>
                         <Form id="registerForm">
                             <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
                                 <Form.Label>Full Name</Form.Label>
@@ -129,9 +134,9 @@ export default function ResetPassword() {
                             >
                                 {isLoading
                                     ? <div><Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> Creating profile...</div>
-                                    : 'Register'}                                
+                                    : <span><BsPersonPlusFill /> Register</span>}                                
                         </Button>
-                        <Link to='/'><Button variant='outline-secondary' size='sm'>Cancel</Button></Link>
+                        <Link to='/'><Button variant='outline-secondary' size='sm'><BsBackspaceReverseFill /> Cancel</Button></Link>
                     </Card.Body>
                 </Card>
             </CardGroup>

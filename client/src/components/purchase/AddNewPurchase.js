@@ -17,6 +17,11 @@ import {
     Alert,
     Badge,
 } from 'react-bootstrap';
+import {
+    BsBasketFill,
+    BsPlusCircleFill,
+    BsFillArrowLeftCircleFill,
+} from 'react-icons/bs';
 
 import {
     homeContainer,
@@ -194,7 +199,7 @@ export default function AddNewPurchase() {
                                 <CardGroup>
                                     <Card>
                                         <Card.Header style={cardStyleHeader}>
-                                            Add New Purchase
+                                            <BsBasketFill /> Add New Purchase
                                         </Card.Header>
                                         <Card.Body>
                                             <Form id="addNewPurForm">
@@ -294,9 +299,9 @@ export default function AddNewPurchase() {
                                                 style={{ marginRight: '5px', float: 'left' }}
                                                 onClick={addNewPurchase}
                                             >
-                                                Add Purchase
+                                                <BsPlusCircleFill /> Add Purchase
                                             </Button>
-                                            <Link to="/home"><Button size="sm" variant="outline-secondary">Go Back</Button></Link>
+                                            <Link to="/home"><Button size="sm" variant="outline-secondary"><BsFillArrowLeftCircleFill />Go Back</Button></Link>
                                         </Card.Footer>
                                     </Card>
                                 </CardGroup>

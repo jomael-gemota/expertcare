@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useHistory, Link } from 'react-router-dom';
+import axios from 'axios';
 import {
     Card,
     Button,
@@ -8,7 +9,10 @@ import {
     CardGroup,
     Spinner
 } from 'react-bootstrap';
-import axios from 'axios';
+import {
+    BsPersonBoundingBox,
+    BsPersonLinesFill,
+} from 'react-icons/bs';
 
 import {
     loginBody,
@@ -88,14 +92,14 @@ export default function Login() {
                         >
                             {isLoading
                                 ? <div><Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> Loading...</div>
-                                : 'Sign In'}
+                                : <span><BsPersonBoundingBox /> Sign In</span>}
                         </Button>
                         <Link
                             to='/register'
                             onClick={ (event) => event.preventDefault() }
                             style={{ cursor: 'not-allowed' }}
                         >
-                            <Button variant="warning" size="sm" disabled>Register</Button>
+                            <Button variant="warning" size="sm" disabled><BsPersonLinesFill /> Register</Button>
                         </Link>
                         <p style={loginForgotPass}>Forgot Password? <Link to='/reset-password'>Click Here!</Link></p>
                     </Card.Body>
