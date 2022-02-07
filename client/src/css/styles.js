@@ -22,7 +22,7 @@ export const loginCard = {
 export const loginHeader = {
     fontSize: '16px',
     color: 'white',
-    backgroundColor: '#2980B9',
+    backgroundColor: '#0D6EFD',
 };
 
 export const loginForgotPass = {
@@ -96,7 +96,7 @@ export const homeContainer = {
 };
 
 export const navBarStyles = {
-    backgroundColor: '#34495E',
+    backgroundColor: '#4C75A3',
     boxShadow: '0px 1px 10px #455A64',
 };
 
@@ -104,7 +104,7 @@ export const navBarBrand = {
     fontFamily: 'Sans-serif',
     fontName: 'Verdana',
     color: '#FFFFFF',
-    marginLeft: '35px',
+    marginLeft: '25px',
 };
 
 export const spanIms = {
@@ -116,16 +116,16 @@ export const spanIms = {
 };
 
 export const invCardHeader = {
-    backgroundColor: '#2980B9',
+    backgroundColor: '#0D6EFD',
     color: 'white',
 };
 
 export const cardTools = {
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#E3F2FD',
 };
 
 export const cardStyleHeader = {
-    backgroundColor: '#2980B9',
+    backgroundColor: '#0D6EFD',
     color: 'white',
 };
 

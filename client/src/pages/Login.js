@@ -34,9 +34,11 @@ export default function Login() {
         axios.post('/api/user/login', credential)
             .then(res => {
                 const { success, name, message, token } = res.data;
+                const username = JSON.parse(res.config.data).username;
                 
                 if (success) {
                     localStorage.setItem('jwt', token);
+                    localStorage.setItem('username', username)
                     history.push('/home');
                 } else setNotif({ header: name, content: message, status: true });
 

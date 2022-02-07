@@ -35,7 +35,7 @@ import {
 import {
     homeContainer,
     invCardHeader,
-    cardTools
+    cardTools,
 } from '../css/styles';
 
 import NavigationBar from '../components/navigations/NavigationBar';
@@ -248,7 +248,7 @@ export default function Home() {
                                             <BsFillLayersFill /> Manage Inventory
                                             <Button
                                                 size="sm"
-                                                variant="info"
+                                                variant="primary"
                                                 disabled={isLoadingRefresh}
                                                 style={{ float: 'right', color: 'white'}}
                                                 onClick={refresh}
