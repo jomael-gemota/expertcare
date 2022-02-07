@@ -12,8 +12,6 @@ import {
     Row,
     Col,
     Nav,
-    Navbar,
-    Container,
     Alert,
     Modal,
     Badge,
@@ -28,12 +26,11 @@ import {
 
 import {
     homeContainer,
-    navBarStyles,
-    navBarBrand,
-    spanIms,
     cardStyleHeader,
     formLabel
 } from '../../css/styles';
+
+import NavigationBar from '../navigations/NavigationBar';
 
 export default function RemovePurchase() {
     const history = useHistory();
@@ -48,7 +45,7 @@ export default function RemovePurchase() {
             .then(res => {
                 let purArr = [];
                 res.data.message.map(pur => {
-                    purArr.push({
+                    return purArr.push({
                         purchaseId: pur.purchaseID,
                         itemName: pur.itemName,
                         itemNumber: pur.itemNumber,
@@ -144,35 +141,12 @@ export default function RemovePurchase() {
     
     const handleModalClose = () => setModalShow(false);
 
-    const logOut = () => {
-        localStorage.clear('jwt');
-        history.push('/');
-    };
-
     return (
         <div style={homeContainer}>
             <Tab.Container id="left-tabs-example" defaultActiveKey="first">
                 <Row>
                     <Col>
-                        <Navbar fixed="top" expand="lg" style={navBarStyles}>
-                            <Container fluid>
-                                <Navbar.Brand href="/home" style={navBarBrand}>
-                                    EXPERT CARE <span style={spanIms}>Inventory Management System Pharmacy</span>
-                                </Navbar.Brand>
-                                <Navbar.Toggle aria-controls="navbarScroll" />
-                                <Navbar.Collapse id="navbarScroll">
-                                    <Nav
-                                        className="me-auto my-2 my-lg-0"
-                                        style={{ maxHeight: '100px' }}
-                                        navbarScroll
-                                    >
-                                    </Nav>
-                                    <span style={{ color: 'white' }}>
-                                        Welcome Staff! | <Button size="sm" variant="danger" onClick={logOut}>Log Out</Button>
-                                    </span>
-                                </Navbar.Collapse>
-                            </Container>
-                        </Navbar>
+                        <NavigationBar />
                     </Col>
                 </Row>
                 <br />

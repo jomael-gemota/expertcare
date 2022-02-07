@@ -1,4 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
+import getJwt from '../helper/getJwt';
+import $ from 'jquery';
+import dt from 'datatables.net';
+import moment from 'moment';
+
 import {
     Tab,
     Nav,
@@ -6,8 +13,6 @@ import {
     Col,
     CardGroup,
     Card,
-    Container,
-    Navbar,
     Tabs,
     Button,
     Table,
@@ -24,29 +29,18 @@ import {
     BsTrashFill,
     BsFileEarmarkExcelFill,
     BsPrinter,
-    BsGearFill,
     BsArrowRepeat,
     BsFillLayersFill,
 } from 'react-icons/bs';
-
-import { useHistory, Link } from 'react-router-dom';
-import axios from 'axios';
-import getJwt from '../helper/getJwt';
-import $ from 'jquery';
-import dt from 'datatables.net';
-import moment from 'moment';
-
 import {
     homeContainer,
-    navBarStyles,
-    navBarBrand,
-    spanIms,
     invCardHeader,
     cardTools
 } from '../css/styles';
 
+import NavigationBar from '../components/navigations/NavigationBar';
+
 export default function Home() {
-    const history = useHistory();
     const [saleList, setSaleList] = useState([]);
     const [prodList, setProdList] = useState([]);
     const [purList, setPurList] = useState([]);
@@ -224,31 +218,12 @@ export default function Home() {
         }, 2000);
     };
 
-    const logOut = () => {
-        localStorage.clear('jwt');
-        history.push('/');
-    };
-
     return (
         <div style={homeContainer}>
             <Tab.Container id="left-tabs-example" defaultActiveKey="first">
                 <Row>
                     <Col>
-                        <Navbar fixed="top" expand="lg" style={navBarStyles}>
-                            <Container fluid>
-                                <Navbar.Brand href="/home" style={navBarBrand}>EXPERT CARE <span style={spanIms}>Inventory Management System Pharmacy</span></Navbar.Brand>
-                                <Navbar.Toggle aria-controls="navbarScroll" />
-                                <Navbar.Collapse id="navbarScroll">
-                                    <Nav
-                                        className="me-auto my-2 my-lg-0"
-                                        style={{ maxHeight: '100px' }}
-                                        navbarScroll
-                                    >
-                                    </Nav>
-                                    <span style={{ color: 'white' }}>Welcome Staff! | <Button size="sm" variant="danger" onClick={logOut}>Log Out</Button></span>
-                                </Navbar.Collapse>
-                            </Container>
-                        </Navbar>
+                        <NavigationBar />
                     </Col>
                 </Row>
                 <br />
