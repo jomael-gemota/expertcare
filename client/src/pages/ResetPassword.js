@@ -28,8 +28,6 @@ export default function ResetPassword() {
     const [isLoading, setLoading] = useState(false);
     const history = useHistory();
 
-    const resetForm = () => document.getElementById("resetPassForm").reset();
-
     const resetPassword = () => {
         setLoading(true);
 
@@ -59,9 +57,13 @@ export default function ResetPassword() {
                     });
             };
         } else {
-            setNotif({ header: '', content: 'Your Username is required.', status: true});
+            setNotif({ header: '', content: 'Username is required.', status: true});
             setLoading(false);
         };
+
+        setTimeout(function() {
+            setNotif({ ...notif, status: false });
+        }, 2000);
     };
 
     return (

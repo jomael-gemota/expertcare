@@ -25,7 +25,8 @@ import {
     BsFileEarmarkExcelFill,
     BsPrinter,
     BsGearFill,
-    BsArrowRepeat
+    BsArrowRepeat,
+    BsFillLayersFill,
 } from 'react-icons/bs';
 
 import { useHistory, Link } from 'react-router-dom';
@@ -269,7 +270,7 @@ export default function Home() {
                                 <CardGroup>
                                     <Card style={{  boxShadow: '0px 1px 10px #999' }}>
                                         <Card.Header style={invCardHeader}>
-                                            <BsGearFill /> Manage Inventory
+                                            <BsFillLayersFill /> Manage Inventory
                                             <Button
                                                 size="sm"
                                                 variant="info"

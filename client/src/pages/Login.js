@@ -46,6 +46,10 @@ export default function Login() {
                 setNotif({ header: err.name, content: err.message, status: true });
                 setLoading(false);
             });
+
+        setTimeout(function() {
+            setNotif({ ...notif, status: false });
+        }, 2000);
     };
 
     return (
@@ -96,10 +100,10 @@ export default function Login() {
                         </Button>
                         <Link
                             to='/register'
-                            onClick={ (event) => event.preventDefault() }
-                            style={{ cursor: 'not-allowed' }}
+                            // onClick={ (event) => event.preventDefault() }
+                            // style={{ cursor: 'not-allowed' }}
                         >
-                            <Button variant="warning" size="sm" disabled><BsPersonLinesFill /> Register</Button>
+                            <Button variant="warning" size="sm"><BsPersonLinesFill /> Register</Button>
                         </Link>
                         <p style={loginForgotPass}>Forgot Password? <Link to='/reset-password'>Click Here!</Link></p>
                     </Card.Body>

@@ -35,18 +35,16 @@ export default function ResetPassword() {
     const [isLoading, setLoading] = useState(false);
     const history = useHistory();
 
-    const resetForm = () => document.getElementById("registerForm").reset();
-
     const register = () => {
         setLoading(true);
 
         const { fullname, username, password, rePassword } = userInfo;
 
         if (fullname === "") {
-            setNotif({ header: '', content: 'Your Fullname is required.', status: 'true' });
+            setNotif({ header: '', content: 'Fullname is required.', status: 'true' });
             setLoading(false);
         } else if (username === "") {
-            setNotif({ header: '', content: 'Your Username is required.', status: 'true' });
+            setNotif({ header: '', content: 'Username is required.', status: 'true' });
             setLoading(false);
         } else if (password !== rePassword) {
             setNotif({ header: '', content: 'Password does not match.', status: 'true' });
@@ -69,7 +67,12 @@ export default function ResetPassword() {
                     setNotif({ header: err.name, content: err.message, status: true });
                     setLoading(false);
                 });
-        }
+        };
+
+        setTimeout(function() {
+            setNotif({ ...notif, status: false });
+        }, 2000);
+        
     };
 
     return (
