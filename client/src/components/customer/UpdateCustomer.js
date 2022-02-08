@@ -27,6 +27,7 @@ import {
 } from '../../css/styles';
 
 import NavigationBar from '../navigations/NavigationBar';
+import SideBar from '../navigations/SideBar';
 
 export default function UpdateCustomer() {
     const history = useHistory();
@@ -132,14 +133,7 @@ export default function UpdateCustomer() {
                 <br />
                 <Row style={{ padding: '3%' }}>
                     <Col sm={2}>
-                        <Nav variant="pills" className="flex-column">
-                            <Nav.Item>
-                                <Nav.Link eventKey="first">Inventory</Nav.Link>
-                            </Nav.Item>
-                            <Nav.Item>
-                                <Nav.Link eventKey="second" disabled>Services</Nav.Link>
-                            </Nav.Item>
-                        </Nav>
+                        <SideBar />
                     </Col>
                     <Col sm={6}>
                         <Tab.Content>

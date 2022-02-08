@@ -39,6 +39,7 @@ import {
 } from '../css/styles';
 
 import NavigationBar from '../components/navigations/NavigationBar';
+import SideBar from '../components/navigations/SideBar';
 
 export default function Home() {
     const [saleList, setSaleList] = useState([]);
@@ -230,14 +231,7 @@ export default function Home() {
                 <br />
                 <Row style={{ padding: '3%' }}>
                     <Col sm={2}>
-                        <Nav variant="pills" className="flex-column">
-                            <Nav.Item>
-                                <Nav.Link eventKey="first">Inventory</Nav.Link>
-                            </Nav.Item>
-                            <Nav.Item>
-                                <Nav.Link eventKey="second" disabled>Services</Nav.Link>
-                            </Nav.Item>
-                        </Nav>
+                        <SideBar />
                     </Col>
                     <Col sm={10}>
                         <Tab.Content>
@@ -248,9 +242,8 @@ export default function Home() {
                                             <BsFillLayersFill /> Manage Inventory
                                             <Button
                                                 size="sm"
-                                                variant="primary"
                                                 disabled={isLoadingRefresh}
-                                                style={{ float: 'right', color: 'white'}}
+                                                style={{ float: 'right', color: 'white', backgroundColor: '#2C3E50', border: '1px solid #2C3E50'}}
                                                 onClick={refresh}
                                             >
                                                 {isLoadingRefresh
