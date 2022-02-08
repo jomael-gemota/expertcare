@@ -12,7 +12,6 @@ app.use(express.json());
 app.use('/api/user', userRouter);
 app.use('/api/inv', invRouter);
 
-//set static folder    
 app.use(express.static('client/build'));
 app.get('*', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));    

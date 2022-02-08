@@ -3,7 +3,7 @@ const pool = require('../../config/db');
 module.exports = {
     getAllSales: callback => {
         pool.query(
-            `SELECT * FROM shop_inventory.sale`,
+            `SELECT * FROM expertcare.sale`,
             [],
             (error, results, fields) => {
                 if (error) {
@@ -17,7 +17,7 @@ module.exports = {
 
     getAllProducts: callback => {
         pool.query(
-            `SELECT * FROM shop_inventory.item`,
+            `SELECT * FROM expertcare.item`,
             [],
             (error, results, fields) => {
                 if (error) {
@@ -31,7 +31,7 @@ module.exports = {
 
     getAllPurchase: callback => {
         pool.query(
-            `SELECT * FROM shop_inventory.purchase`,
+            `SELECT * FROM expertcare.purchase`,
             [],
             (error, results, fields) => {
                 if (error) {
@@ -45,7 +45,7 @@ module.exports = {
 
     getAllVendors: callback => {
         pool.query(
-            `SELECT * FROM shop_inventory.vendor`,
+            `SELECT * FROM expertcare.vendor`,
             [],
             (error, results, fields) => {
                 if (error) {
@@ -59,7 +59,7 @@ module.exports = {
 
     getCustomerDatabase: callback => {
         pool.query(
-            `SELECT * FROM shop_inventory.customer`,
+            `SELECT * FROM expertcare.customer`,
             [],
             (error, results, fields) => {
                 if (error) {
@@ -81,7 +81,7 @@ module.exports = {
         });
 
         pool.query(
-            `INSERT INTO shop_inventory.sale (customerName, customerId, itemName, itemNumber, unitPrice, quantity, discount, saleDate) VALUES ?`,
+            `INSERT INTO expertcare.sale (customerName, customerId, itemName, itemNumber, unitPrice, quantity, discount, saleDate) VALUES ?`,
             [saleArr],
             (error, results, fields) => {
                 if (error) {
@@ -95,7 +95,7 @@ module.exports = {
 
     updateStockByProdId: (data, callback) => {
         pool.query(
-            `UPDATE shop_inventory.item SET stock = ? WHERE productID = ?`,
+            `UPDATE expertcare.item SET stock = ? WHERE productID = ?`,
             [
                 data.stock,
                 data.productId
@@ -112,7 +112,7 @@ module.exports = {
 
     updateSaleBySaleId: (data, callback) => {
         pool.query(
-            `UPDATE shop_inventory.sale SET customerName = ?, itemName = ?, itemNumber = ?, quantity = ?, discount = ?, unitPrice = ? WHERE saleID = ?`,
+            `UPDATE expertcare.sale SET customerName = ?, itemName = ?, itemNumber = ?, quantity = ?, discount = ?, unitPrice = ? WHERE saleID = ?`,
             [
                 data.customerName,
                 data.itemName,
@@ -134,7 +134,7 @@ module.exports = {
 
     deleteSaleBySaleId: (data, callback) => {
         pool.query(
-            `DELETE FROM shop_inventory.sale WHERE saleID = ?`,
+            `DELETE FROM expertcare.sale WHERE saleID = ?`,
             [data.id],
             (error, results, fields) => {
                 if (error) {
@@ -148,7 +148,7 @@ module.exports = {
 
     addNewProduct: (data, callback) => {
         pool.query(
-            `INSERT INTO shop_inventory.item (itemNumber, itemName, units, discount, stock, unitPrice, description) VALUES (?,?,?,?,?,?,?)`,
+            `INSERT INTO expertcare.item (itemNumber, itemName, units, discount, stock, unitPrice, description) VALUES (?,?,?,?,?,?,?)`,
             [
                 data.itemNumber,
                 data.itemName,
@@ -170,7 +170,7 @@ module.exports = {
 
     deleteProdByProdId: (data, callback) => {
         pool.query(
-            `DELETE FROM shop_inventory.item WHERE productID = ?`,
+            `DELETE FROM expertcare.item WHERE productID = ?`,
             [data.id],
             (error, results, fields) => {
                 if (error) {
@@ -184,7 +184,7 @@ module.exports = {
 
     updateProductById: (data, callback) => {
         pool.query(
-            `UPDATE shop_inventory.item SET itemName = ?, itemNumber = ?, units = ?, unitPrice = ?, stock = ?, discount = ?, description = ? WHERE productID = ?`,
+            `UPDATE expertcare.item SET itemName = ?, itemNumber = ?, units = ?, unitPrice = ?, stock = ?, discount = ?, description = ? WHERE productID = ?`,
             [
                 data.itemName,
                 data.itemNumber,
@@ -207,7 +207,7 @@ module.exports = {
 
     addNewPurchase: (data, callback) => {
         pool.query(
-            `INSERT INTO shop_inventory.purchase (itemNumber, itemName, unitPrice, quantity, vendorName, vendorID, purchaseDate) VALUES (?,?,?,?,?,?,?)`,
+            `INSERT INTO expertcare.purchase (itemNumber, itemName, unitPrice, quantity, vendorName, vendorID, purchaseDate) VALUES (?,?,?,?,?,?,?)`,
             [
                 data.itemNumber,
                 data.itemName,
@@ -229,7 +229,7 @@ module.exports = {
 
     updatePurchaseById: (data, callback) => {
         pool.query(
-            `UPDATE shop_inventory.purchase SET itemName = ?, itemNumber = ?, unitPrice = ?, quantity = ?, vendorName = ?, vendorID = ?, purchaseDate = ? WHERE purchaseID = ?`,
+            `UPDATE expertcare.purchase SET itemName = ?, itemNumber = ?, unitPrice = ?, quantity = ?, vendorName = ?, vendorID = ?, purchaseDate = ? WHERE purchaseID = ?`,
             [
                 data.itemName,
                 data.itemNumber,
@@ -252,7 +252,7 @@ module.exports = {
 
     deletePurchaseById: (data, callback) => {
         pool.query(
-            `DELETE FROM shop_inventory.purchase WHERE purchaseID = ?`,
+            `DELETE FROM expertcare.purchase WHERE purchaseID = ?`,
             [data.id],
             (error, results, fields) => {
                 if (error) {
@@ -266,7 +266,7 @@ module.exports = {
 
     addNewVendor: (data, callback) => {
         pool.query(
-            `INSERT INTO shop_inventory.vendor (fullName, email, mobile, phone2, address, city, district) VALUES (?,?,?,?,?,?,?)`,
+            `INSERT INTO expertcare.vendor (fullName, email, mobile, phone2, address, city, district) VALUES (?,?,?,?,?,?,?)`,
             [
                 data.fullName,
                 data.email,
@@ -288,7 +288,7 @@ module.exports = {
 
     updateVendorById: (data, callback) => {
         pool.query(
-            `UPDATE shop_inventory.vendor SET fullName = ?, email = ?, mobile = ?, phone2 = ?, address = ?, city = ?, district = ? WHERE vendorID = ?`,
+            `UPDATE expertcare.vendor SET fullName = ?, email = ?, mobile = ?, phone2 = ?, address = ?, city = ?, district = ? WHERE vendorID = ?`,
             [
                 data.fullName,
                 data.email,
@@ -311,7 +311,7 @@ module.exports = {
 
     deleteVendorById: (data, callback) => {
         pool.query(
-            `DELETE FROM shop_inventory.vendor WHERE vendorID = ?`,
+            `DELETE FROM expertcare.vendor WHERE vendorID = ?`,
             [data.id],
             (error, results, fields) => {
                 if (error) {
@@ -325,7 +325,7 @@ module.exports = {
 
     addNewCustomer: (data, callback) => {
         pool.query(
-            `INSERT INTO shop_inventory.customer (fullName, illness, email, mobile, phone2, address, city, district) VALUES (?,?,?,?,?,?,?,?)`,
+            `INSERT INTO expertcare.customer (fullName, illness, email, mobile, phone2, address, city, district) VALUES (?,?,?,?,?,?,?,?)`,
             [
                 data.fullName,
                 data.illness,
@@ -348,7 +348,7 @@ module.exports = {
 
     updateCustomerById: (data, callback) => {
         pool.query(
-            `UPDATE shop_inventory.customer SET fullName = ?, illness = ?, email = ?, mobile = ?, phone2 = ?, address = ?, city = ?, district = ? WHERE customerID = ?`,
+            `UPDATE expertcare.customer SET fullName = ?, illness = ?, email = ?, mobile = ?, phone2 = ?, address = ?, city = ?, district = ? WHERE customerID = ?`,
             [
                 data.fullName,
                 data.illness,
@@ -372,7 +372,7 @@ module.exports = {
 
     deleteCustomerById: (data, callback) => {
         pool.query(
-            `DELETE FROM shop_inventory.customer WHERE customerID = ?`,
+            `DELETE FROM expertcare.customer WHERE customerID = ?`,
             [data.id],
             (error, results, fields) => {
                 if (error) {

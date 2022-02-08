@@ -3,7 +3,7 @@ const pool = require('../../config/db');
 module.exports = {
     create: (data, callback) => {
         pool.query(
-            `INSERT INTO shop_inventory.user (fullName, username, password, status)
+            `INSERT INTO expertcare.user (fullName, username, password, status)
             VALUES (?,?,?,?)`,
             [
                 data.fullname,
@@ -23,7 +23,7 @@ module.exports = {
 
     getUsers: callback => {
         pool.query(
-            `SELECT * FROM shop_inventory.user`,
+            `SELECT * FROM expertcare.user`,
             [],
             (error, results, fields) => {
                 if (error) {
@@ -37,7 +37,7 @@ module.exports = {
 
     getUserById: (id, callback) => {
         pool.query(
-            `SELECT * FROM shop_inventory.user WHERE userID = ?`,
+            `SELECT * FROM expertcare.user WHERE userID = ?`,
             [id],
             (error, results, fields) => {
                 if (error) {
@@ -51,7 +51,7 @@ module.exports = {
 
     updateUserById: (data, callback) => {
         pool.query(
-            `UPDATE shop_inventory.user SET fullName = ?, username = ?, password = ?, status = ? WHERE userID = ?`,
+            `UPDATE expertcare.user SET fullName = ?, username = ?, password = ?, status = ? WHERE userID = ?`,
             [
                 data.fullname,
                 data.username,
@@ -71,7 +71,7 @@ module.exports = {
 
     updatePasswordByUsername: (data, callback) => {
         pool.query(
-            `UPDATE shop_inventory.user SET password = ? WHERE username = ?`,
+            `UPDATE expertcare.user SET password = ? WHERE username = ?`,
             [
                 data.newPassword,
                 data.username
@@ -88,7 +88,7 @@ module.exports = {
 
     deleteUserById: (data, callback) => {
         pool.query(
-            `DELETE FROM shop_inventory.user WHERE userID = ?`,
+            `DELETE FROM expertcare.user WHERE userID = ?`,
             [data.id],
             (error, results, fields) => {
                 if (error) {
@@ -101,7 +101,7 @@ module.exports = {
 
     getUserByUsername: (username, callback) => {
         pool.query(
-            `SELECT * FROM shop_inventory.user WHERE username = ?`,
+            `SELECT * FROM expertcare.user WHERE username = ?`,
             [username],
             (error, results, fields) => {
                 if (error) {
@@ -114,7 +114,7 @@ module.exports = {
 
     getUserDetailsByUsername: (data, callback) => {
         pool.query(
-            `SELECT * FROM shop_inventory.user WHERE username = ?`,
+            `SELECT * FROM expertcare.user WHERE username = ?`,
             [
                 data.username
             ],
