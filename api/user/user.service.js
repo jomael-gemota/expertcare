@@ -110,5 +110,21 @@ module.exports = {
                 return callback(null, results[0]);
             }
         );
-    }
+    },
+
+    getUserDetailsByUsername: (data, callback) => {
+        pool.query(
+            `SELECT * FROM shop_inventory.user WHERE username = ?`,
+            [
+                data.username
+            ],
+            (error, results, fields) => {
+                if (error) {
+                    callback(error);
+                }
+
+                return callback(null, results[0]);
+            }
+        );
+    },
 };

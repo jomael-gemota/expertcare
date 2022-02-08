@@ -5,6 +5,7 @@ const {
     updateUserById,
     deleteUserById,
     updatePasswordByUsername,
+    getUserDetailsByUsername,
     login,
 } = require('./user.controller');
 
@@ -14,6 +15,7 @@ const { checkToken } = require('../../auth/token_validation');
 router.post('/createUser', createUser);
 router.get('/getUsers', checkToken, getUsers);
 router.get('/getUserById/:id', checkToken, getUserById);
+router.get('/getUserDetailsByUsername', getUserDetailsByUsername);
 router.patch('/updateUserById', checkToken, updateUserById);
 router.delete('/deleteUserById', checkToken, deleteUserById);
 router.patch('/updatePasswordByUsername', updatePasswordByUsername);

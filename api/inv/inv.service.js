@@ -371,7 +371,6 @@ module.exports = {
     },
 
     deleteCustomerById: (data, callback) => {
-        console.log(data)
         pool.query(
             `DELETE FROM shop_inventory.customer WHERE customerID = ?`,
             [data.id],

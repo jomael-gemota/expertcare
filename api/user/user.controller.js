@@ -7,6 +7,7 @@ const {
     deleteUserById,
     getUserByUsername,
     updatePasswordByUsername,
+    getUserDetailsByUsername,
 } = require('./user.service');
 const { genSaltSync, hashSync, compareSync } = require('bcrypt');
 const { sign } = require('jsonwebtoken');
@@ -187,6 +188,24 @@ module.exports = {
                     message: "You have entered an incorrect password."
                 });
             };
+        });
+    },
+
+    getUserDetailsByUsername: (req, res) => {
+        const query = req.query;
+
+        getUserDetailsByUsername(query, (error, results) => {
+            if (error) {
+                return res.json({
+                    success: 0,
+                    message: error
+                });
+            };
+
+            return res.json({
+                success: 1,
+                message: results
+            });
         });
     },
 };
