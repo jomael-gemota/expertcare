@@ -38,6 +38,7 @@ export default function AddNewSale() {
     const [cxList, setCxList] = useState([]);
     const [addedCx, setAddedCx] = useState([]);
     const [notif, setNotif] = useState({ status: false });
+    const [notifForm, setNotifForm] = useState({ status: false });
     const [amountDue, setAmountDue] = useState(0);
     const [addedSaleList, setAddedSaleList] = useState([]);
     const [itemDetails, setItemDetails] = useState({});
@@ -105,11 +106,11 @@ export default function AddNewSale() {
     };
 
     const handleItemNameChange = (e) => {
-        let objCxDetails = {};
+        let objProdDetails = {};
 
         prodList.find(x => {
             if (x.itemName === e.target.value) {
-                objCxDetails = {
+                objProdDetails = {
                     productId: x.prodId,
                     itemName: x.itemName,
                     itemNumber: x.itemNumber,
@@ -119,7 +120,7 @@ export default function AddNewSale() {
                 };
             };
 
-            return setItemDetails(objCxDetails);
+            return setItemDetails(objProdDetails);
         });
 
         if (e.target.value === "") {
@@ -143,48 +144,51 @@ export default function AddNewSale() {
         } = itemDetails;
         let tempDisc;
 
-        if (itemName !== undefined && qty !== undefined && qty !== 0) {
-            let totalPrice = unitPrice * qty;
-            let partAmountDue = totalPrice + amountDue;
+        if (itemName !== undefined && itemName !== '') {
+            if (qty !== undefined && qty !== 0 && qty !== '' && qty !== '0' && qty >= 1 && qty <= stock) {
+                let totalPrice = unitPrice * qty;
+                let partAmountDue = totalPrice + amountDue;
 
-            if (discount === undefined) {
-                tempDisc = 0;
-            } else tempDisc = discount;
+                if (discount === undefined) {
+                    tempDisc = 0;
+                } else tempDisc = discount;
 
-            setAmountDue(partAmountDue);
-            setAddedSaleList([
-                ...addedSaleList,
-                {
-                    productId: productId,
-                    stock: stock,
-                    customerName: addedCx.fullName,
-                    customerId: addedCx.customerId,
-                    itemName: itemName,
-                    itemNumber: itemNumber,
-                    unitPrice: unitPrice,
-                    qty: qty,
-                    discount: tempDisc,
-                    saleDate: new Date()
-                }
-            ]);
-            
-            resetForm();
-        };
+                setAmountDue(partAmountDue);
+                setAddedSaleList([
+                    ...addedSaleList,
+                    {
+                        productId: productId,
+                        stock: stock,
+                        customerName: addedCx.fullName,
+                        customerId: addedCx.customerId,
+                        itemName: itemName,
+                        itemNumber: itemNumber,
+                        unitPrice: unitPrice,
+                        qty: qty,
+                        discount: tempDisc,
+                        saleDate: new Date()
+                    }
+                ]);
+
+                handleUpdateStock(productId);
+                
+                resetForm();
+            } else setNotifForm({ status: true, variant: 'warning', message: 'Incorrect Quantity.' });
+        } else setNotifForm({ status: true, variant: 'warning', message: 'Item Name is Required.' });
+
+        setTimeout(function() {
+            setNotifForm({ ...notifForm, status: false });
+        }, 2000);
     };
 
-    const handleQtyChange = (e) => {
-        const currStock = Number(itemDetails.stock || 0);
-        const currValue = Number(e.target.value || 0)
-        const currQty = Number(itemDetails.qty || 0)
-        const qtyDiff = Math.abs(currQty - currValue)
-        
-        let presStock = currQty > currValue
-            ? currStock + qtyDiff
-            : currStock - qtyDiff;
-        if (presStock < 0) {
-            return
-        }
-        setItemDetails({ ...itemDetails, qty: currValue, stock: presStock });
+    const handleUpdateStock = (id) => {
+        prodList.find(prod => {
+            if (prod.prodId === Number(id)) {
+                console.log(prod.itemNumber);
+                // how to update the stock for this product
+                // i think find the index then update the stock prop
+            };
+        });
     };
 
     const handleRemoveSale = (e, itemName, deductAmount) => {
@@ -277,6 +281,14 @@ export default function AddNewSale() {
                                         </Card.Header>
                                         <Card.Body>
                                             <Form>
+                                                <Alert
+                                                    variant={notifForm.variant}
+                                                    show={notifForm.status}
+                                                    onClose={() => setNotifForm({ status: false })}
+                                                    dismissible
+                                                >
+                                                    {notifForm.message}
+                                                </Alert>
                                                 <Row>
                                                     <Form.Group as={Col} className="mb-3">
                                                         <Form.Label style={formLabel}>Customer Name <Badge bg="danger">Required</Badge></Form.Label>
@@ -331,8 +343,7 @@ export default function AddNewSale() {
                                                             placeholder=""
                                                             min={0}
                                                             value={itemDetails.qty}
-                                                            disabled={itemDetails.stock > 0 ? false : true}
-                                                            onChange={e => handleQtyChange(e)}
+                                                            onChange={e => setItemDetails({ ...itemDetails, qty: e.target.value })}
                                                         />
                                                     </Form.Group>
                                                     <Form.Group as={Col} sm={3} className="mb-3">
