@@ -113,7 +113,7 @@ export default function AddNewCustomer() {
                                                         />
                                                     </Form.Group>
                                                     <Form.Group as={Col} sm={6} className="mb-3">
-                                                        <Form.Label style={formLabel}>Illness <Badge bg="danger">Required</Badge></Form.Label>
+                                                        <Form.Label style={formLabel}>Chief Complaint <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
                                                             placeholder=""

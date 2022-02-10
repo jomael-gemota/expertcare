@@ -193,7 +193,7 @@ export default function RemoveVendor() {
                                                         </datalist>
                                                     </Form.Group>
                                                     <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label style={formLabel}>Full Name <Badge bg="danger">Required</Badge></Form.Label>
+                                                        <Form.Label style={formLabel}>Full Name <Badge bg="secondary">Generated</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
                                                             placeholder=""
@@ -207,7 +207,7 @@ export default function RemoveVendor() {
                                             <Form>
                                                 <Row className="mb-3">
                                                     <Form.Group as={Col} sm={4} className="mb-3">
-                                                        <Form.Label style={formLabel}>Email Address <Badge bg="info">Optional</Badge></Form.Label>
+                                                        <Form.Label style={formLabel}>Email Address <Badge bg="secondary">Generated</Badge></Form.Label>
                                                         <Form.Control
                                                             type="email"
                                                             placeholder=""
@@ -218,7 +218,7 @@ export default function RemoveVendor() {
                                                         />
                                                     </Form.Group>
                                                     <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label style={formLabel}>Mobile No. <Badge bg="info">Optional</Badge></Form.Label>
+                                                        <Form.Label style={formLabel}>Mobile No. <Badge bg="secondary">Generated</Badge></Form.Label>
                                                         <Form.Control
                                                             type="number"
                                                             placeholder=""
@@ -228,7 +228,7 @@ export default function RemoveVendor() {
                                                         />
                                                     </Form.Group>
                                                     <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label style={formLabel}>Phone No. <Badge bg="info">Optional</Badge></Form.Label>
+                                                        <Form.Label style={formLabel}>Phone No. <Badge bg="secondary">Generated</Badge></Form.Label>
                                                         <Form.Control
                                                             type="number"
                                                             placeholder=""
@@ -241,7 +241,7 @@ export default function RemoveVendor() {
                                                 <hr />
                                                 <Row className="mb-3">
                                                     <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label style={formLabel}>Full Address <Badge bg="danger">Required</Badge></Form.Label>
+                                                        <Form.Label style={formLabel}>Full Address <Badge bg="secondary">Generated</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
                                                             placeholder=""
@@ -253,7 +253,7 @@ export default function RemoveVendor() {
                                                 </Row>
                                                 <Row className="mb-3">
                                                     <Form.Group as={Col} sm={6} className="mb-3">
-                                                        <Form.Label style={formLabel}>City <Badge bg="info">Optional</Badge></Form.Label>
+                                                        <Form.Label style={formLabel}>City <Badge bg="secondary">Generated</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
                                                             placeholder=""
@@ -263,7 +263,7 @@ export default function RemoveVendor() {
                                                         />
                                                     </Form.Group>
                                                     <Form.Group as={Col} sm={6} className="mb-3">
-                                                        <Form.Label style={formLabel}>District <Badge bg="danger">Required</Badge></Form.Label>
+                                                        <Form.Label style={formLabel}>District <Badge bg="secondary">Generated</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
                                                             placeholder=""
