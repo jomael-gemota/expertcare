@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
-import moment from 'moment';
 import getJwt from '../../helper/getJwt';
 import {
     Card,
@@ -11,7 +10,6 @@ import {
     Tab,
     Row,
     Col,
-    Nav,
     Alert,
     Badge,
 } from 'react-bootstrap';
@@ -31,7 +29,6 @@ import NavigationBar from '../navigations/NavigationBar';
 import SideBar from '../navigations/SideBar';
 
 export default function AddNewPurchase() {
-    const history = useHistory();
     const [notif, setNotif] = useState({ status: false });
     const [purDetails, setPurDetails] = useState({});
     const [prodList, setProdList] = useState([]);
@@ -63,7 +60,7 @@ export default function AddNewPurchase() {
             .then(res => {
                 let vendArr = [];
                 res.data.message.map(vendor => {
-                    vendArr.push({ vendorId: vendor.vendorID, vendorName: vendor.fullName });
+                    return vendArr.push({ vendorId: vendor.vendorID, vendorName: vendor.fullName });
                 });
     
                 return setVendList(vendArr);
@@ -99,15 +96,19 @@ export default function AddNewPurchase() {
     };
 
     const handleItemNameChange = (e) => {
+        let objPurDetails = {};
         setPurDetails({ ...purDetails, itemName: e.target.value });
+
         prodList.find(x => {
             if (x.itemName === e.target.value) {
-                setPurDetails({
+                objPurDetails = {
                     ...purDetails,
                     itemName: x.itemName,
                     itemNumber: x.itemNumber
-                });
+                };
             };
+
+            return setPurDetails(objPurDetails);
         });
 
         if (e.target.value === "") {
@@ -123,15 +124,19 @@ export default function AddNewPurchase() {
     };
 
     const handleVendorNameChange = (e) => {
+        let objPurDetails = {};
         setPurDetails({ ...purDetails, vendorName: e.target.value });
-        vendList.find(x => {
+
+        return vendList.find(x => {
             if (x.vendorName === e.target.value) {
-                setPurDetails({
+                objPurDetails = {
                     ...purDetails,
                     vendorName: x.vendorName,
                     vendorId: x.vendorId
-                });
+                };
             };
+
+            return setPurDetails(objPurDetails);
         });
     };
 

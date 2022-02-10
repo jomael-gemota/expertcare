@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import getJwt from '../../helper/getJwt';
 import {
@@ -10,7 +10,6 @@ import {
     Tab,
     Row,
     Col,
-    Nav,
     Alert,
     Badge,
 } from 'react-bootstrap';
@@ -30,7 +29,6 @@ import NavigationBar from '../navigations/NavigationBar';
 import SideBar from '../navigations/SideBar';
 
 export default function UpdateCustomer() {
-    const history = useHistory();
     const [notif, setNotif] = useState({ status: false });
     const [cxDetails, setCxDetails] = useState({});
     const [cxList, setCxList] = useState([]);
@@ -86,10 +84,13 @@ export default function UpdateCustomer() {
     };
 
     const handleCustomerIdChange = (e) => {
+        let objCxDetails = {};
+
         setCxDetails({ ...cxDetails, customerId: e.target.value });
+
         cxList.find(x => {
             if (x.customerId === Number(e.target.value)) {
-                setCxDetails({
+                objCxDetails = {
                     customerId: x.customerId,
                     fullName: x.fullName,
                     illness: x.illness,
@@ -99,8 +100,10 @@ export default function UpdateCustomer() {
                     address: x.address,
                     city: x.city,
                     district: x.district
-                });
+                };
             };
+
+            return setCxDetails(objCxDetails);
         });
 
         if (e.target.value === "") resetForm();

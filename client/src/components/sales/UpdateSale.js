@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import moment from 'moment';
 import getJwt from '../../helper/getJwt';
@@ -11,7 +11,6 @@ import {
     Tab,
     Row,
     Col,
-    Nav,
     Alert,
     Badge,
 } from 'react-bootstrap';
@@ -31,7 +30,6 @@ import NavigationBar from '../navigations/NavigationBar';
 import SideBar from '../navigations/SideBar';
 
 export default function UpdateSale() {
-    const history = useHistory();
     const [salesList, setSalesList] = useState([]);
     const [saleDetails, setSaleDetails] = useState([]);
     const [cxList, setCxList] = useState([]);

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import moment from 'moment';
 import getJwt from '../../helper/getJwt';
@@ -11,7 +11,6 @@ import {
     Tab,
     Row,
     Col,
-    Nav,
     Alert,
     Modal,
     Badge,
@@ -34,7 +33,6 @@ import NavigationBar from '../navigations/NavigationBar';
 import SideBar from '../navigations/SideBar';
 
 export default function RemovePurchase() {
-    const history = useHistory();
     const [notif, setNotif] = useState({ status: false });
     const [purDetails, setPurDetails] = useState({});
     const [purList, setPurList] = useState([]);
@@ -97,10 +95,12 @@ export default function RemovePurchase() {
     };
 
     const handlePurchaseIDChange = (e) => {
+        let objPurDetails = {};
         setPurDetails({ ...purDetails, purchaseId: e.target.value });
+
         purList.find(x => {
             if (x.purchaseId === Number(e.target.value)) {
-                setPurDetails({
+                objPurDetails = {
                     purchaseId: x.purchaseId,
                     itemName: x.itemName,
                     itemNumber: x.itemNumber,
@@ -109,21 +109,23 @@ export default function RemovePurchase() {
                     vendorId: x.vendorId,
                     vendorName: x.vendorName,
                     purchaseDate: moment(x.purchaseDate).format('YYYY-MM-DD')
-                });
+                };
             };
 
-            if (e.target.value === "") {
-                setPurDetails({
-                    itemName: '',
-                    itemNumber: '',
-                    quantity: '',
-                    unitPrice: '',
-                    vendorId: '',
-                    vendorName: '',
-                    purchaseDate: ''
-                });
-            };
+            return setPurDetails(objPurDetails);
         });
+
+        if (e.target.value === "") {
+            setPurDetails({
+                itemName: '',
+                itemNumber: '',
+                quantity: '',
+                unitPrice: '',
+                vendorId: '',
+                vendorName: '',
+                purchaseDate: ''
+            });
+        };
     };
 
     const resetForm = () => {

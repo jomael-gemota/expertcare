@@ -11,7 +11,6 @@ import {
     Tab,
     Row,
     Col,
-    Nav,
     Table,
     Alert,
     Badge,
@@ -91,28 +90,36 @@ export default function AddNewSale() {
     }, []);
 
     const handleCustomerNameChange = (e) => {
+        let objCxDetails = {};
+
         cxList.find(x => {
             if (x.fullName === e.target.value) {
-                setAddedCx({
+                objCxDetails = {
                     customerId: x.customerId,
                     fullName: x.fullName
-                });
+                };
             };
+
+            return setAddedCx(objCxDetails);
         });
     };
 
     const handleItemNameChange = (e) => {
+        let objCxDetails = {};
+
         prodList.find(x => {
             if (x.itemName === e.target.value) {
-                setItemDetails({
+                objCxDetails = {
                     productId: x.prodId,
                     itemName: x.itemName,
                     itemNumber: x.itemNumber,
                     unitPrice: x.unitPrice,
                     stock: x.stock,
                     qty: 0
-                });
+                };
             };
+
+            return setItemDetails(objCxDetails);
         });
 
         if (e.target.value === "") {

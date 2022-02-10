@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import getJwt from '../../helper/getJwt';
 import {
@@ -10,7 +10,6 @@ import {
     Tab,
     Row,
     Col,
-    Nav,
     Alert,
     Modal,
     Badge,
@@ -33,7 +32,6 @@ import NavigationBar from '../navigations/NavigationBar';
 import SideBar from '../navigations/SideBar';
 
 export default function RemoveProduct() {
-    const history = useHistory();
     const [prodList, setProdList] = useState([]);
     const [prodDetails, setProdDetails] = useState([]);
     const [notif, setNotif] = useState({ status: false });
@@ -100,10 +98,12 @@ export default function RemoveProduct() {
     };
 
     const handleProductIdChange = (e) => {
+        let objProdDetails = {};
         setProdDetails({ ...prodDetails, productId: e.target.value });
+
         prodList.find(x => {
             if (x.productId === Number(e.target.value)) {
-                setProdDetails({
+                objProdDetails = {
                     ...prodDetails,
                     productId: x.productId,
                     itemName: x.itemName,
@@ -113,8 +113,10 @@ export default function RemoveProduct() {
                     stock: x.stock,
                     discount: x.discount,
                     description: x.description
-                });
+                };
             };
+
+            return setProdDetails(objProdDetails);
         });
 
         if (e.target.value === "") {

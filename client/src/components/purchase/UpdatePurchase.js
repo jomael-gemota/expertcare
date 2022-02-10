@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import moment from 'moment';
 import getJwt from '../../helper/getJwt';
@@ -11,7 +11,6 @@ import {
     Tab,
     Row,
     Col,
-    Nav,
     Alert,
     Badge,
 } from 'react-bootstrap';
@@ -31,7 +30,6 @@ import NavigationBar from '../navigations/NavigationBar';
 import SideBar from '../navigations/SideBar';
 
 export default function UpdatePurchase() {
-    const history = useHistory();
     const [notif, setNotif] = useState({ status: false });
     const [purDetails, setPurDetails] = useState({});
     const [prodList, setProdList] = useState([]);
@@ -64,7 +62,7 @@ export default function UpdatePurchase() {
             .then(res => {
                 let vendArr = [];
                 res.data.message.map(vendor => {
-                    vendArr.push({ vendorId: vendor.vendorID, vendorName: vendor.fullName });
+                    return vendArr.push({ vendorId: vendor.vendorID, vendorName: vendor.fullName });
                 });
     
                 return setVendList(vendArr);
@@ -122,9 +120,10 @@ export default function UpdatePurchase() {
 
     const handlePurchaseIDChange = (e) => {
         setPurDetails({ ...purDetails, purchaseId: e.target.value });
+
         purList.find(x => {
             if (x.purchaseId === Number(e.target.value)) {
-                setPurDetails({
+                return setPurDetails({
                     purchaseId: x.purchaseId,
                     itemName: x.itemName,
                     itemNumber: x.itemNumber,
@@ -135,26 +134,26 @@ export default function UpdatePurchase() {
                     purchaseDate: moment(x.purchaseDate).format('YYYY-MM-DD')
                 });
             };
-
-            if (e.target.value === "") {
-                setPurDetails({
-                    itemName: '',
-                    itemNumber: '',
-                    quantity: '',
-                    unitPrice: '',
-                    vendorId: '',
-                    vendorName: '',
-                    purchaseDate: ''
-                });
-            };
         });
+
+        if (e.target.value === "") {
+            setPurDetails({
+                itemName: '',
+                itemNumber: '',
+                quantity: '',
+                unitPrice: '',
+                vendorId: '',
+                vendorName: '',
+                purchaseDate: ''
+            });
+        };
     };
 
     const handleItemNameChange = (e) => {
         setPurDetails({ ...purDetails, itemName: e.target.value });
-        prodList.find(x => {
+        return prodList.find(x => {
             if (x.itemName === e.target.value) {
-                setPurDetails({
+                return setPurDetails({
                     ...purDetails,
                     itemName: x.itemName,
                     itemNumber: x.itemNumber
@@ -165,9 +164,9 @@ export default function UpdatePurchase() {
 
     const handleVendorNameChange = (e) => {
         setPurDetails({ ...purDetails, vendorName: e.target.value });
-        vendList.find(x => {
+        return vendList.find(x => {
             if (x.vendorName === e.target.value) {
-                setPurDetails({
+                return setPurDetails({
                     ...purDetails,
                     vendorName: x.vendorName,
                     vendorId: x.vendorId

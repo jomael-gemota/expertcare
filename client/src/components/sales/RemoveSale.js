@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import moment from 'moment';
 import getJwt from '../../helper/getJwt';
@@ -11,7 +11,6 @@ import {
     Tab,
     Row,
     Col,
-    Nav,
     Alert,
     Modal,
     Badge,
@@ -34,7 +33,6 @@ import NavigationBar from '../navigations/NavigationBar';
 import SideBar from '../navigations/SideBar';
 
 export default function RemoveSale() {
-    const history = useHistory();
     const [salesList, setSalesList] = useState([]);
     const [saleDetails, setSaleDetails] = useState([]);
     const [notif, setNotif] = useState({ status: false });
@@ -104,9 +102,11 @@ export default function RemoveSale() {
     };
     
     const handleSaleIdChange = (e) => {
+        let objSaleDetails = {};
+
         salesList.find(x => {
             if (x.saleId === Number(e.target.value)) {
-                setSaleDetails({
+                objSaleDetails = {
                     saleId: x.saleId,
                     customerName: x.customerName,
                     itemName: x.itemName,
@@ -115,8 +115,10 @@ export default function RemoveSale() {
                     discount: x.discount,
                     quantity: x.quantity,
                     unitPrice: x.unitPrice
-                });
+                };
             };
+
+            return setSaleDetails(objSaleDetails);
         });
 
         if (e.target.value === "") {

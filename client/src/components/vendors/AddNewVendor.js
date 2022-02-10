@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useHistory, Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import getJwt from '../../helper/getJwt';
 import {
@@ -10,7 +10,6 @@ import {
     Tab,
     Row,
     Col,
-    Nav,
     Alert,
     Badge,
 } from 'react-bootstrap';
@@ -30,7 +29,6 @@ import NavigationBar from '../navigations/NavigationBar';
 import SideBar from '../navigations/SideBar';
 
 export default function AddNewVendor() {
-    const history = useHistory();
     const [notif, setNotif] = useState({ status: false });
     const [vendDetails, setVendDetails] = useState({});
 
