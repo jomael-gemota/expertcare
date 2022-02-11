@@ -18,7 +18,6 @@ import {
 import {
     BsPlusCircleFill,
     BsCartFill,
-    BsBackspaceReverseFill,
     BsFillPrinterFill,
     BsFillArrowLeftCircleFill,
 } from 'react-icons/bs'
@@ -27,6 +26,8 @@ import {
     homeContainer,
     cardStyleHeader,
     formLabel,
+    orderSlipStyles,
+    boxShadow,
 } from '../../css/styles';
 
 import NavigationBar from '../navigations/NavigationBar';
@@ -146,6 +147,13 @@ export default function AddNewSale() {
 
         if (itemName !== undefined && itemName !== '') {
             if (qty !== undefined && qty !== 0 && qty !== '' && qty !== '0' && qty >= 1 && qty <= stock) {
+
+                addedSaleList.find(i => {
+                    if (i.productId === 25) {
+
+                    };
+                });
+
                 let totalPrice = unitPrice * qty;
                 let partAmountDue = totalPrice + amountDue;
 
@@ -170,7 +178,7 @@ export default function AddNewSale() {
                     }
                 ]);
 
-                handleUpdateStock(productId);
+                handleUpdateStock(productId, qty);
                 
                 resetForm();
             } else setNotifForm({ status: true, variant: 'warning', message: 'Incorrect Quantity.' });
@@ -181,14 +189,9 @@ export default function AddNewSale() {
         }, 2000);
     };
 
-    const handleUpdateStock = (id) => {
-        prodList.find(prod => {
-            if (prod.prodId === Number(id)) {
-                console.log(prod.itemNumber);
-                // how to update the stock for this product
-                // i think find the index then update the stock prop
-            };
-        });
+    const handleUpdateStock = (id, qty) => {
+        const stockIndex = prodList.findIndex(i => i.prodId === id);
+        prodList[stockIndex].stock -= qty;
     };
 
     const handleRemoveSale = (e, itemName, deductAmount) => {
@@ -289,6 +292,8 @@ export default function AddNewSale() {
                                                 >
                                                     {notifForm.message}
                                                 </Alert>
+                                                {/* <Alert variant='warning'>{JSON.stringify(prodList)}</Alert>
+                                                <Alert variant='primary'>{JSON.stringify(addedSaleList)}</Alert> */}
                                                 <Row>
                                                     <Form.Group as={Col} className="mb-3">
                                                         <Form.Label style={formLabel}>Customer Name <Badge bg="danger">Required</Badge></Form.Label>
@@ -385,7 +390,7 @@ export default function AddNewSale() {
                                             >
                                                 <BsPlusCircleFill /> Add Sale
                                             </Button>
-                                            <Link to="/home"><Button size="sm" variant="outline-secondary"><BsBackspaceReverseFill /> Cancel</Button></Link>
+                                            <Link to="/home"><Button size="sm" variant="outline-secondary"><BsFillArrowLeftCircleFill /> Go Back</Button></Link>
                                         </Card.Footer>
                                     </Card>
                                 </CardGroup>
@@ -397,8 +402,17 @@ export default function AddNewSale() {
                     </Col>
                     <Col sm={5}>
                         <CardGroup>
-                            <Card>
-                                <Card.Body id="orderSlip" style={{ border: '1px dotted grey', backgroundColor: '#FFFDE7' }}>
+                            <Card style={boxShadow}>
+                                <Card.Header>
+                                    <Button
+                                        size="sm"
+                                        variant="success"
+                                        onClick={submitOrderSale}
+                                    >
+                                        <BsFillPrinterFill /> Submit & Print
+                                    </Button>
+                                </Card.Header>
+                                <Card.Body id="orderSlip" style={orderSlipStyles}>
                                     <Alert
                                         variant={notif.variant}
                                         show={notif.status}
@@ -410,7 +424,6 @@ export default function AddNewSale() {
                                     <h5 style={{ textAlign: 'center', marginTop: '10px' }}>Expert Care Pharmacy</h5>
                                     <p style={{ textAlign: 'center'}}>Tudtud, Nasipit Road, Talamban, Cebu City, Philippines 6000</p>
                                     <h6 style={{ textAlign: 'center', fontWeight: 'bolder' }}>Order Slip</h6>
-                                    <hr />
                                     <br />
                                     <p><b style={formLabel}>Customer Name:</b> {addedCx.fullName}</p>
                                     <p><b style={formLabel}>Ordered Date:</b> {moment(new Date()).format('MM/DD/YY h:mm:ss a')}</p>
@@ -419,7 +432,6 @@ export default function AddNewSale() {
                                         hover
                                         size="sm"
                                         id="orderSlip"
-                                        style={{ marginBottom: '35px' }}
                                     >
                                         <thead>
                                             <tr>
@@ -457,17 +469,6 @@ export default function AddNewSale() {
                                         </tfoot>
                                     </Table>
                                 </Card.Body>
-                                <Card.Footer>
-                                    <Button
-                                        size="sm"
-                                        variant="success"
-                                        style={{ marginRight: '5px' }}
-                                        onClick={submitOrderSale}
-                                    >
-                                        <BsFillPrinterFill /> Submit & Print
-                                    </Button>
-                                    <Link to="/home"><Button size="sm" variant="outline-secondary"><BsFillArrowLeftCircleFill /> Go Back</Button></Link>
-                                </Card.Footer>
                             </Card>
                         </CardGroup>
                     </Col>

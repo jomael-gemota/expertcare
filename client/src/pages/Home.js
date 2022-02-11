@@ -237,13 +237,13 @@ export default function Home() {
                         <Tab.Content>
                             <Tab.Pane eventKey="first">
                                 <CardGroup>
-                                    <Card style={{  boxShadow: '0px 1px 10px #999' }}>
+                                    <Card>
                                         <Card.Header style={invCardHeader}>
                                             <BsFillLayersFill /> Manage Inventory
                                             <Button
                                                 size="sm"
                                                 disabled={isLoadingRefresh}
-                                                style={{ float: 'right', color: 'white', backgroundColor: '#2C3E50', border: '1px solid #2C3E50'}}
+                                                style={{ float: 'right', color: 'white', backgroundColor: '#1985AC', border: '1px solid #1985AC'}}
                                                 onClick={refresh}
                                             >
                                                 {isLoadingRefresh

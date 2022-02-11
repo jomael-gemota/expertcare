@@ -24,6 +24,7 @@ import {
     homeContainer,
     cardStyleHeader,
     formLabel,
+    boxShadow,
 } from '../../css/styles';
 
 import NavigationBar from '../navigations/NavigationBar';
