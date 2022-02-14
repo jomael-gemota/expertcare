@@ -27,7 +27,6 @@ import {
     cardStyleHeader,
     formLabel,
     orderSlipStyles,
-    boxShadow,
 } from '../../css/styles';
 
 import NavigationBar from '../navigations/NavigationBar';
@@ -134,6 +133,7 @@ export default function AddNewSale() {
     };
 
     const handleAddToList = () => {
+        let tempDisc;
         const {
             productId,
             itemName,
@@ -143,46 +143,52 @@ export default function AddNewSale() {
             discount,
             stock
         } = itemDetails;
-        let tempDisc;
 
-        if (itemName !== undefined && itemName !== '') {
-            if (qty !== undefined && qty !== 0 && qty !== '' && qty !== '0' && qty >= 1 && qty <= stock) {
+        const saleIndex = addedSaleList.findIndex(sale => sale.productId === productId);
 
-                addedSaleList.find(i => {
-                    if (i.productId === 25) {
+        if (saleIndex === -1) {
+            if (itemName !== undefined && itemName !== '') {
+                if (qty !== undefined && qty !== 0 && qty !== '' && qty !== '0' && qty >= 1 && qty <= stock) {
+    
+                    let totalPrice = unitPrice * qty;
+                    let partAmountDue = totalPrice + amountDue;
+    
+                    if (discount === undefined) {
+                        tempDisc = 0;
+                    } else tempDisc = discount;
+    
+                    setAmountDue(partAmountDue);
+                    setAddedSaleList([
+                        ...addedSaleList,
+                        {
+                            productId: productId,
+                            stock: stock,
+                            customerName: addedCx.fullName,
+                            customerId: addedCx.customerId,
+                            itemName: itemName,
+                            itemNumber: itemNumber,
+                            unitPrice: unitPrice,
+                            qty: qty,
+                            discount: tempDisc,
+                            saleDate: new Date()
+                        }
+                    ]);
 
-                    };
-                });
+                    handleUpdateStock(productId, qty);
 
-                let totalPrice = unitPrice * qty;
-                let partAmountDue = totalPrice + amountDue;
-
-                if (discount === undefined) {
-                    tempDisc = 0;
-                } else tempDisc = discount;
-
-                setAmountDue(partAmountDue);
-                setAddedSaleList([
-                    ...addedSaleList,
-                    {
-                        productId: productId,
-                        stock: stock,
-                        customerName: addedCx.fullName,
-                        customerId: addedCx.customerId,
-                        itemName: itemName,
-                        itemNumber: itemNumber,
-                        unitPrice: unitPrice,
-                        qty: qty,
-                        discount: tempDisc,
-                        saleDate: new Date()
-                    }
-                ]);
-
-                handleUpdateStock(productId, qty);
-                
-                resetForm();
-            } else setNotifForm({ status: true, variant: 'warning', message: 'Incorrect Quantity.' });
-        } else setNotifForm({ status: true, variant: 'warning', message: 'Item Name is Required.' });
+                    addedSaleList.map(sale => {
+                        sale.customerName = addedCx.fullName;
+                        sale.customerId = addedCx.customerId;
+                    });
+    
+                    
+                    resetForm();
+    
+                } else setNotifForm({ status: true, variant: 'warning', message: 'Incorrect Quantity.' });
+            } else setNotifForm({ status: true, variant: 'warning', message: 'Item Name is Required.' });
+        } else {
+            setNotifForm({ status: true, variant: 'warning', message: 'You have already entered the product.' })
+        };
 
         setTimeout(function() {
             setNotifForm({ ...notifForm, status: false });
@@ -191,7 +197,7 @@ export default function AddNewSale() {
 
     const handleUpdateStock = (id, qty) => {
         const stockIndex = prodList.findIndex(i => i.prodId === id);
-        prodList[stockIndex].stock -= qty;
+        prodList[stockIndex].stock -= Number(qty);
     };
 
     const handleRemoveSale = (e, itemName, deductAmount) => {
@@ -211,11 +217,13 @@ export default function AddNewSale() {
                     message: 'Sale Submitted!'
                 });
 
-                addedSaleList.map(sale => {
+                prodList.map(prod => {
                     let stockObj = {};
 
-                    stockObj.stock = sale.stock;
-                    stockObj.productId = sale.productId;
+                    stockObj.stock = prod.stock;
+                    stockObj.productId = prod.prodId;
+
+                    console.log(stockObj);
 
                     return axios.patch('/api/inv/updateStockByProdId', stockObj,
                         { headers: { Authorization: getJwt() } })
@@ -292,8 +300,6 @@ export default function AddNewSale() {
                                                 >
                                                     {notifForm.message}
                                                 </Alert>
-                                                {/* <Alert variant='warning'>{JSON.stringify(prodList)}</Alert>
-                                                <Alert variant='primary'>{JSON.stringify(addedSaleList)}</Alert> */}
                                                 <Row>
                                                     <Form.Group as={Col} className="mb-3">
                                                         <Form.Label style={formLabel}>Customer Name <Badge bg="danger">Required</Badge></Form.Label>
@@ -402,8 +408,8 @@ export default function AddNewSale() {
                     </Col>
                     <Col sm={5}>
                         <CardGroup>
-                            <Card style={boxShadow}>
-                                <Card.Header>
+                            <Card style={{ border: '1px solid #E3F2FD' }}>
+                                <Card.Header style={{ border: 'none', backgroundColor: '#E3F2FD', padding: '0 0 10px 0' }}>
                                     <Button
                                         size="sm"
                                         variant="success"

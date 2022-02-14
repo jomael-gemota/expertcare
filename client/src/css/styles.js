@@ -5,7 +5,6 @@ export const loginBody = {
     position: 'absolute',
     height: '100%',
     width: '100%',
-    backgroundColor: '#E4E5E6',
 };
 
 export const loginCard = {
@@ -141,4 +140,6 @@ export const boxShadow = {
 
 export const orderSlipStyles = {
     padding: '20px',
+    boxShadow: '0px 1px 15px #c1c1c1',
+    borderRadius: '5px',
 };
