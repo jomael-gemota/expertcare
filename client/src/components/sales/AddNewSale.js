@@ -14,7 +14,10 @@ import {
     Table,
     Alert,
     Badge,
+    ToggleButton,
+    ButtonGroup,
 } from 'react-bootstrap';
+import { MdSend } from 'react-icons/md';
 import {
     BsPlusCircleFill,
     BsCartFill,
@@ -22,6 +25,7 @@ import {
     BsFillArrowLeftCircleFill,
     BsFillTrashFill,
     BsPencilSquare,
+    BsXOctagonFill,
 } from 'react-icons/bs'
 
 import {
@@ -413,14 +417,34 @@ export default function AddNewSale() {
                     <Col sm={5}>
                         <CardGroup>
                             <Card style={{ border: '1px solid #E3F2FD' }}>
-                                <Card.Header style={{ border: 'none', backgroundColor: '#E3F2FD', padding: '0 0 10px 0' }}>
-                                    <Button
-                                        size="sm"
-                                        variant="success"
-                                        onClick={submitOrderSale}
-                                    >
-                                        <BsFillPrinterFill /> Submit & Print
-                                    </Button>
+                                <Card.Header style={{ border: 'none', backgroundColor: '#E3F2FD', padding: '0 0 0 0' }}>
+                                    <ButtonGroup className="mb-2">
+                                        <ToggleButton
+                                            key={1}
+                                            type="radio"
+                                            variant="danger"
+                                            name="radio"
+                                        >
+                                            <BsXOctagonFill />
+                                        </ToggleButton>
+                                        <ToggleButton
+                                            key={2}
+                                            type="radio"
+                                            variant="primary"
+                                            name="radio"
+                                        >
+                                            <BsFillPrinterFill />
+                                        </ToggleButton>
+                                        <ToggleButton
+                                            key={3}
+                                            type="radio"
+                                            variant="primary"
+                                            name="radio"
+                                            onClick={submitOrderSale}
+                                        >
+                                            <MdSend />
+                                        </ToggleButton>
+                                    </ButtonGroup>
                                 </Card.Header>
                                 <Card.Body id="orderSlip" style={orderSlipStyles}>
                                     <Alert
@@ -431,7 +455,7 @@ export default function AddNewSale() {
                                     >
                                         {notif.message}
                                     </Alert>
-                                    <h5 style={{ textAlign: 'center', marginTop: '10px' }}>Expert Care Pharmacy</h5>
+                                    <h5 style={{ textAlign: 'center', marginTop: '25px' }}>Expert Care Pharmacy</h5>
                                     <p style={{ textAlign: 'center'}}>Tudtud, Nasipit Road, Talamban, Cebu City, Philippines 6000</p>
                                     <h6 style={{ textAlign: 'center', fontWeight: 'bolder' }}>Order Slip</h6>
                                     <br />
@@ -460,7 +484,7 @@ export default function AddNewSale() {
                                                 return <tr key={index}>
                                                     <td style={{ textAlign: 'center' }}>
                                                         {/* Use a dropdown button for selection for any actions instead of buttons in the table. */}
-                                                        <BsPencilSquare color='blue' style={{ marginRight: '15px', cursor: 'pointer' }} />
+                                                        {/* <BsPencilSquare color='blue' style={{ marginRight: '15px', cursor: 'pointer' }} /> */}
                                                         <BsFillTrashFill color='red' style={{ cursor: 'pointer' }} onClick={e => handleRemoveSale(e, itemName, unitPrice * qty)} />
                                                     </td>
                                                     <td style={{ textAlign: 'center' }}>{index + 1}</td>
@@ -470,7 +494,7 @@ export default function AddNewSale() {
                                                     <td style={{ textAlign: 'center' }}>{discount === 0 ? '' : discount + '%'}</td>
                                                     <td style={{ textAlign: 'center' }}>{'₱ ' + (Math.round((unitPrice * qty) * 100) / 100).toFixed(2)}</td>
                                                 </tr>
-                                            }): <tr><td colSpan="7" style={{ textAlign: 'center', }}>No Sale Item added yet.</td></tr>}
+                                            }): <tr><td colSpan="7" style={{ textAlign: 'center', }}>No sale item added yet.</td></tr>}
                                         </tbody>
                                         <tfoot>
                                             <tr>
