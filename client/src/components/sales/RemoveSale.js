@@ -260,7 +260,7 @@ export default function RemoveSale() {
                                                             type="number"
                                                             placeholder=""
                                                             disabled
-                                                            value={saleDetails.unitPrice}
+                                                            value={(Math.round(saleDetails.unitPrice * 100) / 100).toFixed(2)}
                                                         />
                                                     </Form.Group>
                                                     <Form.Group as={Col} sm={3} className="mb-3">

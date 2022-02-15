@@ -299,7 +299,7 @@ export default function UpdateSale() {
                                                             type="number"
                                                             placeholder=""
                                                             disabled
-                                                            value={saleDetails.unitPrice}
+                                                            value={(Math.round(saleDetails.unitPrice * 100) / 100).toFixed(2)}
                                                         />
                                                     </Form.Group>
                                                     <Form.Group as={Col} sm={3} className="mb-3">
@@ -312,10 +312,10 @@ export default function UpdateSale() {
                                                         />
                                                     </Form.Group>
                                                 </Row>
-                                                <p><span style={formLabel}>Total Price: </span><b style={{ color: 'red' }}>
+                                                <p><span style={{ fontSize: '15px', fontWeight: 'bold' }}>Total Price: </span><b style={{ color: 'red' }}>
                                                          ₱ {saleDetails.unitPrice === undefined
                                                             ? 0
-                                                            : saleDetails.quantity * saleDetails.unitPrice}</b></p>
+                                                            : (Math.round((saleDetails.quantity * saleDetails.unitPrice) * 100) / 100).toFixed(2)}</b></p>
                                             </Form>
                                         </Card.Body>
                                         <Card.Footer>

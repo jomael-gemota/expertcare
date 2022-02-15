@@ -246,7 +246,7 @@ export default function RemovePurchase() {
                                                             placeholder=""
                                                             disabled
                                                             min={0}
-                                                            value={purDetails.unitPrice}
+                                                            value={(Math.round(purDetails.unitPrice * 100) / 100).toFixed(2)}
                                                         />
                                                     </Form.Group>
                                                 </Row>

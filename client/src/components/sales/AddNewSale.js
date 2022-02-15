@@ -20,6 +20,8 @@ import {
     BsCartFill,
     BsFillPrinterFill,
     BsFillArrowLeftCircleFill,
+    BsFillTrashFill,
+    BsPencilSquare,
 } from 'react-icons/bs'
 
 import {
@@ -373,7 +375,7 @@ export default function AddNewSale() {
                                                             type="number"
                                                             placeholder=""
                                                             disabled
-                                                            value={itemDetails.unitPrice}
+                                                            value={(Math.round(itemDetails.unitPrice * 100) / 100).toFixed(2)}
                                                         />
                                                     </Form.Group>
                                                     <Form.Group as={Col} sm={3} className="mb-3">
@@ -442,7 +444,7 @@ export default function AddNewSale() {
                                         id="orderSlip"
                                     >
                                         <thead>
-                                            <tr>
+                                            <tr style={{ textAlign: 'center' }}>
                                                 <th></th>
                                                 <th>No.</th>
                                                 <th>Item No./Name</th>
@@ -456,23 +458,25 @@ export default function AddNewSale() {
                                             {addedSaleList.length >= 1 ? addedSaleList.map((sale, index) => {
                                                 const { itemName, itemNumber, qty, unitPrice, discount } = sale;
                                                 return <tr key={index}>
-                                                    <td>
-                                                        <a href="#/remove" onClick={e => handleRemoveSale(e, itemName, unitPrice * qty)}>Remove</a>
+                                                    <td style={{ textAlign: 'center' }}>
+                                                        {/* Use a dropdown button for selection for any actions instead of buttons in the table. */}
+                                                        <BsPencilSquare color='blue' style={{ marginRight: '15px', cursor: 'pointer' }} />
+                                                        <BsFillTrashFill color='red' style={{ cursor: 'pointer' }} onClick={e => handleRemoveSale(e, itemName, unitPrice * qty)} />
                                                     </td>
                                                     <td style={{ textAlign: 'center' }}>{index + 1}</td>
                                                     <td>{itemNumber + '-' + itemName}</td>
-                                                    <td>{qty}</td>
-                                                    <td>{'₱ ' + unitPrice}</td>
-                                                    <td>{discount}</td>
-                                                    <td>{'₱ ' + unitPrice * qty}</td>
+                                                    <td style={{ textAlign: 'center' }}>{qty}</td>
+                                                    <td style={{ textAlign: 'center' }}>{'₱ ' + (Math.round(unitPrice * 100) / 100).toFixed(2)}</td>
+                                                    <td style={{ textAlign: 'center' }}>{discount === 0 ? '' : discount + '%'}</td>
+                                                    <td style={{ textAlign: 'center' }}>{'₱ ' + (Math.round((unitPrice * qty) * 100) / 100).toFixed(2)}</td>
                                                 </tr>
                                             }): <tr><td colSpan="7" style={{ textAlign: 'center', }}>No Sale Item added yet.</td></tr>}
                                         </tbody>
                                         <tfoot>
                                             <tr>
-                                                <th colSpan={3}></th>
-                                                <th>Total Amount:</th>
-                                                <th colSpan={3} style={{ textAlign: 'center', color: 'red' }}>{'₱ ' + amountDue}</th>
+                                                <th colSpan={5}></th>
+                                                <th style={{ textAlign: 'center' }}>Total Amount:</th>
+                                                <th colSpan={1} style={{ textAlign: 'center', color: 'red' }}>{'₱ ' + (Math.round(amountDue * 100) / 100).toFixed(2)}</th>
                                             </tr>
                                         </tfoot>
                                     </Table>

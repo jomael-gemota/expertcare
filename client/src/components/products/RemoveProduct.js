@@ -242,7 +242,7 @@ export default function RemoveProduct() {
                                                             placeholder=""
                                                             disabled
                                                             min={0}
-                                                            value={prodDetails.unitPrice}
+                                                            value={(Math.round(prodDetails.unitPrice * 100) / 100).toFixed(2)}
                                                             onChange={e => setProdDetails({ ...prodDetails, unitPrice: e.target.value })}
                                                         />
                                                     </Form.Group>
