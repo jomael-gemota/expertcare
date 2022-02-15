@@ -71,7 +71,7 @@ export default function UpdateProduct() {
                 axios.patch('/api/inv/updateProductById', prodDetails,
                     { headers: { Authorization: getJwt() } })
                     .then(() => setNotif({ status: true, variant: 'success', message: 'Product Updated!' }))
-                    .catch(() => setNotif({ status: true, variant: 'danger', message: 'Something is wrong.' }));
+                    .catch(() => setNotif({ status: true, variant: 'warning', message: 'Something is wrong.' }));
 
                 setProdDetails({
                     productId: '',
@@ -84,8 +84,8 @@ export default function UpdateProduct() {
                     description: ''
                 });
 
-            } else setNotif({ status: true, variant: 'danger', message: 'Fill-up all the required fields.' });
-        } else setNotif({ status: true, variant: 'danger', message: 'Fill-up all the required fields.' });
+            } else setNotif({ status: true, variant: 'warning', message: 'Fill-up all the required fields.' });
+        } else setNotif({ status: true, variant: 'warning', message: 'Fill-up all the required fields.' });
 
         setTimeout(function() {
             setNotif({ ...notif, status: false });

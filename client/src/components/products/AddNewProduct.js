@@ -53,8 +53,8 @@ export default function AddNewProduct() {
                     setNotif({ status: true, variant: 'success', message: 'Product Added!' });
                     resetForm();
                 })
-                .catch(() => setNotif({ status: true, variant: 'danger', message: 'Something is wrong.' }))
-        } else setNotif({ status: true, variant: 'danger', message: 'Fill-up all the required fields.' })
+                .catch(() => setNotif({ status: true, variant: 'warning', message: 'Something is wrong.' }))
+        } else setNotif({ status: true, variant: 'warning', message: 'Fill-up all the required fields.' })
 
         setTimeout(function() {
             setNotif({ ...notif, status: false });

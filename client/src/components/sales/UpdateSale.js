@@ -110,7 +110,7 @@ export default function UpdateSale() {
             axios.patch('/api/inv/updateSaleBySaleId', saleDetails,
                 { headers: { Authorization: getJwt() } })
                 .then(() => setNotif({ status: true, variant: 'success', message: 'Sale Updated!' }))
-                .catch(() => setNotif({ status: true, variant: 'danger', message: 'Something is wrong.' }));
+                .catch(() => setNotif({ status: true, variant: 'warning', message: 'Something is wrong.' }));
 
             setSaleDetails({
                 saleId: '',
@@ -122,7 +122,7 @@ export default function UpdateSale() {
                 quantity: '',
                 unitPrice: ''
             });
-        } else setNotif({ status: true, variant: 'danger', message: 'Fill-up all the required fields.' });
+        } else setNotif({ status: true, variant: 'warning', message: 'Fill-up all the required fields.' });
 
         setTimeout(function() {
             setNotif({ ...notif, status: false });

@@ -47,9 +47,9 @@ export default function AddNewCustomer() {
                         setNotif({ status: true, variant: 'success', message: 'Customer Information Added!' });
                         resetForm();
                     })
-                    .catch(() => setNotif({ status: true, variant: 'danger', message: 'Something is wrong.' }))
-            } else setNotif({ status: true, variant: 'danger', message: 'Fill-up all the required fields.' });
-        } else setNotif({ status: true, variant: 'danger', message: 'Fill-up all the required fields.' });
+                    .catch(() => setNotif({ status: true, variant: 'warning', message: 'Something is wrong.' }))
+            } else setNotif({ status: true, variant: 'warning', message: 'Fill-up all the required fields.' });
+        } else setNotif({ status: true, variant: 'warning', message: 'Fill-up all the required fields.' });
 
         setTimeout(function() {
             setNotif({ ...notif, status: false });
@@ -94,6 +94,7 @@ export default function AddNewCustomer() {
                                         <Card.Body>
                                             <Form id="addNewCustomerForm">
                                                 <Alert
+                                                    dismissible
                                                     variant={notif.variant}
                                                     show={notif.status}
                                                     onClose={() => setNotif({ status: false })}

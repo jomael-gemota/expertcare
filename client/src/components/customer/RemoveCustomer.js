@@ -99,9 +99,9 @@ export default function RemoveCustomer() {
                         setNotif({ status: true, variant: 'success', message: 'Customer Information Deleted!' });
                         resetForm();
                     })
-                    .catch(() => setNotif({ status: true, variant: 'danger', message: 'Something is wrong.' }))
-            } else setNotif({ status: true, variant: 'danger', message: 'Fill-up all the required fields.' });
-        } else setNotif({ status: true, variant: 'danger', message: 'Fill-up all the required fields.' });
+                    .catch(() => setNotif({ status: true, variant: 'warning', message: 'Something is wrong.' }))
+            } else setNotif({ status: true, variant: 'warning', message: 'Fill-up all the required fields.' });
+        } else setNotif({ status: true, variant: 'warning', message: 'Fill-up all the required fields.' });
 
         setTimeout(function() {
             setNotif({ ...notif, status: false });
@@ -112,8 +112,8 @@ export default function RemoveCustomer() {
         if (cxDetails.customerId !== undefined) {
             if (cxDetails.customerId !== "") {
                 setModalShow(true);
-            } else setNotif({ status: true, variant: 'danger', message: 'Fill-up all the required fields.' });
-        } else setNotif({ status: true, variant: 'danger', message: 'Fill-up all the required fields.' });
+            } else setNotif({ status: true, variant: 'warning', message: 'Fill-up all the required fields.' });
+        } else setNotif({ status: true, variant: 'warning', message: 'Fill-up all the required fields.' });
         
         setTimeout(function() {
             setNotif({ ...notif, status: false });
@@ -179,6 +179,7 @@ export default function RemoveCustomer() {
                                         <Card.Body>
                                             <Form id="deleteCustomerForm">
                                                 <Alert
+                                                    dismissible
                                                     variant={notif.variant}
                                                     show={notif.status}
                                                     onClose={() => setNotif({ status: false })}

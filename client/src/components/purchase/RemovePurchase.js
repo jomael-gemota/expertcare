@@ -73,7 +73,7 @@ export default function RemovePurchase() {
                         setNotif({ status: true, variant: 'success', message: 'Purchase Deleted!' });
                         resetForm();
                     })
-                    .catch(() => setNotif({ status: true, variant: 'danger', message: 'Something is wrong.' }))
+                    .catch(() => setNotif({ status: true, variant: 'warning', message: 'Something is wrong.' }))
             };
         };
 
@@ -86,8 +86,8 @@ export default function RemovePurchase() {
         if (purDetails.purchaseId !== undefined) {
             if (purDetails.purchaseId !== "") {
                 setModalShow(true);
-            } else setNotif({ status: true, variant: 'danger', message: 'Fill-up all the required fields.' });
-        } else setNotif({ status: true, variant: 'danger', message: 'Fill-up all the required fields.' });
+            } else setNotif({ status: true, variant: 'warning', message: 'Fill-up all the required fields.' });
+        } else setNotif({ status: true, variant: 'warning', message: 'Fill-up all the required fields.' });
         
         setTimeout(function() {
             setNotif({ ...notif, status: false });

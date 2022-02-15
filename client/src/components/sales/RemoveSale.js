@@ -70,7 +70,7 @@ export default function RemoveSale() {
                 { params: { id: saleDetails.saleId },
                 headers: { Authorization: getJwt() } })
                 .then(() => setNotif({ status: true, variant: 'success', message: 'Sale Deleted!' }))
-                .catch(() => setNotif({ status: true, variant: 'danger', message: 'Something is wrong.' }))
+                .catch(() => setNotif({ status: true, variant: 'warning', message: 'Something is wrong.' }))
 
             setSaleDetails({
                 saleId: '',
@@ -93,7 +93,7 @@ export default function RemoveSale() {
         if (saleDetails.saleId !== undefined) {
             setModalShow(true);
         } else {
-            setNotif({ status: true, variant: 'danger', message: 'Fill-up all the required fields.' });
+            setNotif({ status: true, variant: 'warning', message: 'Fill-up all the required fields.' });
         };
 
         setTimeout(function() {

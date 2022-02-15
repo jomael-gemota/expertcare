@@ -68,7 +68,7 @@ export default function RemoveProduct() {
                 { params: { id: prodDetails.productId },
                 headers: { Authorization: getJwt() } })
                 .then(() => setNotif({ status: true, variant: 'success', message: 'Product Deleted!' }))
-                .catch(() => setNotif({ status: true, variant: 'danger', message: 'Something is wrong.' }))
+                .catch(() => setNotif({ status: true, variant: 'warning', message: 'Something is wrong.' }))
 
             setTimeout(function() {
                 setNotif({ ...notif, status: false });
@@ -84,13 +84,13 @@ export default function RemoveProduct() {
                 discount: '',
                 description: ''
             });
-        } else setNotif({ status: true, variant: 'danger', message: 'Fill-up all the required fields.' });
+        } else setNotif({ status: true, variant: 'warning', message: 'Fill-up all the required fields.' });
     };
 
     const handleDeleteConfirmation = () => {
         if (prodDetails.itemName !== undefined) {
             setModalShow(true);
-        } else setNotif({ status: true, variant: 'danger', message: 'Fill-up all the required fields.' });
+        } else setNotif({ status: true, variant: 'warning', message: 'Fill-up all the required fields.' });
 
         setTimeout(function() {
             setNotif({ ...notif, status: false });

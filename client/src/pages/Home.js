@@ -8,7 +8,6 @@ import moment from 'moment';
 
 import {
     Tab,
-    Nav,
     Row,
     Col,
     CardGroup,
@@ -20,6 +19,7 @@ import {
     Dropdown,
     Spinner,
     ButtonGroup,
+    Alert,
 } from 'react-bootstrap';
 import {
     BsFileEarmarkPdfFill,
@@ -296,8 +296,8 @@ export default function Home() {
                                                                     <td>{sale.itemName}</td>
                                                                     <td>{sale.discount === 0 ? '' : sale.discount + '%'}</td>
                                                                     <td>{sale.qty}</td>
-                                                                    <td>{'₱ ' + sale.unitPrice}</td>
-                                                                    <td>{'₱ ' + sale.qty * sale.unitPrice}</td>
+                                                                    <td>{'₱ ' + (Math.round(sale.unitPrice * 100) / 100).toFixed(2)}</td>
+                                                                    <td>{'₱ ' + (Math.round((sale.qty * sale.unitPrice) * 100) / 100).toFixed(2)}</td>
                                                                 </tr>
                                                             }): <tr>
                                                                     <td></td>
@@ -353,7 +353,7 @@ export default function Home() {
                                                                     <td>{prod.itemNumber}</td>
                                                                     <td>{prod.itemName}</td>
                                                                     <td>{prod.units}</td>
-                                                                    <td>{'₱ ' + prod.unitPrice}</td>
+                                                                    <td>{'₱ ' + (Math.round(prod.unitPrice * 100) / 100).toFixed(2)}</td>
                                                                     <td>{prod.stock}</td>
                                                                     <td>{prod.discount === 0 ? '' : prod.discount + '%'}</td>
                                                                     <td>{prod.description}</td>
@@ -411,7 +411,7 @@ export default function Home() {
                                                                     <td>{pur.itemNumber}</td>
                                                                     <td>{pur.itemName}</td>
                                                                     <td>{pur.quantity}</td>
-                                                                    <td>{'₱ ' + pur.unitPrice}</td>
+                                                                    <td>{'₱ ' + (Math.round(pur.unitPrice * 100) / 100).toFixed(2)}</td>
                                                                     <td>{pur.vendorName}</td>
                                                                     <td>{moment(pur.purchaseDate).format('MM/DD/YYYY')}</td>
                                                                 </tr>

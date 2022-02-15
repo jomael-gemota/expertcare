@@ -147,45 +147,47 @@ export default function AddNewSale() {
         const saleIndex = addedSaleList.findIndex(sale => sale.productId === productId);
 
         if (saleIndex === -1) {
-            if (itemName !== undefined && itemName !== '') {
-                if (qty !== undefined && qty !== 0 && qty !== '' && qty !== '0' && qty >= 1 && qty <= stock) {
+            if (addedCx.fullName !== undefined && addedCx.fullName !== '') {
+                if (itemName !== undefined && itemName !== '') {
+                    if (qty !== undefined && qty !== 0 && qty !== '' && qty !== '0' && qty >= 1 && qty <= stock) {
+        
+                        let totalPrice = unitPrice * qty;
+                        let partAmountDue = totalPrice + amountDue;
+        
+                        if (discount === undefined) {
+                            tempDisc = 0;
+                        } else tempDisc = discount;
+        
+                        setAmountDue(partAmountDue);
+                        setAddedSaleList([
+                            ...addedSaleList,
+                            {
+                                productId: productId,
+                                stock: stock,
+                                customerName: addedCx.fullName,
+                                customerId: addedCx.customerId,
+                                itemName: itemName,
+                                itemNumber: itemNumber,
+                                unitPrice: unitPrice,
+                                qty: qty,
+                                discount: tempDisc,
+                                saleDate: new Date()
+                            }
+                        ]);
     
-                    let totalPrice = unitPrice * qty;
-                    let partAmountDue = totalPrice + amountDue;
+                        handleUpdateStock(productId, qty);
     
-                    if (discount === undefined) {
-                        tempDisc = 0;
-                    } else tempDisc = discount;
-    
-                    setAmountDue(partAmountDue);
-                    setAddedSaleList([
-                        ...addedSaleList,
-                        {
-                            productId: productId,
-                            stock: stock,
-                            customerName: addedCx.fullName,
-                            customerId: addedCx.customerId,
-                            itemName: itemName,
-                            itemNumber: itemNumber,
-                            unitPrice: unitPrice,
-                            qty: qty,
-                            discount: tempDisc,
-                            saleDate: new Date()
-                        }
-                    ]);
-
-                    handleUpdateStock(productId, qty);
-
-                    addedSaleList.map(sale => {
-                        sale.customerName = addedCx.fullName;
-                        sale.customerId = addedCx.customerId;
-                    });
-    
-                    
-                    resetForm();
-    
-                } else setNotifForm({ status: true, variant: 'warning', message: 'Incorrect Quantity.' });
-            } else setNotifForm({ status: true, variant: 'warning', message: 'Item Name is Required.' });
+                        addedSaleList.map(sale => {
+                            sale.customerName = addedCx.fullName;
+                            sale.customerId = addedCx.customerId;
+                        });
+        
+                        
+                        resetForm();
+        
+                    } else setNotifForm({ status: true, variant: 'warning', message: 'Incorrect Quantity.' });
+                } else setNotifForm({ status: true, variant: 'warning', message: 'Item Name is Required.' });
+            } else setNotifForm({ status: true, variant: 'warning', message: 'Customer Name is Required.' });
         } else {
             setNotifForm({ status: true, variant: 'warning', message: 'You have already entered the product.' })
         };
@@ -235,7 +237,7 @@ export default function AddNewSale() {
                         }))
                 })
             })
-            .catch(() => setNotif({ status: true, variant: 'danger', message: 'Something is wrong.' }))
+            .catch(() => setNotif({ status: true, variant: 'warning', message: 'Something is wrong.' }))
 
         setTimeout(function() {
             setNotif({ ...notif, status: false });
