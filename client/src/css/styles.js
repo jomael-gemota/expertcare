@@ -131,7 +131,6 @@ export const cardStyleHeader = {
 export const formLabel = {
     fontWeight: 'bolder',
     fontSize: '13px',
-    color: '#34495E',
 };
 
 export const boxShadow = {

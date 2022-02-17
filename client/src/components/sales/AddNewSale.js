@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import moment from 'moment';
 import getJwt from '../../helper/getJwt';
+import printJS from 'print-js';
 import {
     Card,
     CardGroup,
@@ -24,7 +25,6 @@ import {
     BsFillPrinterFill,
     BsFillArrowLeftCircleFill,
     BsFillTrashFill,
-    BsPencilSquare,
     BsXOctagonFill,
 } from 'react-icons/bs'
 
@@ -39,7 +39,6 @@ import NavigationBar from '../navigations/NavigationBar';
 import SideBar from '../navigations/SideBar';
 
 export default function AddNewSale() {
-    const history = useHistory();
     const [prodList, setProdList] = useState([]);
     const [cxList, setCxList] = useState([]);
     const [addedCx, setAddedCx] = useState([]);
@@ -48,6 +47,7 @@ export default function AddNewSale() {
     const [amountDue, setAmountDue] = useState(0);
     const [addedSaleList, setAddedSaleList] = useState([]);
     const [itemDetails, setItemDetails] = useState({});
+    const [procDate, setProcDate] = useState();
 
     useEffect(() => {
         axios.get('/api/inv/getAllProducts',
@@ -155,43 +155,48 @@ export default function AddNewSale() {
         if (saleIndex === -1) {
             if (addedCx.fullName !== undefined && addedCx.fullName !== '') {
                 if (itemName !== undefined && itemName !== '') {
-                    if (qty !== undefined && qty !== 0 && qty !== '' && qty !== '0' && qty >= 1 && qty <= stock) {
+                    if (qty <= stock) {
+                        if (qty !== undefined && qty !== 0 && qty !== '' && qty !== '0' && qty >= 1) {
         
-                        let totalPrice = unitPrice * qty;
-                        let partAmountDue = totalPrice + amountDue;
+                            let totalPrice = unitPrice * qty;
+                            let partAmountDue = totalPrice + amountDue;
+            
+                            if (discount === undefined) {
+                                tempDisc = 0;
+                            } else tempDisc = discount;
+            
+                            setProcDate(moment(new Date()).format('MM/DD/YY h:mm:ss a'));
+                            setAmountDue(partAmountDue);
+                            setAddedSaleList([
+                                ...addedSaleList,
+                                {
+                                    productId: productId,
+                                    stock: stock,
+                                    customerName: addedCx.fullName,
+                                    customerId: addedCx.customerId,
+                                    itemName: itemName,
+                                    itemNumber: itemNumber,
+                                    unitPrice: unitPrice,
+                                    qty: qty,
+                                    discount: tempDisc,
+                                    saleDate: new Date()
+                                }
+                            ]);
         
-                        if (discount === undefined) {
-                            tempDisc = 0;
-                        } else tempDisc = discount;
+                            handleUpdateStock(productId, qty);
         
-                        setAmountDue(partAmountDue);
-                        setAddedSaleList([
-                            ...addedSaleList,
-                            {
-                                productId: productId,
-                                stock: stock,
-                                customerName: addedCx.fullName,
-                                customerId: addedCx.customerId,
-                                itemName: itemName,
-                                itemNumber: itemNumber,
-                                unitPrice: unitPrice,
-                                qty: qty,
-                                discount: tempDisc,
-                                saleDate: new Date()
-                            }
-                        ]);
-    
-                        handleUpdateStock(productId, qty);
-    
-                        addedSaleList.map(sale => {
-                            sale.customerName = addedCx.fullName;
-                            sale.customerId = addedCx.customerId;
-                        });
-        
-                        
-                        resetForm();
-        
-                    } else setNotifForm({ status: true, variant: 'warning', message: 'Incorrect Quantity.' });
+                            addedSaleList.map(sale => {
+                                return (
+                                    sale.customerName = addedCx.fullName,
+                                    sale.customerId = addedCx.customerId
+                                )
+                            });
+            
+                            
+                            resetForm();
+            
+                        } else setNotifForm({ status: true, variant: 'warning', message: 'Incorrect Quantity.' });
+                    } else setNotifForm({ status: true, variant: 'warning', message: 'Out of Stock.' });
                 } else setNotifForm({ status: true, variant: 'warning', message: 'Item Name is Required.' });
             } else setNotifForm({ status: true, variant: 'warning', message: 'Customer Name is Required.' });
         } else {
@@ -231,8 +236,6 @@ export default function AddNewSale() {
                     stockObj.stock = prod.stock;
                     stockObj.productId = prod.prodId;
 
-                    console.log(stockObj);
-
                     return axios.patch('/api/inv/updateStockByProdId', stockObj,
                         { headers: { Authorization: getJwt() } })
                         .then()
@@ -241,29 +244,43 @@ export default function AddNewSale() {
                             variant: 'danger',
                             message: 'Total Stock was not updated.'
                         }))
-                })
+                });
+
+                addedSaleList.splice(0, addedSaleList.length);
+                setProcDate('');
+                setAddedCx({
+                    customerId: '',
+                    fullName: ''
+                });
             })
-            .catch(() => setNotif({ status: true, variant: 'warning', message: 'Something is wrong.' }))
+            .catch(() => setNotif({ status: true, variant: 'warning', message: 'Order Slip is empty.' }))
 
         setTimeout(function() {
             setNotif({ ...notif, status: false });
-        }, 2000);
-
-        printOrderSlip();
+        }, 5000);
     };
     
     const printOrderSlip = () => {
-        let orderSlip = document.getElementById("orderSlip").outerHTML;
-        let x = window.open('', '', 'height=700, width=700');
+        if (addedSaleList.length >= 1) {
+            printJS({
+                printable: 'orderSlip',
+                type: 'html',
+                style: `h6 { text-align: center; margin-bottom: 1px; }
+                    .tfTotalAmount { border-top: 1px solid #146A89 !important; }
+                    .valTotalAmount { color: red; border-top: 1px solid #146A89 !important; }
+                    .tbItem { text-align: center; }
+                    .trHeaders { border-bottom: 1px solid #146A89 !important; }
+                    table { border-collapse: collapse !important; }
+                    .orderTitle { text-align: center; margin-bottom: 0px; }`
+            });
 
-        x.document.write('<html>');
-        x.document.write('<body> <br>');
-        x.document.write(orderSlip);
-        x.document.write('</body></html>');
-        x.document.close();
-        x.print();
+            submitOrderSale();
 
-        history.push('/home');
+        } else setNotif({ status: true, variant: 'warning', message: 'Order Slip is empty.' });
+
+        setTimeout(function() {
+            setNotif({ ...notif, status: false });
+        }, 3000);
     };
 
     const resetForm = () => {
@@ -274,6 +291,20 @@ export default function AddNewSale() {
             unitPrice: '',
             stock: ''
         });
+    };
+
+    const clearOrderSlip = () => {
+        addedSaleList.splice(0, addedSaleList.length);
+        setProcDate('');
+        setAddedCx({
+            customerId: '',
+            fullName: ''
+        });
+        setNotif({ status: true, variant: 'success', message: 'Order Slip is cleared.' })
+
+        setTimeout(function() {
+            setNotif({ ...notif, status: false });
+        }, 3000);
     };
 
     return (
@@ -315,6 +346,7 @@ export default function AddNewSale() {
                                                             type="text"
                                                             placeholder=""
                                                             list="customerName"
+                                                            value={addedCx.fullName}
                                                             onChange={e => handleCustomerNameChange(e)}
                                                         />
                                                         <datalist id="customerName">
@@ -418,12 +450,13 @@ export default function AddNewSale() {
                         <CardGroup>
                             <Card style={{ border: '1px solid #E3F2FD' }}>
                                 <Card.Header style={{ border: 'none', backgroundColor: '#E3F2FD', padding: '0 0 0 0' }}>
-                                    <ButtonGroup className="mb-2">
+                                    <ButtonGroup className="mb-2" style={{ float: 'right' }}>
                                         <ToggleButton
                                             key={1}
                                             type="radio"
-                                            variant="danger"
+                                            variant="primary"
                                             name="radio"
+                                            onClick={clearOrderSlip}
                                         >
                                             <BsXOctagonFill />
                                         </ToggleButton>
@@ -432,6 +465,7 @@ export default function AddNewSale() {
                                             type="radio"
                                             variant="primary"
                                             name="radio"
+                                            onClick={printOrderSlip}
                                         >
                                             <BsFillPrinterFill />
                                         </ToggleButton>
@@ -455,12 +489,12 @@ export default function AddNewSale() {
                                     >
                                         {notif.message}
                                     </Alert>
-                                    <h5 style={{ textAlign: 'center', marginTop: '25px' }}>Expert Care Pharmacy</h5>
-                                    <p style={{ textAlign: 'center'}}>Tudtud, Nasipit Road, Talamban, Cebu City, Philippines 6000</p>
+                                    <h5 className='orderTitle' style={{ textAlign: 'center', marginTop: '25px' }}>Expert Care Pharmacy</h5>
+                                    <p className='orderTitle' style={{ textAlign: 'center'}}>Tudtud, Nasipit Road, Talamban, Cebu City, Philippines 6000</p>
                                     <h6 style={{ textAlign: 'center', fontWeight: 'bolder' }}>Order Slip</h6>
                                     <br />
                                     <p><b style={formLabel}>Customer Name:</b> {addedCx.fullName}</p>
-                                    <p><b style={formLabel}>Ordered Date:</b> {moment(new Date()).format('MM/DD/YY h:mm:ss a')}</p>
+                                    <p><b style={formLabel}>Processed Date:</b> {procDate}</p>
                                     <Table
                                         striped
                                         hover
@@ -468,14 +502,14 @@ export default function AddNewSale() {
                                         id="orderSlip"
                                     >
                                         <thead>
-                                            <tr style={{ textAlign: 'center' }}>
-                                                <th></th>
-                                                <th>No.</th>
-                                                <th>Item No./Name</th>
-                                                <th>Quantity</th>
-                                                <th>Unit Price</th>
-                                                <th>Discount %</th>
-                                                <th>Total Price</th>
+                                            <tr className='trItems' style={{ textAlign: 'center' }}>
+                                                <th className='trHeaders'></th>
+                                                <th className='trHeaders'>No.</th>
+                                                <th className='trHeaders'>Item No./Name</th>
+                                                <th className='trHeaders'>Quantity</th>
+                                                <th className='trHeaders'>Unit Price</th>
+                                                <th className='trHeaders'>Discount %</th>
+                                                <th className='trHeaders'>Total Price</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -485,22 +519,28 @@ export default function AddNewSale() {
                                                     <td style={{ textAlign: 'center' }}>
                                                         {/* Use a dropdown button for selection for any actions instead of buttons in the table. */}
                                                         {/* <BsPencilSquare color='blue' style={{ marginRight: '15px', cursor: 'pointer' }} /> */}
-                                                        <BsFillTrashFill color='red' style={{ cursor: 'pointer' }} onClick={e => handleRemoveSale(e, itemName, unitPrice * qty)} />
+                                                        {/* <BsFillTrashFill color='red' style={{ cursor: 'pointer' }} onClick={e => handleRemoveSale(e, itemName, unitPrice * qty)} /> */}
                                                     </td>
-                                                    <td style={{ textAlign: 'center' }}>{index + 1}</td>
+                                                    <td className='tbItem' style={{ textAlign: 'center' }}>{index + 1}</td>
                                                     <td>{itemNumber + '-' + itemName}</td>
-                                                    <td style={{ textAlign: 'center' }}>{qty}</td>
-                                                    <td style={{ textAlign: 'center' }}>{'₱ ' + (Math.round(unitPrice * 100) / 100).toFixed(2)}</td>
-                                                    <td style={{ textAlign: 'center' }}>{discount === 0 ? '' : discount + '%'}</td>
-                                                    <td style={{ textAlign: 'center' }}>{'₱ ' + (Math.round((unitPrice * qty) * 100) / 100).toFixed(2)}</td>
+                                                    <td className='tbItem' style={{ textAlign: 'center' }}>{qty}</td>
+                                                    <td className='tbItem' style={{ textAlign: 'center' }}>{'₱ ' + (Math.round(unitPrice * 100) / 100).toFixed(2)}</td>
+                                                    <td className='tbItem' style={{ textAlign: 'center' }}>{discount === 0 ? '' : discount + '%'}</td>
+                                                    <td className='tbItem' style={{ textAlign: 'center' }}>{'₱ ' + (Math.round((unitPrice * qty) * 100) / 100).toFixed(2)}</td>
                                                 </tr>
                                             }): <tr><td colSpan="7" style={{ textAlign: 'center', }}>No sale item added yet.</td></tr>}
                                         </tbody>
                                         <tfoot>
                                             <tr>
-                                                <th colSpan={5}></th>
-                                                <th style={{ textAlign: 'center' }}>Total Amount:</th>
-                                                <th colSpan={1} style={{ textAlign: 'center', color: 'red' }}>{'₱ ' + (Math.round(amountDue * 100) / 100).toFixed(2)}</th>
+                                                <th className='tfTotalAmount' colSpan={5}></th>
+                                                <th className='tfTotalAmount' style={{ textAlign: 'center' }}>Total Amount:</th>
+                                                <th
+                                                    className='valTotalAmount'
+                                                    colSpan={1}
+                                                    style={{ textAlign: 'center', color: 'red' }}
+                                                >
+                                                    {'₱ ' + (Math.round(amountDue * 100) / 100).toFixed(2)}
+                                                </th>
                                             </tr>
                                         </tfoot>
                                     </Table>
