@@ -14,7 +14,6 @@ import {
     Badge,
 } from 'react-bootstrap';
 import {
-    BsFillBagFill,
     BsPlusCircleFill,
     BsFillArrowLeftCircleFill,
 } from 'react-icons/bs';
@@ -93,7 +92,7 @@ export default function AddNewProduct() {
                             <Tab.Pane eventKey="first">
                                 <CardGroup>
                                     <Card>
-                                        <Card.Header style={cardStyleHeader}><BsFillBagFill /> Add New Product</Card.Header>
+                                        <Card.Header style={cardStyleHeader}>Add New Product</Card.Header>
                                         <Card.Body>
                                             <Form id="addNewProdForm">
                                                 <Alert

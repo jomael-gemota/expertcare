@@ -16,7 +16,6 @@ import {
     Badge,
 } from 'react-bootstrap';
 import {
-    BsBasketFill,
     BsTrashFill,
     BsFillArrowLeftCircleFill,
     BsFillExclamationCircleFill,
@@ -180,7 +179,7 @@ export default function RemovePurchase() {
                                 </Modal>
                                 <CardGroup>
                                     <Card>
-                                        <Card.Header style={cardStyleHeader}><BsBasketFill /> Remove Purchase</Card.Header>
+                                        <Card.Header style={cardStyleHeader}>Remove Purchase</Card.Header>
                                         <Card.Body>
                                             <Form id="removePurForm">
                                                 <Alert
@@ -196,7 +195,8 @@ export default function RemovePurchase() {
                                                         <Form.Label style={formLabel}>Purchase ID <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
-                                                            placeholder=""
+                                                            disabled={purList.length > 0 ? false : true}
+                                                            placeholder={purList.length > 0 ? "" : "Loading..."}
                                                             list="purchaseId"
                                                             value={purDetails.purchaseId}
                                                             onChange={e => handlePurchaseIDChange(e)}

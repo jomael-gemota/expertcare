@@ -14,7 +14,6 @@ import {
     Badge,
 } from 'react-bootstrap';
 import {
-    BsFillPeopleFill,
     BsFillPersonPlusFill,
     BsFillArrowLeftCircleFill,
 } from 'react-icons/bs';
@@ -89,7 +88,7 @@ export default function AddNewCustomer() {
                                 <CardGroup>
                                     <Card>
                                         <Card.Header style={cardStyleHeader}>
-                                            <BsFillPeopleFill /> Add New Customer
+                                            Add New Customer
                                         </Card.Header>
                                         <Card.Body>
                                             <Form id="addNewCustomerForm">

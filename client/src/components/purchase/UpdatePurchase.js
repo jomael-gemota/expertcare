@@ -15,7 +15,6 @@ import {
     Badge,
 } from 'react-bootstrap';
 import {
-    BsBasketFill,
     BsPencilFill,
     BsFillArrowLeftCircleFill,
 } from 'react-icons/bs';
@@ -209,7 +208,7 @@ export default function UpdatePurchase() {
                                 <CardGroup>
                                     <Card>
                                         <Card.Header style={cardStyleHeader}>
-                                            <BsBasketFill /> Edit Purchase
+                                            Edit Purchase
                                         </Card.Header>
                                         <Card.Body>
                                             <Form id="updatePurForm">
@@ -226,7 +225,8 @@ export default function UpdatePurchase() {
                                                         <Form.Label style={formLabel}>Purchase ID <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
-                                                            placeholder=""
+                                                            disabled={purList.length > 0 ? false : true}
+                                                            placeholder={purList.length > 0 ? "" : "Loading..."}
                                                             list="purchaseId"
                                                             value={purDetails.purchaseId}
                                                             onChange={e => handlePurchaseIDChange(e)}
@@ -241,7 +241,8 @@ export default function UpdatePurchase() {
                                                         <Form.Label style={formLabel}>Item Name <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
-                                                            placeholder=""
+                                                            disabled={prodList.length > 0 ? false : true}
+                                                            placeholder={prodList.length > 0 ? "" : "Loading..."}
                                                             list="itemName"
                                                             value={purDetails.itemName}
                                                             onChange={e => handleItemNameChange(e)}
@@ -292,7 +293,8 @@ export default function UpdatePurchase() {
                                                         <Form.Label style={formLabel}>Vendor Name <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
-                                                            placeholder=""
+                                                            disabled={vendList.length > 0 ? false : true}
+                                                            placeholder={vendList.length > 0 ? "" : "Loading..."}
                                                             list="vendorName"
                                                             min={0}
                                                             value={purDetails.vendorName}

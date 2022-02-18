@@ -14,7 +14,6 @@ import {
     Badge,
 } from 'react-bootstrap';
 import {
-    BsHouseFill,
     BsPencilFill,
     BsFillArrowLeftCircleFill,
 } from 'react-icons/bs';
@@ -135,7 +134,7 @@ export default function UpdateVendor() {
                                 <CardGroup>
                                     <Card>
                                         <Card.Header style={cardStyleHeader}>
-                                            <BsHouseFill /> Edit Vendor
+                                            Edit Vendor
                                         </Card.Header>
                                         <Card.Body>
                                             <Form id="updateVendorForm">
@@ -152,7 +151,8 @@ export default function UpdateVendor() {
                                                         <Form.Label style={formLabel}>Vendor ID <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
-                                                            placeholder=""
+                                                            disabled={vendList.length > 0 ? false : true}
+                                                            placeholder={vendList.length > 0 ? "" : "Loading..."}
                                                             list="vendorId"
                                                             value={vendDetails.vendorId}
                                                             onChange={e => handleVendorIdChange(e)}

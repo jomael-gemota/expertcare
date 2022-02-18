@@ -15,7 +15,6 @@ import {
     Modal,
 } from 'react-bootstrap';
 import {
-    BsFillPeopleFill,
     BsTrashFill,
     BsFillArrowLeftCircleFill,
     BsFillExclamationCircleFill,
@@ -174,7 +173,7 @@ export default function RemoveCustomer() {
                                 <CardGroup>
                                     <Card>
                                         <Card.Header style={cardStyleHeader}>
-                                            <BsFillPeopleFill /> Delete Customer Info
+                                            Delete Customer Info
                                         </Card.Header>
                                         <Card.Body>
                                             <Form id="deleteCustomerForm">
@@ -191,7 +190,8 @@ export default function RemoveCustomer() {
                                                         <Form.Label style={formLabel}>Customer ID <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
-                                                            placeholder=""
+                                                            disabled={cxList.length > 0 ? false : true}
+                                                            placeholder={cxList.length > 0 ? "" : "Loading..."}
                                                             list="customerId"
                                                             value={cxDetails.customerId}
                                                             onChange={e => handleCustomerIdChange(e)}

@@ -14,7 +14,6 @@ import {
     Badge,
 } from 'react-bootstrap';
 import {
-    BsFillPeopleFill,
     BsFillPencilFill,
     BsFillArrowLeftCircleFill,
 } from 'react-icons/bs';
@@ -144,7 +143,7 @@ export default function UpdateCustomer() {
                                 <CardGroup>
                                     <Card>
                                         <Card.Header style={cardStyleHeader}>
-                                            <BsFillPeopleFill /> Edit Customer Info
+                                            Edit Customer Info
                                         </Card.Header>
                                         <Card.Body>
                                             <Form id="updateCustomerForm">
@@ -161,7 +160,8 @@ export default function UpdateCustomer() {
                                                         <Form.Label style={formLabel}>Customer ID <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
-                                                            placeholder=""
+                                                            disabled={cxList.length > 0 ? false : true}
+                                                            placeholder={cxList.length > 0 ? "" : "Loading..."}
                                                             list="customerId"
                                                             value={cxDetails.customerId}
                                                             onChange={e => handleCustomerIdChange(e)}

@@ -21,11 +21,11 @@ import {
 import { MdSend } from 'react-icons/md';
 import {
     BsPlusCircleFill,
-    BsCartFill,
     BsFillPrinterFill,
     BsFillArrowLeftCircleFill,
     BsFillTrashFill,
     BsXOctagonFill,
+    BsTable,
 } from 'react-icons/bs'
 
 import {
@@ -247,6 +247,7 @@ export default function AddNewSale() {
                 });
 
                 addedSaleList.splice(0, addedSaleList.length);
+                setAmountDue(0);
                 setProcDate('');
                 setAddedCx({
                     customerId: '',
@@ -271,11 +272,10 @@ export default function AddNewSale() {
                     .tbItem { text-align: center; }
                     .trHeaders { border-bottom: 1px solid #146A89 !important; }
                     table { border-collapse: collapse !important; }
-                    .orderTitle { text-align: center; margin-bottom: 0px; }`
-            });
-
-            submitOrderSale();
-
+                    .orderTitle { text-align: center; margin-bottom: 0px; }
+                    @page { size: 5.5in 8in; margin: 5%; }`
+                });
+                
         } else setNotif({ status: true, variant: 'warning', message: 'Order Slip is empty.' });
 
         setTimeout(function() {
@@ -295,6 +295,7 @@ export default function AddNewSale() {
 
     const clearOrderSlip = () => {
         addedSaleList.splice(0, addedSaleList.length);
+        setAmountDue(0);
         setProcDate('');
         setAddedCx({
             customerId: '',
@@ -327,7 +328,7 @@ export default function AddNewSale() {
                                 <CardGroup>
                                     <Card>
                                         <Card.Header style={cardStyleHeader}>
-                                            <BsCartFill /> Add New Sale 
+                                            Add New Sale 
                                         </Card.Header>
                                         <Card.Body>
                                             <Form>
@@ -344,7 +345,8 @@ export default function AddNewSale() {
                                                         <Form.Label style={formLabel}>Customer Name <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
-                                                            placeholder=""
+                                                            disabled={cxList.length > 0 ? false : true}
+                                                            placeholder={cxList.length > 0 ? "" : "Loading..."}
                                                             list="customerName"
                                                             value={addedCx.fullName}
                                                             onChange={e => handleCustomerNameChange(e)}
@@ -365,7 +367,8 @@ export default function AddNewSale() {
                                                         <Form.Label style={formLabel}>Item Name <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
-                                                            placeholder=""
+                                                            disabled={prodList.length > 0 ? false : true}
+                                                            placeholder={prodList.length > 0 ? "" : "Loading..."}
                                                             list='itemName'
                                                             onChange={e => handleItemNameChange(e)}
                                                         />
@@ -451,29 +454,44 @@ export default function AddNewSale() {
                             <Card style={{ border: '1px solid #E3F2FD' }}>
                                 <Card.Header style={{ border: 'none', backgroundColor: '#E3F2FD', padding: '0 0 0 0' }}>
                                     <ButtonGroup className="mb-2" style={{ float: 'right' }}>
+                                        <Link to={'/home'}>
+                                            <ToggleButton
+                                                key={1}
+                                                type="radio"
+                                                variant="warning"
+                                                name="radio"
+                                                style={{ borderRadius: '5px', marginLeft: '3px' }}
+                                                onClick={clearOrderSlip}
+                                            >
+                                                <BsTable />
+                                            </ToggleButton>
+                                        </Link>
                                         <ToggleButton
-                                            key={1}
+                                            key={2}
                                             type="radio"
-                                            variant="primary"
+                                            variant="secondary"
                                             name="radio"
+                                            style={{ borderRadius: '5px', marginLeft: '3px' }}
                                             onClick={clearOrderSlip}
                                         >
                                             <BsXOctagonFill />
                                         </ToggleButton>
                                         <ToggleButton
-                                            key={2}
+                                            key={3}
                                             type="radio"
-                                            variant="primary"
+                                            variant="secondary"
                                             name="radio"
+                                            style={{ borderRadius: '5px', marginLeft: '3px' }}
                                             onClick={printOrderSlip}
                                         >
                                             <BsFillPrinterFill />
                                         </ToggleButton>
                                         <ToggleButton
-                                            key={3}
+                                            key={4}
                                             type="radio"
-                                            variant="primary"
+                                            variant="success"
                                             name="radio"
+                                            style={{ borderRadius: '5px', marginLeft: '3px' }}
                                             onClick={submitOrderSale}
                                         >
                                             <MdSend />
@@ -489,8 +507,8 @@ export default function AddNewSale() {
                                     >
                                         {notif.message}
                                     </Alert>
-                                    <h5 className='orderTitle' style={{ textAlign: 'center', marginTop: '25px' }}>Expert Care Pharmacy</h5>
-                                    <p className='orderTitle' style={{ textAlign: 'center'}}>Tudtud, Nasipit Road, Talamban, Cebu City, Philippines 6000</p>
+                                    <h5 className='orderTitle' style={{ textAlign: 'center', marginTop: '10px' }}>Expert Care Pharmacy</h5>
+                                    <p className='orderTitle' style={{ textAlign: 'center'}}>Lapu Lapu City, Cebu, Philippines 6000</p>
                                     <h6 style={{ textAlign: 'center', fontWeight: 'bolder' }}>Order Slip</h6>
                                     <br />
                                     <p><b style={formLabel}>Customer Name:</b> {addedCx.fullName}</p>

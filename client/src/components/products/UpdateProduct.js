@@ -14,7 +14,6 @@ import {
     Badge,
 } from 'react-bootstrap';
 import {
-    BsFillBagFill,
     BsFillPencilFill,
     BsFillArrowLeftCircleFill,
 } from 'react-icons/bs';
@@ -149,7 +148,7 @@ export default function UpdateProduct() {
                                 <CardGroup>
                                     <Card>
                                         <Card.Header style={cardStyleHeader}>
-                                            <BsFillBagFill /> Edit Product 
+                                            Edit Product 
                                         </Card.Header>
                                         <Card.Body>
                                             <Form>
@@ -166,7 +165,8 @@ export default function UpdateProduct() {
                                                         <Form.Label style={formLabel}>Product ID <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
-                                                            placeholder=""
+                                                            disabled={prodList.length > 0 ? false : true}
+                                                            placeholder={prodList.length > 0 ? "" : "Loading..."}
                                                             list="productId"
                                                             value={prodDetails.productId}
                                                             onChange={e => handleProductIdChange(e)}

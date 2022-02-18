@@ -15,7 +15,6 @@ import {
     Badge,
 } from 'react-bootstrap';
 import {
-    BsCartFill,
     BsPencilFill,
     BsFillArrowLeftCircleFill,
 } from 'react-icons/bs';
@@ -195,7 +194,7 @@ export default function UpdateSale() {
                                 <CardGroup>
                                     <Card>
                                         <Card.Header style={cardStyleHeader}>
-                                            <BsCartFill /> Edit Sale 
+                                            Edit Sale 
                                         </Card.Header>
                                         <Card.Body>
                                             <Form>
@@ -212,7 +211,8 @@ export default function UpdateSale() {
                                                         <Form.Label style={formLabel}>Sale ID <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
-                                                            placeholder=""
+                                                            disabled={salesList.length > 0 ? false : true}
+                                                            placeholder={salesList.length > 0 ? "" : "Loading..."}
                                                             list="saleId"
                                                             value={saleDetails.saleId}
                                                             onChange={e => handleSaleIdChange(e)}
@@ -250,7 +250,8 @@ export default function UpdateSale() {
                                                         <Form.Label style={formLabel}>Item Name <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
-                                                            placeholder=""
+                                                            disabled={prodList.length > 0 ? false : true}
+                                                            placeholder={prodList.length > 0 ? "" : "Loading..."}
                                                             list='itemName'
                                                             value={saleDetails.itemName}
                                                             onChange={e => handleItemNameChange(e)}

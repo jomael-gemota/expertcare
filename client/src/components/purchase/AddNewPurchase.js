@@ -14,7 +14,6 @@ import {
     Badge,
 } from 'react-bootstrap';
 import {
-    BsBasketFill,
     BsPlusCircleFill,
     BsFillArrowLeftCircleFill,
 } from 'react-icons/bs';
@@ -172,7 +171,7 @@ export default function AddNewPurchase() {
                                 <CardGroup>
                                     <Card>
                                         <Card.Header style={cardStyleHeader}>
-                                            <BsBasketFill /> Add New Purchase
+                                            Add New Purchase
                                         </Card.Header>
                                         <Card.Body>
                                             <Form id="addNewPurForm">

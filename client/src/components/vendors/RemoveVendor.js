@@ -15,7 +15,6 @@ import {
     Modal,
 } from 'react-bootstrap';
 import {
-    BsHouseFill,
     BsTrashFill,
     BsFillArrowLeftCircleFill,
 } from 'react-icons/bs';
@@ -163,7 +162,7 @@ export default function RemoveVendor() {
                                 <CardGroup>
                                     <Card>
                                         <Card.Header style={cardStyleHeader}>
-                                            <BsHouseFill /> Remove Vendor
+                                            Remove Vendor
                                         </Card.Header>
                                         <Card.Body>
                                             <Form id="updateVendorForm">
@@ -180,7 +179,8 @@ export default function RemoveVendor() {
                                                         <Form.Label style={formLabel}>Vendor ID <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
-                                                            placeholder=""
+                                                            disabled={vendList.length > 0 ? false : true}
+                                                            placeholder={vendList.length > 0 ? "" : "Loading..."}
                                                             list="vendorId"
                                                             value={vendDetails.vendorId}
                                                             onChange={e => handleVendorIdChange(e)}

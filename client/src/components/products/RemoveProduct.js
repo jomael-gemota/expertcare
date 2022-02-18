@@ -15,7 +15,6 @@ import {
     Badge,
 } from 'react-bootstrap';
 import {
-    BsFillBagFill,
     BsTrashFill,
     BsFillArrowLeftCircleFill,
     BsFillExclamationCircleFill,
@@ -172,7 +171,7 @@ export default function RemoveProduct() {
                                 <CardGroup>
                                     <Card>
                                         <Card.Header style={cardStyleHeader}>
-                                            <BsFillBagFill /> Remove Product 
+                                            Remove Product 
                                         </Card.Header>
                                         <Card.Body>
                                             <Form>
@@ -189,7 +188,8 @@ export default function RemoveProduct() {
                                                         <Form.Label style={formLabel}>Product ID <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
                                                             type="text"
-                                                            placeholder=""
+                                                            disabled={prodList.length > 0 ? false : true}
+                                                            placeholder={prodList.length > 0 ? "" : "Loading..."}
                                                             list="productId"
                                                             value={prodDetails.productId}
                                                             onChange={e => handleProductIdChange(e)}
