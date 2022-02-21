@@ -5,6 +5,9 @@ import getJwt from '../helper/getJwt';
 import $ from 'jquery';
 import dt from 'datatables.net';
 import moment from 'moment';
+import { ExportToCsv } from 'export-to-csv';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 import {
     Tab,
@@ -19,7 +22,6 @@ import {
     Dropdown,
     Spinner,
     ButtonGroup,
-    Alert,
 } from 'react-bootstrap';
 import {
     BsFileEarmarkPdfFill,
@@ -210,6 +212,78 @@ export default function Home() {
                 
     }, [isUpdate]);
 
+    const arrayToCsv = (arrData, tbName) => {
+        const mapKeys = transormFn => obj => Object.fromEntries(
+            Object.entries(obj)
+              .map(([key, value]) => [transormFn(key), value])
+        );
+
+        function replaceIt(text) {
+            const result = text.replace(/([A-Z])/g, " $1");
+            const finalResult = result.charAt(0).toUpperCase()+result.slice(1);
+            return finalResult;
+        };
+
+        const toSentCase = arrData.map(mapKeys(replaceIt));
+
+        const arrToCsvOpt = {
+            fieldSeparator: ',',
+            filename: `${tbName} ${moment(new Date()).format('MM-DD-YYYY_hhmmA')}`,
+            quoteStrings: '"',
+            decimalSeparator: '.',
+            showLabels: true, 
+            showTitle: false,
+            useTextFile: false,
+            useBom: true,
+            useKeysAsHeaders: true,
+        };
+    
+        const csvExporter = new ExportToCsv(arrToCsvOpt);
+        csvExporter.generateCsv(toSentCase);
+    };
+
+    const arrayToPDF = (arrData, tbName) => {
+        const arrBody = [];
+        const arrHeaders = [];
+        const doc = new jsPDF('landscape');
+
+        Object.getOwnPropertyNames(arrData[0]).map(head => {
+            const strAddSpace = head.replace(/([A-Z])/g,' $1');
+            const toSentCase = strAddSpace.charAt(0).toUpperCase()+strAddSpace.slice(1);
+            
+            arrHeaders.push(toSentCase);
+        });
+
+        arrData.map(obj => {
+            let arrValues = Object.values(obj);
+            arrBody.push(arrValues);
+        });
+
+        doc.autoTable({
+            head: [arrHeaders],
+            body: arrBody,
+            margin: { horizontal: 10 },
+            styles: { overflow: "linebreak" },
+            bodyStyles: { valign: "top" },
+            theme: "striped",
+            showHead: "everyPage",
+            didDrawPage: function (data) {
+                doc.text(`Expert Care Pharmacy - ${tbName} Inventory`, data.settings.margin.left, 10);
+
+                var str = "Page " + doc.internal.getNumberOfPages();
+                doc.setFontSize(10);
+            
+                var pageSize = doc.internal.pageSize;
+                var pageHeight = pageSize.height
+                  ? pageSize.height
+                  : pageSize.getHeight();
+                doc.text(str, data.settings.margin.left, pageHeight - 10);
+            },
+        });
+
+        doc.save(`${tbName}_${moment(new Date()).format('MM-DD-YYYY_hhmmA')}.pdf`);
+    };
+
     const refresh = () => {
         setIsLoadingRefresh(true);
         setIsUpdate(!isUpdate);
@@ -261,11 +335,11 @@ export default function Home() {
                                                                 <Link to='/home/update-sale'><Button size="sm" variant="warning" style={{ marginRight: '5px' }}><BsPencilSquare /> Edit Sale</Button></Link>
                                                                 <Link to='/home/remove-sale'><Button size="sm" variant="outline-danger" style={{ marginRight: '5px' }}><BsTrashFill /> Remove Sale</Button></Link>
                                                                 <Dropdown size="sm" as={ButtonGroup} style={{ float: 'right' }}>
-                                                                    <Button variant="secondary"><BsDownload /> Export Report</Button>
+                                                                    <Button variant="secondary" onClick={() => arrayToCsv(saleList, 'Sales')}><BsDownload /> Export Report</Button>
                                                                     <Dropdown.Toggle split variant="secondary" id="dropdown-custom-2" />
                                                                     <Dropdown.Menu>
-                                                                        <Dropdown.Item eventKey="1"><BsFileEarmarkExcelFill /> CSV</Dropdown.Item>
-                                                                        <Dropdown.Item eventKey="2"><BsFileEarmarkPdfFill /> PDF</Dropdown.Item>
+                                                                        <Dropdown.Item eventKey="1" onClick={() => arrayToCsv(saleList, 'Sales')}><BsFileEarmarkExcelFill /> CSV</Dropdown.Item>
+                                                                        <Dropdown.Item eventKey="2" onClick={() => arrayToPDF(saleList, 'Sales')}><BsFileEarmarkPdfFill /> PDF</Dropdown.Item>
                                                                         <Dropdown.Divider />
                                                                         <Dropdown.Item eventKey="4"><BsPrinter /> Print</Dropdown.Item>
                                                                     </Dropdown.Menu>
@@ -320,11 +394,11 @@ export default function Home() {
                                                                 <Link to='/home/update-product'><Button size="sm" variant="warning" style={{ marginRight: '5px' }}><BsPencilSquare /> Edit Product</Button></Link>
                                                                 <Link to='/home/remove-product'><Button size="sm" variant="outline-danger"><BsTrashFill /> Remove Product</Button></Link>
                                                                 <Dropdown size="sm" as={ButtonGroup} style={{ float: 'right' }}>
-                                                                    <Button variant="secondary"><BsDownload /> Export Report</Button>
+                                                                    <Button variant="secondary" onClick={() => arrayToCsv(prodList, 'Products')}><BsDownload /> Export Report</Button>
                                                                     <Dropdown.Toggle split variant="secondary" id="dropdown-custom-2" />
                                                                     <Dropdown.Menu>
-                                                                        <Dropdown.Item eventKey="1"><BsFileEarmarkExcelFill /> CSV</Dropdown.Item>
-                                                                        <Dropdown.Item eventKey="2"><BsFileEarmarkPdfFill /> PDF</Dropdown.Item>
+                                                                        <Dropdown.Item eventKey="1" onClick={() => arrayToCsv(prodList, 'Products')}><BsFileEarmarkExcelFill /> CSV</Dropdown.Item>
+                                                                        <Dropdown.Item eventKey="2" onClick={() => arrayToPDF(prodList, 'Products')}><BsFileEarmarkPdfFill /> PDF</Dropdown.Item>
                                                                         <Dropdown.Divider />
                                                                         <Dropdown.Item eventKey="4"><BsPrinter /> Print</Dropdown.Item>
                                                                     </Dropdown.Menu>
@@ -379,11 +453,11 @@ export default function Home() {
                                                                 <Link to='/home/update-purchase'><Button size="sm" variant="warning" style={{ marginRight: '5px' }}><BsPencilSquare /> Edit Purchase</Button></Link>
                                                                 <Link to='/home/remove-purchase'><Button size="sm" variant="outline-danger"><BsTrashFill /> Remove Purchase</Button></Link>
                                                                 <Dropdown size="sm" as={ButtonGroup} style={{ float: 'right' }}>
-                                                                    <Button variant="secondary"><BsDownload /> Export Report</Button>
+                                                                    <Button variant="secondary" onClick={() => arrayToCsv(purList, 'Purchases')}><BsDownload /> Export Report</Button>
                                                                     <Dropdown.Toggle split variant="secondary" id="dropdown-custom-2" />
                                                                     <Dropdown.Menu>
-                                                                        <Dropdown.Item eventKey="1"><BsFileEarmarkExcelFill /> CSV</Dropdown.Item>
-                                                                        <Dropdown.Item eventKey="2"><BsFileEarmarkPdfFill /> PDF</Dropdown.Item>
+                                                                        <Dropdown.Item eventKey="1" onClick={() => arrayToCsv(purList, 'Purchases')}><BsFileEarmarkExcelFill /> CSV</Dropdown.Item>
+                                                                        <Dropdown.Item eventKey="2" onClick={() => arrayToPDF(purList, 'Purchases')}><BsFileEarmarkPdfFill /> PDF</Dropdown.Item>
                                                                         <Dropdown.Divider />
                                                                         <Dropdown.Item eventKey="4"><BsPrinter /> Print</Dropdown.Item>
                                                                     </Dropdown.Menu>
@@ -435,11 +509,11 @@ export default function Home() {
                                                                 <Link to='/home/update-vendor'><Button size="sm" variant="warning" style={{ marginRight: '5px' }}><BsPencilSquare /> Edit Vendor</Button></Link>
                                                                 <Link to='/home/remove-vendor'><Button size="sm" variant="outline-danger"><BsTrashFill /> Remove Vendor</Button></Link>
                                                                 <Dropdown size="sm" as={ButtonGroup} style={{ float: 'right' }}>
-                                                                    <Button variant="secondary"><BsDownload /> Export Report</Button>
+                                                                    <Button variant="secondary" onClick={() => arrayToCsv(vendList, 'Vendors')}><BsDownload /> Export Report</Button>
                                                                     <Dropdown.Toggle split variant="secondary" id="dropdown-custom-2" />
                                                                     <Dropdown.Menu>
-                                                                        <Dropdown.Item eventKey="1"><BsFileEarmarkExcelFill /> CSV</Dropdown.Item>
-                                                                        <Dropdown.Item eventKey="2"><BsFileEarmarkPdfFill /> PDF</Dropdown.Item>
+                                                                        <Dropdown.Item eventKey="1" onClick={() => arrayToCsv(vendList, 'Vendors')}><BsFileEarmarkExcelFill /> CSV</Dropdown.Item>
+                                                                        <Dropdown.Item eventKey="2" onClick={() => arrayToPDF(vendList, 'Vendors')}><BsFileEarmarkPdfFill /> PDF</Dropdown.Item>
                                                                         <Dropdown.Divider />
                                                                         <Dropdown.Item eventKey="4"><BsPrinter /> Print</Dropdown.Item>
                                                                     </Dropdown.Menu>
@@ -494,11 +568,11 @@ export default function Home() {
                                                                 <Link to='/home/update-customer'><Button size="sm" variant="warning" style={{ marginRight: '5px' }}><BsPencilSquare /> Edit Customer</Button></Link>
                                                                 <Link to='/home/remove-customer'><Button size="sm" variant="outline-danger"><BsTrashFill /> Remove Customer</Button></Link>
                                                                 <Dropdown size="sm" as={ButtonGroup} style={{ float: 'right' }}>
-                                                                    <Button variant="secondary"><BsDownload /> Export Report</Button>
+                                                                    <Button variant="secondary" onClick={() => arrayToCsv(cxList, 'Customer Database')}><BsDownload /> Export Report</Button>
                                                                     <Dropdown.Toggle split variant="secondary" id="dropdown-custom-2" />
                                                                     <Dropdown.Menu>
-                                                                        <Dropdown.Item eventKey="1"><BsFileEarmarkExcelFill /> CSV</Dropdown.Item>
-                                                                        <Dropdown.Item eventKey="2"><BsFileEarmarkPdfFill /> PDF</Dropdown.Item>
+                                                                        <Dropdown.Item eventKey="1" onClick={() => arrayToCsv(cxList, 'Customer Database')}><BsFileEarmarkExcelFill /> CSV</Dropdown.Item>
+                                                                        <Dropdown.Item eventKey="2" onClick={() => arrayToPDF(cxList, 'Customer Database')}><BsFileEarmarkPdfFill /> PDF</Dropdown.Item>
                                                                         <Dropdown.Divider />
                                                                         <Dropdown.Item eventKey="4"><BsPrinter /> Print</Dropdown.Item>
                                                                     </Dropdown.Menu>

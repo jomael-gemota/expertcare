@@ -90,7 +90,7 @@ export default function ResetPassword() {
                 <Card>
                     <Card.Header style={loginHeader}>Register in Expert Care</Card.Header>
                     <Card.Body>
-                        <Alert dismissible variant='warning'><BsFillExclamationCircleFill /> <b>Note!</b> Exclusive for Admin only.</Alert>
+                        <Alert variant='warning'><BsFillExclamationCircleFill /> <b>Note!</b> This form is exclusive for Admin members only.</Alert>
                         <Form id="registerForm">
                             <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
                                 <Form.Label>Full Name</Form.Label>
