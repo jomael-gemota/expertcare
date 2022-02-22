@@ -17,13 +17,14 @@ import {
     Badge,
     ToggleButton,
     ButtonGroup,
+    Modal,
 } from 'react-bootstrap';
 import { MdSend } from 'react-icons/md';
+import { FaMinusCircle, FaPencilAlt } from 'react-icons/fa';
 import {
     BsPlusCircleFill,
     BsFillPrinterFill,
     BsFillArrowLeftCircleFill,
-    BsFillTrashFill,
     BsXOctagonFill,
     BsTable,
 } from 'react-icons/bs'
@@ -48,6 +49,8 @@ export default function AddNewSale() {
     const [addedSaleList, setAddedSaleList] = useState([]);
     const [itemDetails, setItemDetails] = useState({});
     const [procDate, setProcDate] = useState();
+    const [isEdit, setIsEdit] = useState(false);
+    const [showEditOrderSaleModal, setShowEditOrderSaleModal] = useState(false);
 
     useEffect(() => {
         axios.get('/api/inv/getAllProducts',
@@ -213,12 +216,18 @@ export default function AddNewSale() {
         prodList[stockIndex].stock -= Number(qty);
     };
 
+    const handleEditOrderSaleForm = (sale) => {
+        setShowEditOrderSaleModal(true);
+    };
+
     const handleRemoveSale = (e, itemName, deductAmount) => {
         e.preventDefault();
         
         setAddedSaleList(addedSaleList.filter(item => item.itemName !== itemName));
         setAmountDue(amountDue - deductAmount);
     };
+
+    const handleEditOrderSaleModalClose = () => setShowEditOrderSaleModal(false);
 
     const submitOrderSale = () => {
         axios.post('/api/inv/createSale', addedSaleList,
@@ -274,7 +283,7 @@ export default function AddNewSale() {
                     table { border-collapse: collapse !important; }
                     .orderTitle { text-align: center; margin-bottom: 0px; }
                     @page { size: 5.5in 8in; margin: 5%; }`
-                });
+            });
                 
         } else setNotif({ status: true, variant: 'warning', message: 'Order Slip is empty.' });
 
@@ -452,8 +461,34 @@ export default function AddNewSale() {
                     <Col sm={5}>
                         <CardGroup>
                             <Card style={{ border: '1px solid #E3F2FD' }}>
+                                <Modal
+                                    size="md"
+                                    aria-labelledby="contained-modal-title-vcenter"
+                                    centered
+                                    show={showEditOrderSaleModal}
+                                    onHide={handleEditOrderSaleModalClose}
+                                    animation={true}
+                                >
+                                    <Modal.Header closeButton>
+                                        <Modal.Title><h5>Delete Confirmation</h5></Modal.Title>
+                                    </Modal.Header>
+                                    <Modal.Body>Do you really want to delete this sale?</Modal.Body>
+                                    <Modal.Footer>
+                                        <Button variant="outline-secondary" size="sm" onClick={handleEditOrderSaleModalClose}>Cancel</Button>
+                                        <Button variant="danger" size="sm">Remove</Button>
+                                    </Modal.Footer>
+                                </Modal>
                                 <Card.Header style={{ border: 'none', backgroundColor: '#E3F2FD', padding: '0 0 0 0' }}>
-                                    <ButtonGroup className="mb-2" style={{ float: 'right' }}>
+                                    {/* <Form style={{ float: 'left' }}>
+                                        <Form.Check
+                                            type="switch"
+                                            id="custom-switch"
+                                            label="Edit Mode"
+                                            disabled={addedSaleList.length > 0 ? false : true}
+                                            onClick={() => setIsEdit(!isEdit)}
+                                        />
+                                    </Form> */}
+                                    <ButtonGroup as={Col} className="mb-2" style={{ float: 'right' }}>
                                         <Link to={'/home'}>
                                             <ToggleButton
                                                 key={1}
@@ -535,9 +570,20 @@ export default function AddNewSale() {
                                                 const { itemName, itemNumber, qty, unitPrice, discount } = sale;
                                                 return <tr key={index}>
                                                     <td style={{ textAlign: 'center' }}>
-                                                        {/* Use a dropdown button for selection for any actions instead of buttons in the table. */}
-                                                        {/* <BsPencilSquare color='blue' style={{ marginRight: '15px', cursor: 'pointer' }} /> */}
-                                                        {/* <BsFillTrashFill color='red' style={{ cursor: 'pointer' }} onClick={e => handleRemoveSale(e, itemName, unitPrice * qty)} /> */}
+                                                        {isEdit === true
+                                                            ?   <span>
+                                                                    <FaPencilAlt
+                                                                        color='orange'
+                                                                        style={{ cursor: 'pointer', marginRight: '15px' }}
+                                                                        onClick={() => handleEditOrderSaleForm(sale)}
+                                                                    />
+                                                                    <FaMinusCircle
+                                                                        color='red'
+                                                                        style={{ cursor: 'pointer' }}
+                                                                        onClick={e => handleRemoveSale(e, itemName, unitPrice * qty)}
+                                                                    />
+                                                                </span>
+                                                            :   ''}
                                                     </td>
                                                     <td className='tbItem' style={{ textAlign: 'center' }}>{index + 1}</td>
                                                     <td>{itemNumber + '-' + itemName}</td>

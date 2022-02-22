@@ -30,7 +30,6 @@ import {
     BsPlusCircleFill,
     BsTrashFill,
     BsFileEarmarkExcelFill,
-    BsPrinter,
     BsArrowRepeat,
     BsFillLayersFill,
 } from 'react-icons/bs';
@@ -338,10 +337,8 @@ export default function Home() {
                                                                     <Button variant="secondary" onClick={() => arrayToCsv(saleList, 'Sales')}><BsDownload /> Export Report</Button>
                                                                     <Dropdown.Toggle split variant="secondary" id="dropdown-custom-2" />
                                                                     <Dropdown.Menu>
-                                                                        <Dropdown.Item eventKey="1" onClick={() => arrayToCsv(saleList, 'Sales')}><BsFileEarmarkExcelFill /> CSV</Dropdown.Item>
-                                                                        <Dropdown.Item eventKey="2" onClick={() => arrayToPDF(saleList, 'Sales')}><BsFileEarmarkPdfFill /> PDF</Dropdown.Item>
-                                                                        <Dropdown.Divider />
-                                                                        <Dropdown.Item eventKey="4"><BsPrinter /> Print</Dropdown.Item>
+                                                                        <Dropdown.Item eventKey="1" onClick={() => arrayToCsv(saleList, 'Sales')}><BsFileEarmarkExcelFill color='#16A085' /> CSV</Dropdown.Item>
+                                                                        <Dropdown.Item eventKey="2" onClick={() => arrayToPDF(saleList, 'Sales')}><BsFileEarmarkPdfFill color='#D35400' /> PDF</Dropdown.Item>
                                                                     </Dropdown.Menu>
                                                                 </Dropdown>
                                                             </FormGroup>
@@ -397,10 +394,8 @@ export default function Home() {
                                                                     <Button variant="secondary" onClick={() => arrayToCsv(prodList, 'Products')}><BsDownload /> Export Report</Button>
                                                                     <Dropdown.Toggle split variant="secondary" id="dropdown-custom-2" />
                                                                     <Dropdown.Menu>
-                                                                        <Dropdown.Item eventKey="1" onClick={() => arrayToCsv(prodList, 'Products')}><BsFileEarmarkExcelFill /> CSV</Dropdown.Item>
-                                                                        <Dropdown.Item eventKey="2" onClick={() => arrayToPDF(prodList, 'Products')}><BsFileEarmarkPdfFill /> PDF</Dropdown.Item>
-                                                                        <Dropdown.Divider />
-                                                                        <Dropdown.Item eventKey="4"><BsPrinter /> Print</Dropdown.Item>
+                                                                        <Dropdown.Item eventKey="1" onClick={() => arrayToCsv(prodList, 'Products')}><BsFileEarmarkExcelFill color='#16A085' /> CSV</Dropdown.Item>
+                                                                        <Dropdown.Item eventKey="2" onClick={() => arrayToPDF(prodList, 'Products')}><BsFileEarmarkPdfFill color='#D35400' /> PDF</Dropdown.Item>
                                                                     </Dropdown.Menu>
                                                                 </Dropdown>
                                                             </FormGroup>
@@ -456,10 +451,8 @@ export default function Home() {
                                                                     <Button variant="secondary" onClick={() => arrayToCsv(purList, 'Purchases')}><BsDownload /> Export Report</Button>
                                                                     <Dropdown.Toggle split variant="secondary" id="dropdown-custom-2" />
                                                                     <Dropdown.Menu>
-                                                                        <Dropdown.Item eventKey="1" onClick={() => arrayToCsv(purList, 'Purchases')}><BsFileEarmarkExcelFill /> CSV</Dropdown.Item>
-                                                                        <Dropdown.Item eventKey="2" onClick={() => arrayToPDF(purList, 'Purchases')}><BsFileEarmarkPdfFill /> PDF</Dropdown.Item>
-                                                                        <Dropdown.Divider />
-                                                                        <Dropdown.Item eventKey="4"><BsPrinter /> Print</Dropdown.Item>
+                                                                        <Dropdown.Item eventKey="1" onClick={() => arrayToCsv(purList, 'Purchases')}><BsFileEarmarkExcelFill color='#16A085' /> CSV</Dropdown.Item>
+                                                                        <Dropdown.Item eventKey="2" onClick={() => arrayToPDF(purList, 'Purchases')}><BsFileEarmarkPdfFill color='#D35400' /> PDF</Dropdown.Item>
                                                                     </Dropdown.Menu>
                                                                 </Dropdown>
                                                             </FormGroup>
@@ -512,10 +505,8 @@ export default function Home() {
                                                                     <Button variant="secondary" onClick={() => arrayToCsv(vendList, 'Vendors')}><BsDownload /> Export Report</Button>
                                                                     <Dropdown.Toggle split variant="secondary" id="dropdown-custom-2" />
                                                                     <Dropdown.Menu>
-                                                                        <Dropdown.Item eventKey="1" onClick={() => arrayToCsv(vendList, 'Vendors')}><BsFileEarmarkExcelFill /> CSV</Dropdown.Item>
-                                                                        <Dropdown.Item eventKey="2" onClick={() => arrayToPDF(vendList, 'Vendors')}><BsFileEarmarkPdfFill /> PDF</Dropdown.Item>
-                                                                        <Dropdown.Divider />
-                                                                        <Dropdown.Item eventKey="4"><BsPrinter /> Print</Dropdown.Item>
+                                                                        <Dropdown.Item eventKey="1" onClick={() => arrayToCsv(vendList, 'Vendors')}><BsFileEarmarkExcelFill color='#16A085' /> CSV</Dropdown.Item>
+                                                                        <Dropdown.Item eventKey="2" onClick={() => arrayToPDF(vendList, 'Vendors')}><BsFileEarmarkPdfFill color='#D35400' /> PDF</Dropdown.Item>
                                                                     </Dropdown.Menu>
                                                                 </Dropdown>
                                                             </FormGroup>
@@ -571,10 +562,8 @@ export default function Home() {
                                                                     <Button variant="secondary" onClick={() => arrayToCsv(cxList, 'Customer Database')}><BsDownload /> Export Report</Button>
                                                                     <Dropdown.Toggle split variant="secondary" id="dropdown-custom-2" />
                                                                     <Dropdown.Menu>
-                                                                        <Dropdown.Item eventKey="1" onClick={() => arrayToCsv(cxList, 'Customer Database')}><BsFileEarmarkExcelFill /> CSV</Dropdown.Item>
-                                                                        <Dropdown.Item eventKey="2" onClick={() => arrayToPDF(cxList, 'Customer Database')}><BsFileEarmarkPdfFill /> PDF</Dropdown.Item>
-                                                                        <Dropdown.Divider />
-                                                                        <Dropdown.Item eventKey="4"><BsPrinter /> Print</Dropdown.Item>
+                                                                        <Dropdown.Item eventKey="1" onClick={() => arrayToCsv(cxList, 'Customer Database')}><BsFileEarmarkExcelFill color='#16A085' /> CSV</Dropdown.Item>
+                                                                        <Dropdown.Item eventKey="2" onClick={() => arrayToPDF(cxList, 'Customer Database')}><BsFileEarmarkPdfFill color='#D35400' /> PDF</Dropdown.Item>
                                                                     </Dropdown.Menu>
                                                                 </Dropdown>
                                                             </FormGroup>

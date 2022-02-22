@@ -16,7 +16,6 @@ export const loginCard = {
     transform: 'translate(-50%, -50%)',
     width: '450px',
     height: '350px',
-    boxShadow: '0px 1px 15px #c1c1c1',
 };
 
 export const loginHeader = {
@@ -48,7 +47,6 @@ export const resetPassCard = {
     transform: 'translate(-50%, -50%)',
     width: '450px',
     height: '380px',
-    boxShadow: '0px 1px 15px #c1c1c1',
 };
 
 export const resetPassAlert = {
@@ -70,7 +68,6 @@ export const registerCard = {
     transform: 'translate(-50%, -50%)',
     width: '450px',
     height: '535px',
-    boxShadow: '0px 1px 15px #c1c1c1',
 };
 
 export const registerAlert = {
