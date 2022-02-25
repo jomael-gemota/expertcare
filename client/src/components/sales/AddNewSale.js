@@ -22,11 +22,13 @@ import {
 import { MdSend } from 'react-icons/md';
 import { FaMinusCircle, FaPencilAlt } from 'react-icons/fa';
 import {
+    BsPencilFill,
+    BsPencilSquare,
     BsPlusCircleFill,
     BsFillPrinterFill,
+    BsBackspaceReverseFill,
     BsFillArrowLeftCircleFill,
-    BsXOctagonFill,
-    BsTable,
+    BsInfoLg,
 } from 'react-icons/bs'
 
 import {
@@ -45,11 +47,13 @@ export default function AddNewSale() {
     const [addedCx, setAddedCx] = useState([]);
     const [notif, setNotif] = useState({ status: false });
     const [notifForm, setNotifForm] = useState({ status: false });
+    const [notifModal, setNotifModal] = useState({ status: false });
     const [amountDue, setAmountDue] = useState(0);
     const [addedSaleList, setAddedSaleList] = useState([]);
     const [itemDetails, setItemDetails] = useState({});
     const [procDate, setProcDate] = useState();
     const [isEdit, setIsEdit] = useState(false);
+    const [osItemDetails, setOsItemDetails] = useState({});
     const [showEditOrderSaleModal, setShowEditOrderSaleModal] = useState(false);
 
     useEffect(() => {
@@ -186,7 +190,7 @@ export default function AddNewSale() {
                                 }
                             ]);
         
-                            handleUpdateStock(productId, qty);
+                            handleUpdateStock(productId, qty, 'add');
         
                             addedSaleList.map(sale => {
                                 return (
@@ -211,23 +215,67 @@ export default function AddNewSale() {
         }, 2000);
     };
 
-    const handleUpdateStock = (id, qty) => {
-        const stockIndex = prodList.findIndex(i => i.prodId === id);
-        prodList[stockIndex].stock -= Number(qty);
-    };
-
-    const handleEditOrderSaleForm = (sale) => {
-        setShowEditOrderSaleModal(true);
-    };
-
-    const handleRemoveSale = (e, itemName, deductAmount) => {
+    const handleRemoveSale = (e, itemName, deductAmount, productId, qty) => {
         e.preventDefault();
         
         setAddedSaleList(addedSaleList.filter(item => item.itemName !== itemName));
         setAmountDue(amountDue - deductAmount);
+
+        handleUpdateStock(productId, qty, 'drop');
     };
 
-    const handleEditOrderSaleModalClose = () => setShowEditOrderSaleModal(false);
+    const handleUpdateStock = (id, qty, action) => {
+        const stockIndex = prodList.findIndex(i => i.prodId === id);
+
+        if (action === 'add') {
+            prodList[stockIndex].stock -= Number(qty);
+        } else if (action === 'drop') {
+            prodList[stockIndex].stock += Number(qty);
+        };
+    };
+
+    const handleEditOrderSaleForm = (sale) => {
+        setOsItemDetails(sale);
+        setShowEditOrderSaleModal(true);
+    };
+
+    const handleUpdateOrderSale = () => {
+        let diffQty = 0;
+        let updateStockStatus = '';
+
+        const { qty } = osItemDetails;
+
+        if (qty !== undefined && qty !== 0 && qty !== '' && qty !== '0' && qty >= 1) {
+            addedSaleList.map(sale => {
+                const { productId, qty, unitPrice } = sale;
+    
+                if (productId === osItemDetails.productId) {
+                    if (Number(qty) > Number(osItemDetails.qty)) {
+                        updateStockStatus = 'drop';
+                        diffQty = (qty - osItemDetails.qty);
+    
+                        setAmountDue(amountDue - (diffQty * unitPrice));
+    
+                    } else {
+                        updateStockStatus = 'add';
+                        diffQty = (osItemDetails.qty - qty);
+    
+                        setAmountDue(amountDue + (diffQty * unitPrice));
+                    };
+    
+                    sale.qty = osItemDetails.qty;
+                    handleUpdateStock(osItemDetails.productId, diffQty, updateStockStatus);
+                };
+            });
+    
+            setShowEditOrderSaleModal(false);
+
+        } else setNotifModal({ status: true, variant: 'warning', message: 'Incorrect Quantity.' });
+
+        setTimeout(function() {
+            setNotifModal({ ...notifModal, status: false });
+        }, 3000);
+    };
 
     const submitOrderSale = () => {
         axios.post('/api/inv/createSale', addedSaleList,
@@ -271,19 +319,22 @@ export default function AddNewSale() {
     };
     
     const printOrderSlip = () => {
+        if (isEdit === true) setIsEdit(false);
         if (addedSaleList.length >= 1) {
-            printJS({
-                printable: 'orderSlip',
-                type: 'html',
-                style: `h6 { text-align: center; margin-bottom: 1px; }
-                    .tfTotalAmount { border-top: 1px solid #146A89 !important; }
-                    .valTotalAmount { color: red; border-top: 1px solid #146A89 !important; }
-                    .tbItem { text-align: center; }
-                    .trHeaders { border-bottom: 1px solid #146A89 !important; }
-                    table { border-collapse: collapse !important; }
-                    .orderTitle { text-align: center; margin-bottom: 0px; }
-                    @page { size: 5.5in 8in; margin: 5%; }`
-            });
+            setTimeout(function() {
+                printJS({
+                    printable: 'orderSlip',
+                    type: 'html',
+                    style: `h6 { text-align: center; margin-bottom: 1px; }
+                        .tfTotalAmount { border-top: 1px solid #146A89 !important; }
+                        .valTotalAmount { color: red; border-top: 1px solid #146A89 !important; }
+                        .tbItem { text-align: center; }
+                        .trHeaders { border-bottom: 1px solid #146A89 !important; }
+                        table { border-collapse: collapse !important; }
+                        .orderTitle { text-align: center; margin-bottom: 0px; }
+                        @page { size: 5.5in 8in; margin: 5%; }`
+                });
+            }, 1000);
                 
         } else setNotif({ status: true, variant: 'warning', message: 'Order Slip is empty.' });
 
@@ -300,21 +351,6 @@ export default function AddNewSale() {
             unitPrice: '',
             stock: ''
         });
-    };
-
-    const clearOrderSlip = () => {
-        addedSaleList.splice(0, addedSaleList.length);
-        setAmountDue(0);
-        setProcDate('');
-        setAddedCx({
-            customerId: '',
-            fullName: ''
-        });
-        setNotif({ status: true, variant: 'success', message: 'Order Slip is cleared.' })
-
-        setTimeout(function() {
-            setNotif({ ...notif, status: false });
-        }, 3000);
     };
 
     return (
@@ -347,7 +383,7 @@ export default function AddNewSale() {
                                                     onClose={() => setNotifForm({ status: false })}
                                                     dismissible
                                                 >
-                                                    {notifForm.message}
+                                                    <BsInfoLg /> {notifForm.message}
                                                 </Alert>
                                                 <Row>
                                                     <Form.Group as={Col} className="mb-3">
@@ -466,55 +502,92 @@ export default function AddNewSale() {
                                     aria-labelledby="contained-modal-title-vcenter"
                                     centered
                                     show={showEditOrderSaleModal}
-                                    onHide={handleEditOrderSaleModalClose}
+                                    onHide={() => setShowEditOrderSaleModal(false)}
                                     animation={true}
                                 >
-                                    <Modal.Header closeButton>
-                                        <Modal.Title><h5>Delete Confirmation</h5></Modal.Title>
+                                    <Modal.Header closeButton style={cardStyleHeader}>
+                                        <Modal.Title><BsPencilSquare /> Order Slip - Edit Item</Modal.Title>
                                     </Modal.Header>
-                                    <Modal.Body>Do you really want to delete this sale?</Modal.Body>
+                                    <Modal.Body>
+                                        <Alert
+                                            variant={notifModal.variant}
+                                            show={notifModal.status}
+                                            onClose={() => setNotifModal({ status: false })}
+                                            dismissible
+                                        >
+                                            <BsInfoLg /> {notifModal.message}
+                                        </Alert>
+                                        <Row>
+                                            <Form.Group as={Col} className="mb-3">
+                                                <Form.Label style={formLabel}>Item Number</Form.Label>
+                                                <Form.Control
+                                                    type="text"
+                                                    placeholder=""
+                                                    disabled
+                                                    value={`${osItemDetails.itemNumber}-${osItemDetails.itemName}`}
+                                                />
+                                            </Form.Group>
+                                            <Form.Group as={Col} sm={4} className="mb-3">
+                                                <Form.Label style={formLabel}>Quantity <Badge bg="danger">Required</Badge></Form.Label>
+                                                <Form.Control
+                                                    type="number"
+                                                    placeholder=""
+                                                    min={0}
+                                                    value={osItemDetails.qty}
+                                                    onChange={e => setOsItemDetails({ ...osItemDetails, qty: e.target.value })}
+                                                />
+                                            </Form.Group>
+                                        </Row>
+                                        <Row>
+                                            <Form.Group as={Col} className="mb-3">
+                                                <Form.Label style={formLabel}>Unit Price</Form.Label>
+                                                <Form.Control
+                                                    type="text"
+                                                    placeholder=""
+                                                    disabled
+                                                    value={(Math.round(osItemDetails.unitPrice * 100) / 100).toFixed(2)}
+                                                />
+                                            </Form.Group>
+                                            <Form.Group as={Col} className="mb-3">
+                                                <Form.Label style={formLabel}>Disc %</Form.Label>
+                                                <Form.Control
+                                                    type="text"
+                                                    placeholder=""
+                                                    disabled
+                                                    value={osItemDetails.discount}
+                                                />
+                                            </Form.Group>
+                                            <Form.Group as={Col} className="mb-3">
+                                                <Form.Label style={formLabel}>Total Price</Form.Label>
+                                                <Form.Control
+                                                    type="number"
+                                                    placeholder=""
+                                                    disabled
+                                                    value={(Math.round((osItemDetails.qty * osItemDetails.unitPrice) * 100) / 100).toFixed(2)}
+                                                />
+                                            </Form.Group>
+                                        </Row>
+                                    </Modal.Body>
                                     <Modal.Footer>
-                                        <Button variant="outline-secondary" size="sm" onClick={handleEditOrderSaleModalClose}>Cancel</Button>
-                                        <Button variant="danger" size="sm">Remove</Button>
+                                        <Button variant="outline-secondary" size="sm" onClick={() => setShowEditOrderSaleModal(false)}><BsBackspaceReverseFill /> Cancel</Button>
+                                        <Button variant="success" size="sm" onClick={handleUpdateOrderSale}><BsPencilFill /> Update Item</Button>
                                     </Modal.Footer>
                                 </Modal>
                                 <Card.Header style={{ border: 'none', backgroundColor: '#E3F2FD', padding: '0 0 0 0' }}>
-                                    {/* <Form style={{ float: 'left' }}>
+                                    <Form style={{ float: 'left' }}>
                                         <Form.Check
                                             type="switch"
                                             id="custom-switch"
                                             label="Edit Mode"
-                                            disabled={addedSaleList.length > 0 ? false : true}
+                                            checked={isEdit}
                                             onClick={() => setIsEdit(!isEdit)}
                                         />
-                                    </Form> */}
+                                    </Form>
                                     <ButtonGroup as={Col} className="mb-2" style={{ float: 'right' }}>
-                                        <Link to={'/home'}>
-                                            <ToggleButton
-                                                key={1}
-                                                type="radio"
-                                                variant="warning"
-                                                name="radio"
-                                                style={{ borderRadius: '5px', marginLeft: '3px' }}
-                                                onClick={clearOrderSlip}
-                                            >
-                                                <BsTable />
-                                            </ToggleButton>
-                                        </Link>
-                                        <ToggleButton
-                                            key={2}
-                                            type="radio"
-                                            variant="secondary"
-                                            name="radio"
-                                            style={{ borderRadius: '5px', marginLeft: '3px' }}
-                                            onClick={clearOrderSlip}
-                                        >
-                                            <BsXOctagonFill />
-                                        </ToggleButton>
                                         <ToggleButton
                                             key={3}
                                             type="radio"
-                                            variant="secondary"
+                                            variant="warning"
                                             name="radio"
                                             style={{ borderRadius: '5px', marginLeft: '3px' }}
                                             onClick={printOrderSlip}
@@ -540,7 +613,7 @@ export default function AddNewSale() {
                                         onClose={() => setNotif({ status: false })}
                                         dismissible
                                     >
-                                        {notif.message}
+                                        <BsInfoLg /> {notif.message}
                                     </Alert>
                                     <h5 className='orderTitle' style={{ textAlign: 'center', marginTop: '10px' }}>Expert Care Pharmacy</h5>
                                     <p className='orderTitle' style={{ textAlign: 'center'}}>Lapu Lapu City, Cebu, Philippines 6000</p>
@@ -567,20 +640,20 @@ export default function AddNewSale() {
                                         </thead>
                                         <tbody>
                                             {addedSaleList.length >= 1 ? addedSaleList.map((sale, index) => {
-                                                const { itemName, itemNumber, qty, unitPrice, discount } = sale;
+                                                const { productId, itemName, itemNumber, qty, unitPrice, discount } = sale;
                                                 return <tr key={index}>
                                                     <td style={{ textAlign: 'center' }}>
                                                         {isEdit === true
                                                             ?   <span>
                                                                     <FaPencilAlt
                                                                         color='orange'
-                                                                        style={{ cursor: 'pointer', marginRight: '15px' }}
+                                                                        style={{ cursor: 'pointer', marginRight: '15px', marginLeft: '10px' }}
                                                                         onClick={() => handleEditOrderSaleForm(sale)}
                                                                     />
                                                                     <FaMinusCircle
                                                                         color='red'
                                                                         style={{ cursor: 'pointer' }}
-                                                                        onClick={e => handleRemoveSale(e, itemName, unitPrice * qty)}
+                                                                        onClick={e => handleRemoveSale(e, itemName, unitPrice * qty, productId, qty)}
                                                                     />
                                                                 </span>
                                                             :   ''}
