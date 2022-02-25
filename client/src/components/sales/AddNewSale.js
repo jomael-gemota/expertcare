@@ -647,12 +647,31 @@ export default function AddNewSale() {
                                                             ?   <span>
                                                                     <FaPencilAlt
                                                                         color='orange'
-                                                                        style={{ cursor: 'pointer', marginRight: '15px', marginLeft: '10px' }}
+                                                                        style={{
+                                                                            cursor: 'pointer',
+                                                                            marginRight: '2px',
+                                                                            border: '0px solid',
+                                                                            borderRadius: '3px',
+                                                                            height: '30px',
+                                                                            width: '35px',
+                                                                            padding: '6px'
+                                                                        }}
+                                                                        onMouseOver={e => e.target.style.border = '1px solid'}
+                                                                        onMouseOut={e => e.target.style.border = ''}
                                                                         onClick={() => handleEditOrderSaleForm(sale)}
                                                                     />
                                                                     <FaMinusCircle
                                                                         color='red'
-                                                                        style={{ cursor: 'pointer' }}
+                                                                        style={{
+                                                                            cursor: 'pointer',
+                                                                            border: '0px solid',
+                                                                            borderRadius: '3px',
+                                                                            height: '30px',
+                                                                            width: '35px',
+                                                                            padding: '6px'
+                                                                        }}
+                                                                        onMouseOver={e => e.target.style.border = '1px solid'}
+                                                                        onMouseOut={e => e.target.style.border = ''}
                                                                         onClick={e => handleRemoveSale(e, itemName, unitPrice * qty, productId, qty)}
                                                                     />
                                                                 </span>
