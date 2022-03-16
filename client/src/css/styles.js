@@ -96,7 +96,7 @@ export const homeContainer = {
 
 export const navBarStyles = {
     backgroundColor: '#146a89',
-    boxShadow: '0px 1px 8px #455A64',
+    // boxShadow: '0px 1px 8px #455A64',
 };
 
 export const navBarBrand = {

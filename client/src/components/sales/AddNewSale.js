@@ -496,7 +496,7 @@ export default function AddNewSale() {
                     </Col>
                     <Col sm={5}>
                         <CardGroup>
-                            <Card style={{ border: '1px solid #E3F2FD' }}>
+                            <Card style={{ border: '0px solid #E3F2FD' }}>
                                 <Modal
                                     size="md"
                                     aria-labelledby="contained-modal-title-vcenter"
@@ -573,7 +573,7 @@ export default function AddNewSale() {
                                         <Button variant="success" size="sm" onClick={handleUpdateOrderSale}><BsPencilFill /> Update Item</Button>
                                     </Modal.Footer>
                                 </Modal>
-                                <Card.Header style={{ border: 'none', backgroundColor: '#E3F2FD', padding: '0 0 0 0' }}>
+                                <Card.Header style={{ border: '#E3F2FD', backgroundColor: '#E3F2FD', padding: '0 0 0 0' }}>
                                     <Form style={{ float: 'left' }}>
                                         <Form.Check
                                             type="switch"

@@ -97,7 +97,7 @@ export default function Login() {
                             onClick={signIn}
                         >
                             {isLoading
-                                ? <div><Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> Loading...</div>
+                                ? <div><Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> Logging in...</div>
                                 : <span><BsPersonBoundingBox /> Sign In</span>}
                         </Button>
                         <Link
