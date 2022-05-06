@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import axios from 'axios';
 import getJwt from '../../helper/getJwt';
 import {
@@ -17,17 +17,22 @@ import {
     BsFillPencilFill,
     BsFillArrowLeftCircleFill,
 } from 'react-icons/bs';
+import { FaInfo } from 'react-icons/fa';
 
 import {
     homeContainer,
     cardStyleHeader,
-    formLabel
+    formLabel,
+    sidebarStyles,
+    formControl,
+    cardStyles,
 } from '../../css/styles';
 
 import NavigationBar from '../navigations/NavigationBar';
 import SideBar from '../navigations/SideBar';
 
 export default function UpdateProduct() {
+    const history = useHistory();
     const [prodList, setProdList] = useState([]);
     const [prodDetails, setProdDetails] = useState([]);
     const [notif, setNotif] = useState({ status: false });
@@ -65,39 +70,48 @@ export default function UpdateProduct() {
             stock,
         } = prodDetails;
 
-        if (productId !== undefined && itemName !== undefined && itemNumber !== undefined && units !== undefined && unitPrice !== undefined && stock !== undefined) {
-            if (productId !== "" && itemName !== "" && itemNumber !== "" && units !== "" && unitPrice !== "" && stock !== "") {
-                axios.patch('/api/inv/updateProductById', prodDetails,
-                    { headers: { Authorization: getJwt() } })
-                    .then(() => setNotif({ status: true, variant: 'success', message: 'Product Updated!' }))
-                    .catch(() => setNotif({ status: true, variant: 'warning', message: 'Something is wrong.' }));
+        let isProdExist = false;
+        prodList.find(x => { if (x.itemName === itemName) isProdExist = true });
 
-                setProdDetails({
-                    productId: '',
-                    itemName: '',
-                    itemNumber: '',
-                    units: '',
-                    unitPrice: '',
-                    stock: '',
-                    discount: '',
-                    description: ''
-                });
-
-            } else setNotif({ status: true, variant: 'warning', message: 'Fill-up all the required fields.' });
-        } else setNotif({ status: true, variant: 'warning', message: 'Fill-up all the required fields.' });
+        if (isProdExist === true) {
+            if (productId !== undefined && itemName !== undefined && itemNumber !== undefined && units !== undefined && unitPrice !== undefined && stock !== undefined) {
+                if (productId !== "" && itemName !== "" && itemNumber !== "" && units !== "" && unitPrice !== "" && stock !== "") {
+                    axios.patch('/api/inv/updateProductById', prodDetails,
+                        { headers: { Authorization: getJwt() } })
+                        .then(() => setNotif({ status: true, variant: 'success', message: 'Product Updated!' }))
+                        .catch(() => setNotif({ status: true, variant: 'warning', message: 'Something is wrong.' }));
+    
+                    setProdDetails({
+                        productId: '',
+                        itemName: '',
+                        itemNumber: '',
+                        units: '',
+                        unitPrice: '',
+                        stock: '',
+                        discount: '',
+                        description: ''
+                    });
+    
+                    setTimeout(function() {
+                        history.push('/home');
+                    }, 1500);
+    
+                } else setNotif({ status: true, variant: 'warning', message: 'Fill-up all the required fields.' });
+            } else setNotif({ status: true, variant: 'warning', message: 'Fill-up all the required fields.' });   
+        } else setNotif({ status: true, variant: 'warning', message: 'The item name does not exist in the system.' });
 
         setTimeout(function() {
             setNotif({ ...notif, status: false });
-        }, 3000);
+        }, 2000);
     };
 
-    const handleProductIdChange = (e) => {
+    const handleProductNameChange = (e) => {
         let objProdDetails = {};
 
-        setProdDetails({ ...prodDetails, productId: e.target.value });
+        setProdDetails({ ...prodDetails, itemName: e.target.value });
 
         prodList.find(x => {
-            if (x.productId === Number(e.target.value)) {
+            if (x.itemName === e.target.value) {
                 objProdDetails = {
                     ...prodDetails,
                     productId: x.productId,
@@ -136,17 +150,15 @@ export default function UpdateProduct() {
                         <NavigationBar />
                     </Col>
                 </Row>
-                <br />
-                <br />
-                <Row style={{ padding: '3%' }}>
-                    <Col sm={2}>
+                <Row>
+                    <Col sm={2} style={sidebarStyles}>
                         <SideBar />
                     </Col>
-                    <Col sm={6}>
-                        <Tab.Content>
+                    <Col sm={8}>
+                        <Tab.Content style={{ margin: '100px 20px 30px 50px' }}>
                             <Tab.Pane eventKey="first">
                                 <CardGroup>
-                                    <Card>
+                                    <Card style={cardStyles}>
                                         <Card.Header style={cardStyleHeader}>
                                             Edit Product 
                                         </Card.Header>
@@ -158,33 +170,36 @@ export default function UpdateProduct() {
                                                     show={notif.status}
                                                     onClose={() => setNotif({ status: false })}
                                                 >
-                                                    {notif.message}
+                                                    <FaInfo /> {notif.message}
                                                 </Alert>
                                                 <Row>
-                                                    <Form.Group as={Col} sm={4} className="mb-3">
-                                                        <Form.Label style={formLabel}>Product ID <Badge bg="danger">Required</Badge></Form.Label>
-                                                        <Form.Control
-                                                            type="text"
-                                                            disabled={prodList.length > 0 ? false : true}
-                                                            placeholder={prodList.length > 0 ? "" : "Loading..."}
-                                                            list="productId"
-                                                            value={prodDetails.productId}
-                                                            onChange={e => handleProductIdChange(e)}
-                                                        />
-                                                        <datalist id="productId">
-                                                            {prodList.length >= 1 ? prodList.map((prod, index) => {
-                                                                const { productId  } = prod;
-                                                                return <option key={index} value={productId} />
-                                                            }): ''}
-                                                        </datalist>
-                                                    </Form.Group>
                                                     <Form.Group as={Col} className="mb-3">
                                                         <Form.Label style={formLabel}>Item Name <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
+                                                            type="text"
+                                                            list="itemName"
+                                                            disabled={prodList.length > 0 ? false : true}
+                                                            placeholder={prodList.length > 0 ? "" : "Loading..."}
+                                                            value={prodDetails.itemName}
+                                                            onChange={e => handleProductNameChange(e)}
+                                                        />
+                                                        <datalist id="itemName">
+                                                            {prodList.length >= 1 ? prodList.map((prod, index) => {
+                                                                const { itemName  } = prod;
+                                                                return <option key={index} value={itemName} />
+                                                            }): ''}
+                                                        </datalist>
+                                                    </Form.Group>
+                                                    <Form.Group as={Col} sm={4} className="mb-3">
+                                                        <Form.Label style={formLabel}>Product ID</Form.Label>
+                                                        <Form.Control
+                                                            style={formControl}
+                                                            disabled
                                                             type="text"
                                                             placeholder=""
-                                                            value={prodDetails.itemName}
-                                                            onChange={e => setProdDetails({ ...prodDetails, itemName: e.target.value })}
+                                                            value={prodDetails.productId}
+                                                            onChange={e => setProdDetails({ ...prodDetails, productId: e.target.value })}
                                                         />
                                                     </Form.Group>
                                                 </Row>
@@ -194,6 +209,7 @@ export default function UpdateProduct() {
                                                     <Form.Group as={Col} sm={4} className="mb-3">
                                                         <Form.Label style={formLabel}>Item Number <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="text"
                                                             placeholder=""
                                                             value={prodDetails.itemNumber}
@@ -203,6 +219,7 @@ export default function UpdateProduct() {
                                                     <Form.Group as={Col} className="mb-3">
                                                         <Form.Label style={formLabel}>Units <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="text"
                                                             placeholder=""
                                                             value={prodDetails.units}
@@ -212,6 +229,7 @@ export default function UpdateProduct() {
                                                     <Form.Group as={Col} className="mb-3">
                                                         <Form.Label style={formLabel}>Unit Price <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="number"
                                                             placeholder=""
                                                             min={0}
@@ -220,11 +238,11 @@ export default function UpdateProduct() {
                                                         />
                                                     </Form.Group>
                                                 </Row>
-                                                <hr />
                                                 <Row className="mb-3">
                                                     <Form.Group as={Col} sm={3} className="mb-3">
                                                         <Form.Label style={formLabel}>Stock <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="number"
                                                             placeholder=""
                                                             min={0}
@@ -235,6 +253,7 @@ export default function UpdateProduct() {
                                                     <Form.Group as={Col} sm={3} className="mb-3">
                                                         <Form.Label style={formLabel}>Disc. % <Badge bg="info">Optional</Badge></Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="number"
                                                             placeholder=""
                                                             min={0}
@@ -245,6 +264,7 @@ export default function UpdateProduct() {
                                                     <Form.Group as={Col} sm={6} className="mb-3">
                                                         <Form.Label style={formLabel}>Description <Badge bg="info">Optional</Badge></Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             as="textarea"
                                                             type="text"
                                                             placeholder=""

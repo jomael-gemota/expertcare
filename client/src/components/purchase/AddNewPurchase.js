@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import axios from 'axios';
 import getJwt from '../../helper/getJwt';
 import {
@@ -17,17 +17,22 @@ import {
     BsPlusCircleFill,
     BsFillArrowLeftCircleFill,
 } from 'react-icons/bs';
+import { FaInfo } from 'react-icons/fa';
 
 import {
     homeContainer,
     cardStyleHeader,
-    formLabel
+    formLabel,
+    sidebarStyles,
+    cardStyles,
+    formControl,
 } from '../../css/styles';
 
 import NavigationBar from '../navigations/NavigationBar';
 import SideBar from '../navigations/SideBar';
 
 export default function AddNewPurchase() {
+    const history = useHistory();
     const [notif, setNotif] = useState({ status: false });
     const [purDetails, setPurDetails] = useState({});
     const [prodList, setProdList] = useState([]);
@@ -40,7 +45,7 @@ export default function AddNewPurchase() {
                 let prodArr = [];
                 res.data.message.map(prod => {
                     return prodArr.push({
-                        prodId: prod.productID,
+                        productId: prod.productID,
                         itemNumber: prod.itemNumber,
                         itemName: prod.itemName,
                         discount: prod.discount,
@@ -69,8 +74,10 @@ export default function AddNewPurchase() {
 
     const addNewPurchase = () => {
         const {
+            productId,
             itemName,
             itemNumber,
+            currStock,
             quantity,
             unitPrice,
             vendorName,
@@ -82,10 +89,27 @@ export default function AddNewPurchase() {
                 axios.post('/api/inv/addNewPurchase', purDetails,
                     { headers: { Authorization: getJwt() } })
                     .then(() => {
+                        let prodDetails = {
+                            productId: productId,
+                            itemName: itemName,
+                            itemNumber: itemNumber,
+                            stock: Number(currStock) + Number(quantity)
+                        };
+
+                        axios.patch('/api/inv/updateProductById', prodDetails,
+                            { headers: { Authorization: getJwt() } })
+                            .then()
+                            .catch();
+
                         setNotif({ status: true, variant: 'success', message: 'Purchase Added!' });
                         resetForm();
                     })
                     .catch(() => setNotif({ status: true, variant: 'warning', message: 'Something is wrong.' }))
+
+                setTimeout(function() {
+                    history.push('/home');
+                }, 1500);
+
             } else setNotif({ status: true, variant: 'warning', message: 'Fill-up all the required fields.' });
         } else setNotif({ status: true, variant: 'warning', message: 'Fill-up all the required fields.' });
 
@@ -102,8 +126,10 @@ export default function AddNewPurchase() {
             if (x.itemName === e.target.value) {
                 objPurDetails = {
                     ...purDetails,
+                    productId: x.productId,
                     itemName: x.itemName,
-                    itemNumber: x.itemNumber
+                    itemNumber: x.itemNumber,
+                    currStock: x.stock
                 };
             };
 
@@ -159,17 +185,15 @@ export default function AddNewPurchase() {
                         <NavigationBar />
                     </Col>
                 </Row>
-                <br />
-                <br />
-                <Row style={{ padding: '3%' }}>
-                    <Col sm={2}>
+                <Row>
+                    <Col sm={2} style={ sidebarStyles }>
                         <SideBar />
                     </Col>
                     <Col sm={6}>
-                        <Tab.Content>
+                        <Tab.Content style={{ margin: '100px 20px 30px 50px' }}>
                             <Tab.Pane eventKey="first">
                                 <CardGroup>
-                                    <Card>
+                                    <Card style={cardStyles}>
                                         <Card.Header style={cardStyleHeader}>
                                             Add New Purchase
                                         </Card.Header>
@@ -181,12 +205,13 @@ export default function AddNewPurchase() {
                                                     show={notif.status}
                                                     onClose={() => setNotif({ status: false })}
                                                 >
-                                                    {notif.message}
+                                                    <FaInfo /> {notif.message}
                                                 </Alert>
                                                 <Row>
                                                     <Form.Group as={Col} sm={7} className="mb-3">
                                                         <Form.Label style={formLabel}>Item Name <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="text"
                                                             placeholder=""
                                                             list="itemName"
@@ -200,8 +225,9 @@ export default function AddNewPurchase() {
                                                         </datalist>
                                                     </Form.Group>
                                                     <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label style={formLabel}>Item Number <Badge bg="secondary">Generated</Badge></Form.Label>
+                                                        <Form.Label style={formLabel}>Item Number</Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="text"
                                                             placeholder=""
                                                             disabled
@@ -215,6 +241,7 @@ export default function AddNewPurchase() {
                                                     <Form.Group as={Col} sm={3} className="mb-3">
                                                         <Form.Label style={formLabel}>Quantity <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="number"
                                                             placeholder=""
                                                             min={0}
@@ -225,6 +252,7 @@ export default function AddNewPurchase() {
                                                     <Form.Group as={Col} sm={4} className="mb-3">
                                                         <Form.Label style={formLabel}>Unit Price <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="number"
                                                             placeholder=""
                                                             min={0}
@@ -233,11 +261,11 @@ export default function AddNewPurchase() {
                                                         />
                                                     </Form.Group>
                                                 </Row>
-                                                <hr />
                                                 <Row className="mb-3">
                                                     <Form.Group as={Col} sm={7} className="mb-3">
                                                         <Form.Label style={formLabel}>Vendor Name <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="text"
                                                             placeholder=""
                                                             list="vendorName"
@@ -254,6 +282,7 @@ export default function AddNewPurchase() {
                                                     <Form.Group as={Col} sm={5} className="mb-3">
                                                         <Form.Label style={formLabel}>Purchase Date <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="date"
                                                             placeholder=""
                                                             value={purDetails.purchaseDate}

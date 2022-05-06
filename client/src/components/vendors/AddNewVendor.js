@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useHistory } from 'react-router-dom';
 import axios from 'axios';
 import getJwt from '../../helper/getJwt';
 import {
@@ -17,38 +17,78 @@ import {
     BsPlusCircleFill,
     BsFillArrowLeftCircleFill,
 } from 'react-icons/bs';
+import { FaInfo } from 'react-icons/fa';
 
 import {
     homeContainer,
     cardStyleHeader,
-    formLabel
+    formLabel,
+    sidebarStyles,
+    cardStyles,
+    formControl,
 } from '../../css/styles';
 
 import NavigationBar from '../navigations/NavigationBar';
 import SideBar from '../navigations/SideBar';
 
 export default function AddNewVendor() {
+    const history = useHistory();
     const [notif, setNotif] = useState({ status: false });
     const [vendDetails, setVendDetails] = useState({});
+    const [vendList, setVendList] = useState([]);
+
+    useEffect(() => {
+        axios.get('/api/inv/getAllVendors',
+            { headers: { Authorization: getJwt() } })
+            .then(res => {
+                let vendArr = [];
+                res.data.message.map(vendor => {
+                    return vendArr.push({
+                        vendorId: vendor.vendorID,
+                        fullName: vendor.fullName,
+                        email: vendor.email,
+                        mobile: vendor.mobile,
+                        phone: vendor.phone2,
+                        address: vendor.address,
+                        city: vendor.city,
+                        district: vendor.district
+                    });
+                });
+    
+                return setVendList(vendArr);
+
+            }).catch(error => setVendList({ key: error.name, text: error.message }));
+    }, [vendDetails.vendorId]);
 
     const addNewVendor = () => {
         const {
             fullName,
             address,
-            district
+            mobile
         } = vendDetails;
 
-        if (fullName !== undefined && address !== undefined && district !== undefined) {
-            if (fullName !== "" && address !== "" && district !== "") {
-                axios.post('/api/inv/addNewVendor', vendDetails,
-                    { headers: { Authorization: getJwt() } })
-                    .then(() => {
-                        setNotif({ status: true, variant: 'success', message: 'Vendor Added!' });
-                        resetForm();
-                    })
-                    .catch(() => setNotif({ status: true, variant: 'warning', message: 'Something is wrong.' }))
+        let isVendorExist = false;
+        vendList.find(x => { if (x.fullName === fullName) isVendorExist = true });
+
+        if (isVendorExist !== true) {
+            if (fullName !== undefined && address !== undefined && mobile !== undefined) {
+                if (fullName !== "" && address !== "" && mobile !== "") {
+                    axios.post('/api/inv/addNewVendor', vendDetails,
+                        { headers: { Authorization: getJwt() } })
+                        .then(() => {
+                            setNotif({ status: true, variant: 'success', message: 'Vendor Added!' });
+                            resetForm();
+                        })
+                        .catch(() => setNotif({ status: true, variant: 'warning', message: 'Something is wrong.' }))
+
+                    setTimeout(function() {
+                        history.push('/home');
+                    }, 1500);
+                } else setNotif({ status: true, variant: 'warning', message: 'Fill-up all the required fields.' });
             } else setNotif({ status: true, variant: 'warning', message: 'Fill-up all the required fields.' });
-        } else setNotif({ status: true, variant: 'warning', message: 'Fill-up all the required fields.' });
+        } else {
+            setNotif({ status: true, variant: 'warning', message: 'You have entered an existing vendor.' })
+        };
 
         setTimeout(function() {
             setNotif({ ...notif, status: false });
@@ -76,17 +116,15 @@ export default function AddNewVendor() {
                         <NavigationBar />
                     </Col>
                 </Row>
-                <br />
-                <br />
-                <Row style={{ padding: '3%' }}>
-                    <Col sm={2}>
+                <Row>
+                    <Col sm={2} style={sidebarStyles}>
                         <SideBar />
                     </Col>
                     <Col sm={6}>
-                        <Tab.Content>
+                        <Tab.Content style={{ margin: '100px 20px 30px 50px' }}>
                             <Tab.Pane eventKey="first">
                                 <CardGroup>
-                                    <Card>
+                                    <Card style={cardStyles}>
                                         <Card.Header style={cardStyleHeader}>
                                             Add New Vendor
                                         </Card.Header>
@@ -98,56 +136,31 @@ export default function AddNewVendor() {
                                                     show={notif.status}
                                                     onClose={() => setNotif({ status: false })}
                                                 >
-                                                    {notif.message}
+                                                    <FaInfo /> {notif.message}
                                                 </Alert>
                                                 <Row>
                                                     <Form.Group as={Col} sm={6} className="mb-3">
-                                                        <Form.Label style={formLabel}>Full Name <Badge bg="danger">Required</Badge></Form.Label>
+                                                        <Form.Label style={formLabel}>Vendor Business Name <Badge bg="danger">Required</Badge> <Badge bg="primary">Unique</Badge></Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="text"
-                                                            placeholder=""
+                                                            disabled={vendList.length > 0 ? false : true}
+                                                            placeholder={vendList.length > 0 ? "" : "Loading..."}
+                                                            list="productName"
                                                             value={vendDetails.fullName}
                                                             onChange={e => setVendDetails({ ...vendDetails, fullName: e.target.value })}
                                                         />
+                                                        <datalist id="productName">
+                                                            {vendList.length >= 1 ? vendList.map((prod, index) => {
+                                                                const { fullName  } = prod;
+                                                                return <option key={index} value={fullName} />
+                                                            }): ''}
+                                                        </datalist>
                                                     </Form.Group>
                                                     <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label style={formLabel}>Email Address <Badge bg="info">Optional</Badge></Form.Label>
+                                                        <Form.Label style={formLabel}>Vendor Current Address <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
-                                                            type="email"
-                                                            placeholder=""
-                                                            min={0}
-                                                            value={vendDetails.email}
-                                                            onChange={e => setVendDetails({ ...vendDetails, email: e.target.value })}
-                                                        />
-                                                    </Form.Group>
-                                                </Row>
-                                            </Form>
-                                            <Form>
-                                                <Row className="mb-3">
-                                                    <Form.Group as={Col} sm={6} className="mb-3">
-                                                        <Form.Label style={formLabel}>Mobile No. <Badge bg="info">Optional</Badge></Form.Label>
-                                                        <Form.Control
-                                                            type="number"
-                                                            placeholder=""
-                                                            value={vendDetails.mobile}
-                                                            onChange={e => setVendDetails({ ...vendDetails, mobile: e.target.value })}
-                                                        />
-                                                    </Form.Group>
-                                                    <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label style={formLabel}>Phone No. <Badge bg="info">Optional</Badge></Form.Label>
-                                                        <Form.Control
-                                                            type="number"
-                                                            placeholder=""
-                                                            value={vendDetails.phone}
-                                                            onChange={e => setVendDetails({ ...vendDetails, phone: e.target.value })}
-                                                        />
-                                                    </Form.Group>
-                                                </Row>
-                                                <hr />
-                                                <Row className="mb-3">
-                                                    <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label style={formLabel}>Full Address <Badge bg="danger">Required</Badge></Form.Label>
-                                                        <Form.Control
+                                                            style={formControl}
                                                             type="text"
                                                             placeholder=""
                                                             value={vendDetails.address}
@@ -155,19 +168,56 @@ export default function AddNewVendor() {
                                                         />
                                                     </Form.Group>
                                                 </Row>
+                                            </Form>
+                                            <Form>
                                                 <Row className="mb-3">
-                                                    <Form.Group as={Col} sm={6} className="mb-3">
+                                                    <Form.Group as={Col} sm={3} className="mb-3">
+                                                        <Form.Label style={formLabel}>Mobile No. <Badge bg="danger">Required</Badge></Form.Label>
+                                                        <Form.Control
+                                                            style={formControl}
+                                                            type="number"
+                                                            placeholder=""
+                                                            value={vendDetails.mobile}
+                                                            onChange={e => setVendDetails({ ...vendDetails, mobile: e.target.value })}
+                                                        />
+                                                    </Form.Group>
+                                                    <Form.Group as={Col} className="mb-3">
+                                                        <Form.Label style={formLabel}>Email Address <Badge bg="info">Optional</Badge></Form.Label>
+                                                        <Form.Control
+                                                            style={formControl}
+                                                            type="email"
+                                                            placeholder=""
+                                                            min={0}
+                                                            value={vendDetails.email}
+                                                            onChange={e => setVendDetails({ ...vendDetails, email: e.target.value })}
+                                                        />
+                                                    </Form.Group>
+                                                    <Form.Group as={Col} sm={3} className="mb-3">
+                                                        <Form.Label style={formLabel}>Phone No. <Badge bg="info">Optional</Badge></Form.Label>
+                                                        <Form.Control
+                                                            style={formControl}
+                                                            type="number"
+                                                            placeholder=""
+                                                            value={vendDetails.phone}
+                                                            onChange={e => setVendDetails({ ...vendDetails, phone: e.target.value })}
+                                                        />
+                                                    </Form.Group>
+                                                </Row>
+                                                <Row className="mb-3">
+                                                    <Form.Group as={Col} sm={3} className="mb-3">
                                                         <Form.Label style={formLabel}>City <Badge bg="info">Optional</Badge></Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="text"
                                                             placeholder=""
                                                             value={vendDetails.city}
                                                             onChange={e => setVendDetails({ ...vendDetails, city: e.target.value })}
                                                         />
                                                     </Form.Group>
-                                                    <Form.Group as={Col} sm={6} className="mb-3">
-                                                        <Form.Label style={formLabel}>District <Badge bg="danger">Required</Badge></Form.Label>
+                                                    <Form.Group as={Col} sm={3} className="mb-3">
+                                                        <Form.Label style={formLabel}>District <Badge bg="info">Optional</Badge></Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="text"
                                                             placeholder=""
                                                             value={vendDetails.district}

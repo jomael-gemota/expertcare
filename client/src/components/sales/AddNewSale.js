@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import axios from 'axios';
 import moment from 'moment';
 import getJwt from '../../helper/getJwt';
@@ -28,20 +28,24 @@ import {
     BsFillPrinterFill,
     BsBackspaceReverseFill,
     BsFillArrowLeftCircleFill,
-    BsInfoLg,
 } from 'react-icons/bs'
+import { FaInfo } from 'react-icons/fa';
 
 import {
     homeContainer,
     cardStyleHeader,
     formLabel,
     orderSlipStyles,
+    sidebarStyles,
+    formControl,
+    cardStyles,
 } from '../../css/styles';
 
 import NavigationBar from '../navigations/NavigationBar';
 import SideBar from '../navigations/SideBar';
 
 export default function AddNewSale() {
+    const history = useHistory();
     const [prodList, setProdList] = useState([]);
     const [cxList, setCxList] = useState([]);
     const [addedCx, setAddedCx] = useState([]);
@@ -205,10 +209,8 @@ export default function AddNewSale() {
                         } else setNotifForm({ status: true, variant: 'warning', message: 'Incorrect Quantity.' });
                     } else setNotifForm({ status: true, variant: 'warning', message: 'Out of Stock.' });
                 } else setNotifForm({ status: true, variant: 'warning', message: 'Item Name is Required.' });
-            } else setNotifForm({ status: true, variant: 'warning', message: 'Customer Name is Required.' });
-        } else {
-            setNotifForm({ status: true, variant: 'warning', message: 'You have already entered the product.' })
-        };
+            } else setNotifForm({ status: true, variant: 'warning', message: 'Customer Name does not exist in the system.' });
+        } else setNotifForm({ status: true, variant: 'warning', message: 'You have already entered the product.' });
 
         setTimeout(function() {
             setNotifForm({ ...notifForm, status: false });
@@ -310,12 +312,16 @@ export default function AddNewSale() {
                     customerId: '',
                     fullName: ''
                 });
+
+                setTimeout(function() {
+                    history.push('/home');
+                }, 1500);
             })
             .catch(() => setNotif({ status: true, variant: 'warning', message: 'Order Slip is empty.' }))
 
         setTimeout(function() {
             setNotif({ ...notif, status: false });
-        }, 5000);
+        }, 2000);
     };
     
     const printOrderSlip = () => {
@@ -361,17 +367,15 @@ export default function AddNewSale() {
                         <NavigationBar />
                     </Col>
                 </Row>
-                <br />
-                <br />
-                <Row style={{ padding: '3%' }}>
-                    <Col sm={2}>
+                <Row>
+                    <Col sm={2} style={sidebarStyles}>
                         <SideBar />
                     </Col>
                     <Col sm={5}>
-                        <Tab.Content>
+                        <Tab.Content style={{ margin: '100px 5px 30px 50px' }}>
                             <Tab.Pane eventKey="first">
                                 <CardGroup>
-                                    <Card>
+                                    <Card style={cardStyles}>
                                         <Card.Header style={cardStyleHeader}>
                                             Add New Sale 
                                         </Card.Header>
@@ -383,12 +387,13 @@ export default function AddNewSale() {
                                                     onClose={() => setNotifForm({ status: false })}
                                                     dismissible
                                                 >
-                                                    <BsInfoLg /> {notifForm.message}
+                                                    <FaInfo /> {notifForm.message}
                                                 </Alert>
                                                 <Row>
                                                     <Form.Group as={Col} className="mb-3">
                                                         <Form.Label style={formLabel}>Customer Name <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="text"
                                                             disabled={cxList.length > 0 ? false : true}
                                                             placeholder={cxList.length > 0 ? "" : "Loading..."}
@@ -406,11 +411,11 @@ export default function AddNewSale() {
                                                 </Row>
                                             </Form>
                                             <Form id="addNewSaleForm">
-                                                <hr />
                                                 <Row className="mb-3">
                                                     <Form.Group as={Col} className="mb-3">
                                                         <Form.Label style={formLabel}>Item Name <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="text"
                                                             disabled={prodList.length > 0 ? false : true}
                                                             placeholder={prodList.length > 0 ? "" : "Loading..."}
@@ -425,8 +430,9 @@ export default function AddNewSale() {
                                                         </datalist>
                                                     </Form.Group>
                                                     <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label style={formLabel}>Item Number  <Badge bg="secondary">Generated</Badge></Form.Label>
+                                                        <Form.Label style={formLabel}>Item Number</Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="text"
                                                             placeholder=""
                                                             disabled
@@ -436,8 +442,9 @@ export default function AddNewSale() {
                                                 </Row>
                                                 <Row className="mb-3">
                                                     <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label style={formLabel}>Quantity <Badge bg="danger">Required</Badge></Form.Label>
+                                                        <Form.Label style={formLabel}>Qty <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="number"
                                                             placeholder=""
                                                             min={0}
@@ -448,14 +455,16 @@ export default function AddNewSale() {
                                                     <Form.Group as={Col} sm={3} className="mb-3">
                                                         <Form.Label style={formLabel}>Disc. % <Badge bg="info">Optional</Badge></Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="number"
                                                             placeholder=""
                                                             onChange={e => setItemDetails({ ...itemDetails, discount: e.target.value })}
                                                         />
                                                     </Form.Group>
                                                     <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label style={formLabel}>Unit Price <Badge bg="secondary">Generated</Badge></Form.Label>
+                                                        <Form.Label style={formLabel}>Unit Price</Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="number"
                                                             placeholder=""
                                                             disabled
@@ -463,8 +472,9 @@ export default function AddNewSale() {
                                                         />
                                                     </Form.Group>
                                                     <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label style={formLabel}>Total Stock  <Badge bg="secondary">Generated</Badge></Form.Label>
+                                                        <Form.Label style={formLabel}>Total Stock</Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="number"
                                                             placeholder=""
                                                             disabled
@@ -495,7 +505,7 @@ export default function AddNewSale() {
                         </Tab.Content>
                     </Col>
                     <Col sm={5}>
-                        <CardGroup>
+                        <CardGroup style={{ margin: '100px 20px 30px 0px' }}>
                             <Card style={{ border: '0px solid #E3F2FD' }}>
                                 <Modal
                                     size="md"
@@ -506,7 +516,7 @@ export default function AddNewSale() {
                                     animation={true}
                                 >
                                     <Modal.Header closeButton style={cardStyleHeader}>
-                                        <Modal.Title><BsPencilSquare /> Order Slip - Edit Item</Modal.Title>
+                                        <Modal.Title style={{ fontSize: '18px' }}><BsPencilSquare /> Order Slip - Edit Item</Modal.Title>
                                     </Modal.Header>
                                     <Modal.Body>
                                         <Alert
@@ -515,12 +525,13 @@ export default function AddNewSale() {
                                             onClose={() => setNotifModal({ status: false })}
                                             dismissible
                                         >
-                                            <BsInfoLg /> {notifModal.message}
+                                            <FaInfo /> {notifModal.message}
                                         </Alert>
                                         <Row>
                                             <Form.Group as={Col} className="mb-3">
                                                 <Form.Label style={formLabel}>Item Number</Form.Label>
                                                 <Form.Control
+                                                    style={formControl}
                                                     type="text"
                                                     placeholder=""
                                                     disabled
@@ -528,8 +539,9 @@ export default function AddNewSale() {
                                                 />
                                             </Form.Group>
                                             <Form.Group as={Col} sm={4} className="mb-3">
-                                                <Form.Label style={formLabel}>Quantity <Badge bg="danger">Required</Badge></Form.Label>
+                                                <Form.Label style={formLabel}>Qty <Badge bg="danger">Required</Badge></Form.Label>
                                                 <Form.Control
+                                                    style={formControl}
                                                     type="number"
                                                     placeholder=""
                                                     min={0}
@@ -542,6 +554,7 @@ export default function AddNewSale() {
                                             <Form.Group as={Col} className="mb-3">
                                                 <Form.Label style={formLabel}>Unit Price</Form.Label>
                                                 <Form.Control
+                                                    style={formControl}
                                                     type="text"
                                                     placeholder=""
                                                     disabled
@@ -551,6 +564,7 @@ export default function AddNewSale() {
                                             <Form.Group as={Col} className="mb-3">
                                                 <Form.Label style={formLabel}>Disc %</Form.Label>
                                                 <Form.Control
+                                                    style={formControl}
                                                     type="text"
                                                     placeholder=""
                                                     disabled
@@ -560,6 +574,7 @@ export default function AddNewSale() {
                                             <Form.Group as={Col} className="mb-3">
                                                 <Form.Label style={formLabel}>Total Price</Form.Label>
                                                 <Form.Control
+                                                    style={formControl}
                                                     type="number"
                                                     placeholder=""
                                                     disabled
@@ -573,7 +588,7 @@ export default function AddNewSale() {
                                         <Button variant="success" size="sm" onClick={handleUpdateOrderSale}><BsPencilFill /> Update Item</Button>
                                     </Modal.Footer>
                                 </Modal>
-                                <Card.Header style={{ border: '#E3F2FD', backgroundColor: '#E3F2FD', padding: '0 0 0 0' }}>
+                                <Card.Header style={{ border: '#E4E5E6', backgroundColor: '#E4E5E6', padding: '0 0 0 0' }}>
                                     <Form style={{ float: 'left' }}>
                                         <Form.Check
                                             type="switch"
@@ -613,28 +628,29 @@ export default function AddNewSale() {
                                         onClose={() => setNotif({ status: false })}
                                         dismissible
                                     >
-                                        <BsInfoLg /> {notif.message}
+                                        <FaInfo /> {notif.message}
                                     </Alert>
                                     <h5 className='orderTitle' style={{ textAlign: 'center', marginTop: '10px' }}>Expert Care Pharmacy</h5>
                                     <p className='orderTitle' style={{ textAlign: 'center'}}>Lapu Lapu City, Cebu, Philippines 6000</p>
                                     <h6 style={{ textAlign: 'center', fontWeight: 'bolder' }}>Order Slip</h6>
                                     <br />
-                                    <p><b style={formLabel}>Customer Name:</b> {addedCx.fullName}</p>
-                                    <p><b style={formLabel}>Processed Date:</b> {procDate}</p>
+                                    <p><b style={formLabel}>Customer Name:</b> <span style={formControl}>{addedCx.fullName}</span></p>
+                                    <p><b style={formLabel}>Processed Date:</b> <span style={formControl}>{procDate}</span></p>
                                     <Table
                                         striped
                                         hover
                                         size="sm"
                                         id="orderSlip"
+                                        style={formControl}
                                     >
                                         <thead>
-                                            <tr className='trItems' style={{ textAlign: 'center' }}>
+                                            <tr className='trItems'>
                                                 <th className='trHeaders'></th>
                                                 <th className='trHeaders'>No.</th>
                                                 <th className='trHeaders'>Item No./Name</th>
-                                                <th className='trHeaders'>Quantity</th>
+                                                <th className='trHeaders'>Qty</th>
                                                 <th className='trHeaders'>Unit Price</th>
-                                                <th className='trHeaders'>Discount %</th>
+                                                <th className='trHeaders'>Disc. %</th>
                                                 <th className='trHeaders'>Total Price</th>
                                             </tr>
                                         </thead>
@@ -652,12 +668,10 @@ export default function AddNewSale() {
                                                                             marginRight: '2px',
                                                                             border: '0px solid',
                                                                             borderRadius: '3px',
-                                                                            height: '30px',
-                                                                            width: '35px',
+                                                                            height: '26px',
+                                                                            width: '30px',
                                                                             padding: '6px'
                                                                         }}
-                                                                        onMouseOver={e => e.target.style.border = '1px solid'}
-                                                                        onMouseOut={e => e.target.style.border = ''}
                                                                         onClick={() => handleEditOrderSaleForm(sale)}
                                                                     />
                                                                     <FaMinusCircle
@@ -666,12 +680,10 @@ export default function AddNewSale() {
                                                                             cursor: 'pointer',
                                                                             border: '0px solid',
                                                                             borderRadius: '3px',
-                                                                            height: '30px',
-                                                                            width: '35px',
+                                                                            height: '26px',
+                                                                            width: '30px',
                                                                             padding: '6px'
                                                                         }}
-                                                                        onMouseOver={e => e.target.style.border = '1px solid'}
-                                                                        onMouseOut={e => e.target.style.border = ''}
                                                                         onClick={e => handleRemoveSale(e, itemName, unitPrice * qty, productId, qty)}
                                                                     />
                                                                 </span>
@@ -680,9 +692,9 @@ export default function AddNewSale() {
                                                     <td className='tbItem' style={{ textAlign: 'center' }}>{index + 1}</td>
                                                     <td>{itemNumber + '-' + itemName}</td>
                                                     <td className='tbItem' style={{ textAlign: 'center' }}>{qty}</td>
-                                                    <td className='tbItem' style={{ textAlign: 'center' }}>{'₱ ' + (Math.round(unitPrice * 100) / 100).toFixed(2)}</td>
-                                                    <td className='tbItem' style={{ textAlign: 'center' }}>{discount === 0 ? '' : discount + '%'}</td>
-                                                    <td className='tbItem' style={{ textAlign: 'center' }}>{'₱ ' + (Math.round((unitPrice * qty) * 100) / 100).toFixed(2)}</td>
+                                                    <td className='tbItem'>{'₱ ' + (Math.round(unitPrice * 100) / 100).toFixed(2)}</td>
+                                                    <td className='tbItem'>{discount === 0 ? '' : discount + '%'}</td>
+                                                    <td className='tbItem'>{'₱ ' + (Math.round((unitPrice * qty) * 100) / 100).toFixed(2)}</td>
                                                 </tr>
                                             }): <tr><td colSpan="7" style={{ textAlign: 'center', }}>No sale item added yet.</td></tr>}
                                         </tbody>

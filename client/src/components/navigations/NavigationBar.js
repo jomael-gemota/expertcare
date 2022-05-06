@@ -10,6 +10,7 @@ import {
     Container,
     Nav,
     Dropdown,
+    Breadcrumb
 } from 'react-bootstrap';
 import {
     BsPersonCircle,
@@ -97,7 +98,7 @@ export default function NavigationBar() {
     return (
         <Navbar fixed="top" expand="lg" style={navBarStyles}>
             <Container fluid>
-                <Navbar.Brand href="/home" style={navBarBrand}>EXPERT CARE <span style={spanIms}>Pharmacy Inventory Management System</span></Navbar.Brand>
+                <Navbar.Brand href="/home" style={navBarBrand}><span style={spanIms}>Pharmacy Inventory Management System</span></Navbar.Brand>
                 <Navbar.Toggle aria-controls="navbarScroll" />
                 <Navbar.Collapse id="navbarScroll">
                     <Nav

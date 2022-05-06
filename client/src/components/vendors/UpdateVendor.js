@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import axios from 'axios';
 import getJwt from '../../helper/getJwt';
 import {
@@ -17,17 +17,22 @@ import {
     BsPencilFill,
     BsFillArrowLeftCircleFill,
 } from 'react-icons/bs';
+import { FaInfo } from 'react-icons/fa';
 
 import {
     homeContainer,
     cardStyleHeader,
-    formLabel
+    formLabel,
+    sidebarStyles,
+    cardStyles,
+    formControl,
 } from '../../css/styles';
 
 import NavigationBar from '../navigations/NavigationBar';
 import SideBar from '../navigations/SideBar';
 
 export default function UpdateVendor() {
+    const history = useHistory();
     const [notif, setNotif] = useState({ status: false });
     const [vendDetails, setVendDetails] = useState({});
     const [vendList, setVendList] = useState([]);
@@ -55,10 +60,10 @@ export default function UpdateVendor() {
             }).catch(error => setVendList({ key: error.name, text: error.message }));
     }, [vendDetails.vendorId]);
 
-    const handleVendorIdChange = (e) => {
-        setVendDetails({ ...vendDetails, vendorId: e.target.value });
+    const handleVendorNameChange = (e) => {
+        setVendDetails({ ...vendDetails, fullName: e.target.value });
         vendList.find(x => {
-            if (x.vendorId === Number(e.target.value)) {
+            if (x.fullName === e.target.value) {
                 setVendDetails({
                     vendorId: x.vendorId,
                     fullName: x.fullName,
@@ -80,20 +85,29 @@ export default function UpdateVendor() {
             vendorId,
             fullName,
             address,
-            district,
         } = vendDetails;
 
-        if (vendorId !== undefined && fullName !== undefined && address !== undefined && district !== undefined) {
-            if (vendorId !== "" && fullName !== "" && address !== "" && district !== "") {
-                axios.patch('/api/inv/updateVendorById', vendDetails,
-                    { headers: { Authorization: getJwt() } })
-                    .then(() => {
-                        setNotif({ status: true, variant: 'success', message: 'Vendor Updated!' });
-                        resetForm();
-                    })
-                    .catch(() => setNotif({ status: true, variant: 'warning', message: 'Something is wrong.' }))
+        let isVendorExist = false;
+        vendList.find(x => { if (x.fullName === fullName) isVendorExist = true });
+
+        if (isVendorExist === true) {
+            if (vendorId !== undefined && fullName !== undefined && address !== undefined) {
+                if (vendorId !== "" && fullName !== "" && address !== "") {
+                    axios.patch('/api/inv/updateVendorById', vendDetails,
+                        { headers: { Authorization: getJwt() } })
+                        .then(() => {
+                            setNotif({ status: true, variant: 'success', message: 'Vendor Updated!' });
+                            resetForm();
+                        })
+                        .catch(() => setNotif({ status: true, variant: 'warning', message: 'Something is wrong.' }))
+    
+                    setTimeout(function() {
+                        history.push('/home');
+                    }, 1500);
+    
+                } else setNotif({ status: true, variant: 'warning', message: 'Fill-up all the required fields.' });
             } else setNotif({ status: true, variant: 'warning', message: 'Fill-up all the required fields.' });
-        } else setNotif({ status: true, variant: 'warning', message: 'Fill-up all the required fields.' });
+        } else setNotif({ status: true, variant: 'warning', message: 'The vendor name does not exist in the system.' });
 
         setTimeout(function() {
             setNotif({ ...notif, status: false });
@@ -122,17 +136,15 @@ export default function UpdateVendor() {
                         <NavigationBar />
                     </Col>
                 </Row>
-                <br />
-                <br />
-                <Row style={{ padding: '3%' }}>
-                    <Col sm={2}>
+                <Row>
+                    <Col sm={2} style={sidebarStyles}>
                         <SideBar />
                     </Col>
                     <Col sm={6}>
-                        <Tab.Content>
+                        <Tab.Content style={{ margin: '100px 20px 30px 50px' }}>
                             <Tab.Pane eventKey="first">
                                 <CardGroup>
-                                    <Card>
+                                    <Card style={cardStyles}>
                                         <Card.Header style={cardStyleHeader}>
                                             Edit Vendor
                                         </Card.Header>
@@ -144,41 +156,65 @@ export default function UpdateVendor() {
                                                     show={notif.status}
                                                     onClose={() => setNotif({ status: false })}
                                                 >
-                                                    {notif.message}
+                                                    <FaInfo /> {notif.message}
                                                 </Alert>
                                                 <Row>
-                                                    <Form.Group as={Col} sm={4} className="mb-3">
-                                                        <Form.Label style={formLabel}>Vendor ID <Badge bg="danger">Required</Badge></Form.Label>
+                                                    <Form.Group as={Col} className="mb-3">
+                                                        <Form.Label style={formLabel}>Vendor Business Name <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="text"
                                                             disabled={vendList.length > 0 ? false : true}
                                                             placeholder={vendList.length > 0 ? "" : "Loading..."}
-                                                            list="vendorId"
-                                                            value={vendDetails.vendorId}
-                                                            onChange={e => handleVendorIdChange(e)}
+                                                            list="vendorName"
+                                                            value={vendDetails.fullName}
+                                                            onChange={e => handleVendorNameChange(e)}
                                                         />
-                                                        <datalist id="vendorId">
+                                                        <datalist id="vendorName">
                                                             {vendList.length >= 1 ? vendList.map((vend, index) => {
-                                                                return <option key={index} value={vend.vendorId} />
+                                                                return <option key={index} value={vend.fullName} />
                                                             }): ''}
                                                         </datalist>
                                                     </Form.Group>
                                                     <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label style={formLabel}>Full Name <Badge bg="danger">Required</Badge></Form.Label>
+                                                        <Form.Label style={formLabel}>Vendor Current Address <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="text"
                                                             placeholder=""
-                                                            value={vendDetails.fullName}
-                                                            onChange={e => setVendDetails({ ...vendDetails, fullName: e.target.value })}
+                                                            value={vendDetails.address}
+                                                            onChange={e => setVendDetails({ ...vendDetails, address: e.target.value })}
+                                                        />
+                                                    </Form.Group>
+                                                    <Form.Group as={Col} sm={3} className="mb-3">
+                                                        <Form.Label style={formLabel}>Vendor ID</Form.Label>
+                                                        <Form.Control
+                                                            style={formControl}
+                                                            type="text"
+                                                            disabled
+                                                            placeholder=""
+                                                            value={vendDetails.vendorId}
+                                                            onChange={e => setVendDetails({ ...vendDetails, vendorId: e.target.value })}
                                                         />
                                                     </Form.Group>
                                                 </Row>
                                             </Form>
                                             <Form>
                                                 <Row className="mb-3">
-                                                    <Form.Group as={Col} sm={4} className="mb-3">
+                                                    <Form.Group as={Col} className="mb-3">
+                                                        <Form.Label style={formLabel}>Mobile No. <Badge bg="danger">Required</Badge></Form.Label>
+                                                        <Form.Control
+                                                            style={formControl}
+                                                            type="number"
+                                                            placeholder=""
+                                                            value={vendDetails.mobile}
+                                                            onChange={e => setVendDetails({ ...vendDetails, mobile: e.target.value })}
+                                                        />
+                                                    </Form.Group>
+                                                    <Form.Group as={Col} sm={6} className="mb-3">
                                                         <Form.Label style={formLabel}>Email Address <Badge bg="info">Optional</Badge></Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="email"
                                                             placeholder=""
                                                             min={0}
@@ -186,18 +222,10 @@ export default function UpdateVendor() {
                                                             onChange={e => setVendDetails({ ...vendDetails, email: e.target.value })}
                                                         />
                                                     </Form.Group>
-                                                    <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label style={formLabel}>Mobile No. <Badge bg="info">Optional</Badge></Form.Label>
-                                                        <Form.Control
-                                                            type="number"
-                                                            placeholder=""
-                                                            value={vendDetails.mobile}
-                                                            onChange={e => setVendDetails({ ...vendDetails, mobile: e.target.value })}
-                                                        />
-                                                    </Form.Group>
-                                                    <Form.Group as={Col} className="mb-3">
+                                                    <Form.Group as={Col} sm={3} className="mb-3">
                                                         <Form.Label style={formLabel}>Phone No. <Badge bg="info">Optional</Badge></Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="number"
                                                             placeholder=""
                                                             value={vendDetails.phone}
@@ -205,31 +233,21 @@ export default function UpdateVendor() {
                                                         />
                                                     </Form.Group>
                                                 </Row>
-                                                <hr />
                                                 <Row className="mb-3">
-                                                    <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label style={formLabel}>Full Address <Badge bg="danger">Required</Badge></Form.Label>
-                                                        <Form.Control
-                                                            type="text"
-                                                            placeholder=""
-                                                            value={vendDetails.address}
-                                                            onChange={e => setVendDetails({ ...vendDetails, address: e.target.value })}
-                                                        />
-                                                    </Form.Group>
-                                                </Row>
-                                                <Row className="mb-3">
-                                                    <Form.Group as={Col} sm={6} className="mb-3">
+                                                    <Form.Group as={Col} sm={3} className="mb-3">
                                                         <Form.Label style={formLabel}>City <Badge bg="info">Optional</Badge></Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="text"
                                                             placeholder=""
                                                             value={vendDetails.city}
                                                             onChange={e => setVendDetails({ ...vendDetails, city: e.target.value })}
                                                         />
                                                     </Form.Group>
-                                                    <Form.Group as={Col} sm={6} className="mb-3">
-                                                        <Form.Label style={formLabel}>District <Badge bg="danger">Required</Badge></Form.Label>
+                                                    <Form.Group as={Col} sm={3} className="mb-3">
+                                                        <Form.Label style={formLabel}>District <Badge bg="info">Optional</Badge></Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="text"
                                                             placeholder=""
                                                             value={vendDetails.district}

@@ -1,0 +1,89 @@
+h4 {
+	text-align: center;
+	color: white;
+	padding: 20px;
+	margin-top: 30px;
+	margin-bottom: 30px;
+}
+
+hr {
+  	color: #ffffff;
+}
+
+tr.group {
+    background-color: #FFF0B5 !important;
+    border-left: 1px solid #D35400 !important;
+    border-right: 1px solid #D35400 !important;
+    line-height: 12px;
+    cursor: pointer;
+}
+
+.sidebar {
+    margin: 0;
+    padding: 0;
+    width: 235px;
+    background-color: #2B405B;
+    position: fixed;
+    height: 100%;
+    overflow: auto;
+    border-right: 0px solid #2F353A;
+    box-shadow: 10px 0 15px -10px #455A64;
+    font-size: 15px;
+}
+
+.sidebar-icons {
+    margin-right: 15px;
+}
+
+.sidebar a {
+    display: block;
+    color: white;
+    padding: 10px;
+    text-decoration: none;
+	border-radius: 5px;
+}
+   
+.sidebar a.active {
+    background-color: #3498DB; /*3498DB*/
+    color: white;
+}
+  
+.sidebar a:hover:not(.active) {
+    background-color: #F39C12;
+    color: white;
+}
+
+div.content {
+    margin-left: 200px;
+    padding: 1px 16px;
+    height: 1000px;
+}
+  
+@media screen and (max-width: 700px) {
+    .sidebar {
+		width: 100%;
+		height: auto;
+		position: relative;
+    }
+    .sidebar a {float: left;}
+    div.content {margin-left: 0;}
+}
+  
+@media screen and (max-width: 400px) {
+    .sidebar a {
+      text-align: center;
+      float: none;
+    }
+}
+
+.main-menu-title {
+	color: #B3E5FC;
+	font-weight: bolder;
+	font-size: 13px;
+	margin: 0px 5px 5px 15px;
+}
+
+.nav-item {
+	cursor: pointer;
+	margin-bottom: 10px;
+}

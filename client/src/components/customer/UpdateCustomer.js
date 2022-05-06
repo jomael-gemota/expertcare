@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import axios from 'axios';
 import getJwt from '../../helper/getJwt';
 import {
@@ -17,17 +17,22 @@ import {
     BsFillPencilFill,
     BsFillArrowLeftCircleFill,
 } from 'react-icons/bs';
+import { FaInfo } from 'react-icons/fa';
 
 import {
     homeContainer,
     cardStyleHeader,
-    formLabel
+    formLabel,
+    sidebarStyles,
+    cardStyles,
+    formControl,
 } from '../../css/styles';
 
 import NavigationBar from '../navigations/NavigationBar';
 import SideBar from '../navigations/SideBar';
 
 export default function UpdateCustomer() {
+    const history = useHistory();
     const [notif, setNotif] = useState({ status: false });
     const [cxDetails, setCxDetails] = useState({});
     const [cxList, setCxList] = useState([]);
@@ -60,35 +65,43 @@ export default function UpdateCustomer() {
         const {
             customerId,
             fullName,
-            illness,
-            address,
-            district,
+            mobile,
         } = cxDetails;
 
-        if (customerId !== undefined && illness !== undefined && fullName !== undefined && address !== undefined && district !== undefined) {
-            if (customerId !== "" && illness !== "" && fullName !== "" && address !== "" && district !== "") {
-                axios.patch('/api/inv/updateCustomerById', cxDetails,
-                    { headers: { Authorization: getJwt() } })
-                    .then(() => {
-                        setNotif({ status: true, variant: 'success', message: 'Customer Information Updated!' });
-                        resetForm();
-                    })
-                    .catch(() => setNotif({ status: true, variant: 'warning', message: 'Something is wrong.' }))
+        let isCxExist = false;
+        cxList.find(x => { if (x.fullName === fullName) isCxExist = true });
+
+        if (isCxExist === true) {
+            if (customerId !== undefined && fullName !== undefined && mobile !== undefined) {
+                if (customerId !== "" && fullName !== "" && mobile !== "") {
+                    axios.patch('/api/inv/updateCustomerById', cxDetails,
+                        { headers: { Authorization: getJwt() } })
+                        .then(() => {
+                            setNotif({ status: true, variant: 'success', message: 'Customer Information Updated!' });
+                            resetForm();
+                        })
+                        .catch(() => setNotif({ status: true, variant: 'warning', message: 'Something is wrong.' }))
+    
+                    setTimeout(function() {
+                        history.push('/home');
+                    }, 1500);
+    
+                } else setNotif({ status: true, variant: 'warning', message: 'Fill-up all the required fields.' });
             } else setNotif({ status: true, variant: 'warning', message: 'Fill-up all the required fields.' });
-        } else setNotif({ status: true, variant: 'warning', message: 'Fill-up all the required fields.' });
+        } else setNotif({ status: true, variant: 'warning', message: 'The patient name does not exist in the system.' });
 
         setTimeout(function() {
             setNotif({ ...notif, status: false });
         }, 2000);
     };
 
-    const handleCustomerIdChange = (e) => {
+    const handleCustomerNameChange = (e) => {
         let objCxDetails = {};
 
-        setCxDetails({ ...cxDetails, customerId: e.target.value });
+        setCxDetails({ ...cxDetails, fullName: e.target.value });
 
         cxList.find(x => {
-            if (x.customerId === Number(e.target.value)) {
+            if (x.fullName === e.target.value) {
                 objCxDetails = {
                     customerId: x.customerId,
                     fullName: x.fullName,
@@ -131,19 +144,17 @@ export default function UpdateCustomer() {
                         <NavigationBar />
                     </Col>
                 </Row>
-                <br />
-                <br />
-                <Row style={{ padding: '3%' }}>
-                    <Col sm={2}>
+                <Row>
+                    <Col sm={2} style={sidebarStyles}>
                         <SideBar />
                     </Col>
                     <Col sm={6}>
-                        <Tab.Content>
+                        <Tab.Content style={{ margin: '100px 20px 30px 50px' }}>
                             <Tab.Pane eventKey="first">
                                 <CardGroup>
-                                    <Card>
+                                    <Card style={cardStyles}>
                                         <Card.Header style={cardStyleHeader}>
-                                            Edit Customer Info
+                                            Edit Patient Record
                                         </Card.Header>
                                         <Card.Body>
                                             <Form id="updateCustomerForm">
@@ -153,40 +164,44 @@ export default function UpdateCustomer() {
                                                     show={notif.status}
                                                     onClose={() => setNotif({ status: false })}
                                                 >
-                                                    {notif.message}
+                                                    <FaInfo /> {notif.message}
                                                 </Alert>
                                                 <Row>
-                                                    <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label style={formLabel}>Customer ID <Badge bg="danger">Required</Badge></Form.Label>
+                                                    <Form.Group as={Col} className="mb-3">
+                                                        <Form.Label style={formLabel}>Patient Full Name <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="text"
                                                             disabled={cxList.length > 0 ? false : true}
                                                             placeholder={cxList.length > 0 ? "" : "Loading..."}
-                                                            list="customerId"
-                                                            value={cxDetails.customerId}
-                                                            onChange={e => handleCustomerIdChange(e)}
+                                                            list="customerName"
+                                                            value={cxDetails.fullName}
+                                                            onChange={e => handleCustomerNameChange(e)}
                                                         />
-                                                        <datalist id="customerId">
+                                                        <datalist id="customerName">
                                                             {cxList.length >= 1 ? cxList.map((cx, index) => {
-                                                                return <option key={index} value={cx.customerId} />
+                                                                return <option key={index} value={cx.fullName} />
                                                             }): ''}
                                                         </datalist>
                                                     </Form.Group>
                                                     <Form.Group as={Col} sm={3} className="mb-3">
-                                                        <Form.Label style={formLabel}>Chief Complaint <Badge bg="danger">Required</Badge></Form.Label>
+                                                        <Form.Label style={formLabel}>Mobile No. <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
-                                                            type="text"
+                                                            style={formControl}
+                                                            type="number"
                                                             placeholder=""
-                                                            value={cxDetails.illness}
-                                                            onChange={e => setCxDetails({ ...cxDetails, illness: e.target.value })}
+                                                            value={cxDetails.mobile}
+                                                            onChange={e => setCxDetails({ ...cxDetails, mobile: e.target.value })}
                                                         />
                                                     </Form.Group>
-                                                    <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label style={formLabel}>Full Name <Badge bg="danger">Required</Badge></Form.Label>
+                                                    <Form.Group as={Col} sm={2} className="mb-3">
+                                                        <Form.Label style={formLabel}>Customer ID</Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="text"
+                                                            disabled
                                                             placeholder=""
-                                                            value={cxDetails.fullName}
+                                                            value={cxDetails.customerId}
                                                             onChange={e => setCxDetails({ ...cxDetails, fullName: e.target.value })}
                                                         />
                                                     </Form.Group>
@@ -197,24 +212,27 @@ export default function UpdateCustomer() {
                                                     <Form.Group as={Col} sm={4} className="mb-3">
                                                         <Form.Label style={formLabel}>Email Address <Badge bg="info">Optional</Badge></Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="email"
                                                             placeholder=""
                                                             value={cxDetails.email}
                                                             onChange={e => setCxDetails({ ...cxDetails, email: e.target.value })}
                                                         />
                                                     </Form.Group>
-                                                    <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label style={formLabel}>Mobile No. <Badge bg="info">Optional</Badge></Form.Label>
+                                                    <Form.Group as={Col} sm={3} className="mb-3">
+                                                        <Form.Label style={formLabel}>Chief Complaint <Badge bg="info">Optional</Badge></Form.Label>
                                                         <Form.Control
-                                                            type="number"
+                                                            style={formControl}
+                                                            type="text"
                                                             placeholder=""
-                                                            value={cxDetails.mobile}
-                                                            onChange={e => setCxDetails({ ...cxDetails, mobile: e.target.value })}
+                                                            value={cxDetails.illness}
+                                                            onChange={e => setCxDetails({ ...cxDetails, illness: e.target.value })}
                                                         />
                                                     </Form.Group>
                                                     <Form.Group as={Col} className="mb-3">
                                                         <Form.Label style={formLabel}>Phone No. <Badge bg="info">Optional</Badge></Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="number"
                                                             placeholder=""
                                                             value={cxDetails.phone}
@@ -222,11 +240,11 @@ export default function UpdateCustomer() {
                                                         />
                                                     </Form.Group>
                                                 </Row>
-                                                <hr />
                                                 <Row className="mb-3">
                                                     <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label style={formLabel}>Full Address <Badge bg="danger">Required</Badge></Form.Label>
+                                                        <Form.Label style={formLabel}>Patient Current Address <Badge bg="info">Optional</Badge></Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="text"
                                                             placeholder=""
                                                             value={cxDetails.address}
@@ -235,18 +253,20 @@ export default function UpdateCustomer() {
                                                     </Form.Group>
                                                 </Row>
                                                 <Row className="mb-3">
-                                                    <Form.Group as={Col} sm={6} className="mb-3">
+                                                    <Form.Group as={Col} sm={3} className="mb-3">
                                                         <Form.Label style={formLabel}>City <Badge bg="info">Optional</Badge></Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="text"
                                                             placeholder=""
                                                             value={cxDetails.city}
                                                             onChange={e => setCxDetails({ ...cxDetails, city: e.target.value })}
                                                         />
                                                     </Form.Group>
-                                                    <Form.Group as={Col} sm={6} className="mb-3">
-                                                        <Form.Label style={formLabel}>District <Badge bg="danger">Required</Badge></Form.Label>
+                                                    <Form.Group as={Col} sm={3} className="mb-3">
+                                                        <Form.Label style={formLabel}>District <Badge bg="info">Optional</Badge></Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="text"
                                                             placeholder=""
                                                             value={cxDetails.district}
@@ -264,7 +284,7 @@ export default function UpdateCustomer() {
                                                 style={{ marginRight: '5px', float: 'left' }}
                                                 onClick={() => updateCustomerById()}
                                             >
-                                                <BsFillPencilFill /> Update Customer Info
+                                                <BsFillPencilFill /> Update Record
                                             </Button>
                                             <Link to="/home"><Button size="sm" variant="outline-secondary"><BsFillArrowLeftCircleFill /> Go Back</Button></Link>
                                         </Card.Footer>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import axios from 'axios';
 import getJwt from '../../helper/getJwt';
 import {
@@ -17,18 +17,24 @@ import {
 import {
     BsTrashFill,
     BsFillArrowLeftCircleFill,
+    BsFillExclamationCircleFill,
 } from 'react-icons/bs';
+import { FaInfo } from 'react-icons/fa';
 
 import {
     homeContainer,
     cardStyleHeader,
-    formLabel
+    formLabel,
+    sidebarStyles,
+    cardStyles,
+    formControl,
 } from '../../css/styles';
 
 import NavigationBar from '../navigations/NavigationBar';
 import SideBar from '../navigations/SideBar';
 
 export default function RemoveVendor() {
+    const history = useHistory();
     const [notif, setNotif] = useState({ status: false });
     const [vendDetails, setVendDetails] = useState({});
     const [vendList, setVendList] = useState([]);
@@ -57,10 +63,11 @@ export default function RemoveVendor() {
             }).catch(error => setVendList({ key: error.name, text: error.message }));
     }, [vendDetails.vendorId]);
 
-    const handleVendorIdChange = (e) => {
-        setVendDetails({ ...vendDetails, vendorId: e.target.value });
+    const handleVendorNameChange = (e) => {
+        setVendDetails({ ...vendDetails, fullName: e.target.value });
+
         vendList.find(x => {
-            if (x.vendorId === Number(e.target.value)) {
+            if (x.fullName === e.target.value) {
                 setVendDetails({
                     vendorId: x.vendorId,
                     fullName: x.fullName,
@@ -90,12 +97,16 @@ export default function RemoveVendor() {
                         resetForm();
                     })
                     .catch(() => setNotif({ status: true, variant: 'warning', message: 'Something is wrong.' }))
+                
+                setTimeout(function() {
+                    history.push('/home');
+                }, 1500);
             };
         };
 
         setTimeout(function() {
             setNotif({ ...notif, status: false });
-        }, 3000);
+        }, 2000);
     };
 
     const handleDeleteConfirmation = () => {
@@ -103,11 +114,11 @@ export default function RemoveVendor() {
             if (vendDetails.vendorId !== "") {
                 setModalShow(true);
             } else setNotif({ status: true, variant: 'warning', message: 'Fill-up all the required fields.' });
-        } else setNotif({ status: true, variant: 'warning', message: 'Fill-up all the required fields.' });
+        } else setNotif({ status: true, variant: 'warning', message: 'The vendor name does not exist in the system.' });
         
         setTimeout(function() {
             setNotif({ ...notif, status: false });
-        }, 3000);
+        }, 2000);
     };
 
     const handleModalClose = () => setModalShow(false);
@@ -133,14 +144,12 @@ export default function RemoveVendor() {
                         <NavigationBar />
                     </Col>
                 </Row>
-                <br />
-                <br />
-                <Row style={{ padding: '3%' }}>
-                    <Col sm={2}>
+                <Row>
+                    <Col sm={2} style={sidebarStyles}>
                         <SideBar />
                     </Col>
                     <Col sm={6}>
-                        <Tab.Content>
+                        <Tab.Content style={{ margin: '100px 20px 30px 50px' }}>
                             <Tab.Pane eventKey="first">
                                 <Modal
                                     size="md"
@@ -151,16 +160,19 @@ export default function RemoveVendor() {
                                     animation={true}
                                 >
                                     <Modal.Header closeButton>
-                                        <Modal.Title><h5>Delete Confirmation</h5></Modal.Title>
+                                        <Modal.Title><h5><BsFillExclamationCircleFill /> Delete Confirmation</h5></Modal.Title>
                                     </Modal.Header>
-                                    <Modal.Body>Do you really want to delete this vendor?</Modal.Body>
+                                    <Modal.Body>
+                                        <Alert variant='danger'><b>Note:</b> Once you delete a vendor, there is no going back. Please be certain.</Alert>
+                                        Do you really want to delete this vendor?
+                                    </Modal.Body>
                                     <Modal.Footer>
                                         <Button variant="outline-secondary" size="sm" onClick={handleModalClose}>Cancel</Button>
                                         <Button variant="danger" size="sm" onClick={() => deleteVendorById()}>Remove</Button>
                                     </Modal.Footer>
                                 </Modal>
                                 <CardGroup>
-                                    <Card>
+                                    <Card style={cardStyles}>
                                         <Card.Header style={cardStyleHeader}>
                                             Remove Vendor
                                         </Card.Header>
@@ -172,42 +184,56 @@ export default function RemoveVendor() {
                                                     show={notif.status}
                                                     onClose={() => setNotif({ status: false })}
                                                 >
-                                                    {notif.message}
+                                                    <FaInfo /> {notif.message}
                                                 </Alert>
                                                 <Row>
-                                                    <Form.Group as={Col} sm={4} className="mb-3">
-                                                        <Form.Label style={formLabel}>Vendor ID <Badge bg="danger">Required</Badge></Form.Label>
+                                                    <Form.Group as={Col} className="mb-3">
+                                                        <Form.Label style={formLabel}>Vendor Business Name <Badge bg="danger">Required</Badge></Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="text"
                                                             disabled={vendList.length > 0 ? false : true}
                                                             placeholder={vendList.length > 0 ? "" : "Loading..."}
-                                                            list="vendorId"
-                                                            value={vendDetails.vendorId}
-                                                            onChange={e => handleVendorIdChange(e)}
+                                                            list="vendorName"
+                                                            value={vendDetails.fullName}
+                                                            onChange={e => handleVendorNameChange(e)}
                                                         />
-                                                        <datalist id="vendorId">
+                                                        <datalist id="vendorName">
                                                             {vendList.length >= 1 ? vendList.map((vend, index) => {
-                                                                return <option key={index} value={vend.vendorId} />
+                                                                return <option key={index} value={vend.fullName} />
                                                             }): ''}
                                                         </datalist>
                                                     </Form.Group>
-                                                    <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label style={formLabel}>Full Name <Badge bg="secondary">Generated</Badge></Form.Label>
+                                                    <Form.Group as={Col} sm={3} className="mb-3">
+                                                        <Form.Label style={formLabel}>Vendor ID</Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="text"
-                                                            placeholder=""
                                                             disabled
-                                                            value={vendDetails.fullName}
-                                                            onChange={e => setVendDetails({ ...vendDetails, fullName: e.target.value })}
+                                                            placeholder=""
+                                                            value={vendDetails.vendorId}
+                                                            onChange={e => setVendDetails({ ...vendDetails, vendorId: e.target.value })}
                                                         />
                                                     </Form.Group>
                                                 </Row>
                                             </Form>
                                             <Form>
                                                 <Row className="mb-3">
-                                                    <Form.Group as={Col} sm={4} className="mb-3">
-                                                        <Form.Label style={formLabel}>Email Address <Badge bg="secondary">Generated</Badge></Form.Label>
+                                                    <Form.Group as={Col} className="mb-3">
+                                                        <Form.Label style={formLabel}>Mobile No.</Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
+                                                            type="number"
+                                                            placeholder=""
+                                                            disabled
+                                                            value={vendDetails.mobile}
+                                                            onChange={e => setVendDetails({ ...vendDetails, mobile: e.target.value })}
+                                                        />
+                                                    </Form.Group>
+                                                    <Form.Group as={Col} sm={6} className="mb-3">
+                                                        <Form.Label style={formLabel}>Email Address</Form.Label>
+                                                        <Form.Control
+                                                            style={formControl}
                                                             type="email"
                                                             placeholder=""
                                                             disabled
@@ -217,18 +243,9 @@ export default function RemoveVendor() {
                                                         />
                                                     </Form.Group>
                                                     <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label style={formLabel}>Mobile No. <Badge bg="secondary">Generated</Badge></Form.Label>
+                                                        <Form.Label style={formLabel}>Phone No.</Form.Label>
                                                         <Form.Control
-                                                            type="number"
-                                                            placeholder=""
-                                                            disabled
-                                                            value={vendDetails.mobile}
-                                                            onChange={e => setVendDetails({ ...vendDetails, mobile: e.target.value })}
-                                                        />
-                                                    </Form.Group>
-                                                    <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label style={formLabel}>Phone No. <Badge bg="secondary">Generated</Badge></Form.Label>
-                                                        <Form.Control
+                                                            style={formControl}
                                                             type="number"
                                                             placeholder=""
                                                             disabled
@@ -237,11 +254,11 @@ export default function RemoveVendor() {
                                                         />
                                                     </Form.Group>
                                                 </Row>
-                                                <hr />
                                                 <Row className="mb-3">
                                                     <Form.Group as={Col} className="mb-3">
-                                                        <Form.Label style={formLabel}>Full Address <Badge bg="secondary">Generated</Badge></Form.Label>
+                                                        <Form.Label style={formLabel}>Full Address</Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="text"
                                                             placeholder=""
                                                             disabled
@@ -252,8 +269,9 @@ export default function RemoveVendor() {
                                                 </Row>
                                                 <Row className="mb-3">
                                                     <Form.Group as={Col} sm={6} className="mb-3">
-                                                        <Form.Label style={formLabel}>City <Badge bg="secondary">Generated</Badge></Form.Label>
+                                                        <Form.Label style={formLabel}>City</Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="text"
                                                             placeholder=""
                                                             disabled
@@ -262,8 +280,9 @@ export default function RemoveVendor() {
                                                         />
                                                     </Form.Group>
                                                     <Form.Group as={Col} sm={6} className="mb-3">
-                                                        <Form.Label style={formLabel}>District <Badge bg="secondary">Generated</Badge></Form.Label>
+                                                        <Form.Label style={formLabel}>District</Form.Label>
                                                         <Form.Control
+                                                            style={formControl}
                                                             type="text"
                                                             placeholder=""
                                                             disabled

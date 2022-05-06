@@ -37,10 +37,16 @@ import {
     homeContainer,
     invCardHeader,
     cardTools,
+    sidebarStyles,
+    invCard,
+    dtblTrStyles,
+    cardStyles,
 } from '../css/styles';
+import '../css/sidebar.css';
 
 import NavigationBar from '../components/navigations/NavigationBar';
 import SideBar from '../components/navigations/SideBar';
+import Services from '../components/navigations/Services';
 
 export default function Home() {
     const [saleList, setSaleList] = useState([]);
@@ -74,12 +80,42 @@ export default function Home() {
                 });
 
                 $(document).ready( function () {
-                    $('#saleTable').DataTable({
-                        order: [[ 0, "desc" ]],
+                    var groupColumn = 1;
+                    var table = $('#saleTable').DataTable({
+                        "order": [[ groupColumn, 'asc' ]],
                         "columnDefs": [
-                            {"className": "dt-center", "targets": [0, 1, 4, 5, 6, 7]}
-                        ]
+                            {"className": "dt-center", "targets": [0, 4, 6]},
+                            { "visible": false, "targets": groupColumn }
+                        ],
+                        "pageLength": 50,
+                        "drawCallback": function ( settings ) {
+                            var api = this.api();
+                            var rows = api.rows( {page:'current'} ).nodes();
+                            var last=null;
+                 
+                            api.column(groupColumn, {page:'current'} ).data().each( function ( group, i ) {
+                                if ( last !== group ) {
+                                    $(rows).eq( i ).before(
+                                        '<tr class="group"><td colspan="7">'+group+'</td></tr>'
+                                    );
+                 
+                                    last = group;
+                                }
+                            } );
+                        }
                     });
+
+                    $('#saleTable tbody').on( 'click', 'tr.group', function () {
+                        var currentOrder = table.order()[0];
+                        if ( currentOrder[0] === groupColumn && currentOrder[1] === 'asc' ) {
+                            table.order( [ groupColumn, 'desc' ] ).draw();
+                        }
+                        else {
+                            table.order( [ groupColumn, 'asc' ] ).draw();
+                        }
+                    } );
+
+                    new $.fn.dataTable.FixedHeader( table );
                 });
 
                 return setSaleList(saleArr);
@@ -109,8 +145,9 @@ export default function Home() {
                         $('#prodTable').DataTable({
                             order: [[ 1, "asc" ]],
                             "columnDefs": [
-                                {"className": "dt-center", "targets": [0, 4, 5, 6]}
-                            ]
+                                {"className": "dt-center", "targets": [5]},
+                            ],
+                            "pageLength": 50
                         });
                     });
 
@@ -136,12 +173,40 @@ export default function Home() {
                     });
 
                     $(document).ready( function () {
-                        $('#purTable').DataTable({
-                            order: [[ 2, "asc" ]],
+                        var groupColumn = 5;
+                        var table = $('#purTable').DataTable({
+                            "order": [[ groupColumn, 'asc' ]],
                             "columnDefs": [
-                                {"className": "dt-center", "targets": [0, 3, 4, 6]}
-                            ]
+                                {"className": "dt-center", "targets": [0, 3]},
+                                { "visible": false, "targets": groupColumn }
+                            ],
+                            "pageLength": 50,
+                            "drawCallback": function ( settings ) {
+                                var api = this.api();
+                                var rows = api.rows( {page:'current'} ).nodes();
+                                var last=null;
+                     
+                                api.column(groupColumn, {page:'current'} ).data().each( function ( group, i ) {
+                                    if ( last !== group ) {
+                                        $(rows).eq( i ).before(
+                                            '<tr class="group"><td colspan="6">'+group+'</td></tr>'
+                                        );
+                     
+                                        last = group;
+                                    }
+                                } );
+                            }
                         });
+
+                        $('#purTable tbody').on( 'click', 'tr.group', function () {
+                            var currentOrder = table.order()[0];
+                            if ( currentOrder[0] === groupColumn && currentOrder[1] === 'asc' ) {
+                                table.order( [ groupColumn, 'desc' ] ).draw();
+                            }
+                            else {
+                                table.order( [ groupColumn, 'asc' ] ).draw();
+                            }
+                        } );
                     });
 
                     return setPurList(purArr);
@@ -167,10 +232,11 @@ export default function Home() {
 
                     $(document).ready( function () {
                         $('#vendTable').DataTable({
-                            order: [[ 1, "asc" ]],
+                            order: [[ 0, "asc" ]],
                             "columnDefs": [
-                                {"className": "dt-center", "targets": [0, 3, 4, 6]}
-                            ]
+                                // {"className": "dt-center", "targets": [2, 3]}
+                            ],
+                            "pageLength": 50
                         });
                     });
 
@@ -198,10 +264,11 @@ export default function Home() {
 
                     $(document).ready( function () {
                         $('#cxTable').DataTable({
-                            order: [[ 1, "asc" ]],
+                            order: [[ 0, "asc" ]],
                             "columnDefs": [
-                                {"className": "dt-center", "targets": [0, 4, 5]}
-                            ]
+                                // {"className": "dt-center", "targets": [3, 4]}
+                            ],
+                            "pageLength": 50
                         });
                     });
 
@@ -283,15 +350,6 @@ export default function Home() {
         doc.save(`${tbName}_${moment(new Date()).format('MM-DD-YYYY_hhmmA')}.pdf`);
     };
 
-    const refresh = () => {
-        setIsLoadingRefresh(true);
-        setIsUpdate(!isUpdate);
-
-        setTimeout(function() {
-            setIsLoadingRefresh(false);
-        }, 2000);
-    };
-
     return (
         <div style={homeContainer}>
             <Tab.Container id="left-tabs-example" defaultActiveKey="first">
@@ -300,31 +358,19 @@ export default function Home() {
                         <NavigationBar />
                     </Col>
                 </Row>
-                <br />
-                <br />
-                <Row style={{ padding: '3%' }}>
-                    <Col sm={2}>
+                <Row>
+                    <Col sm={2} style={sidebarStyles}>
                         <SideBar />
                     </Col>
                     <Col sm={10}>
-                        <Tab.Content>
+                        <Tab.Content style={{ margin: '100px 30px 30px 50px' }}>
                             <Tab.Pane eventKey="first">
-                                <CardGroup>
-                                    <Card>
+                                <CardGroup style={invCard}>
+                                    <Card style={cardStyles}>
                                         <Card.Header style={invCardHeader}>
                                             <BsFillLayersFill /> Manage Inventory
-                                            <Button
-                                                size="sm"
-                                                disabled={isLoadingRefresh}
-                                                style={{ float: 'right', color: 'white', backgroundColor: '#1985AC', border: '1px solid #1985AC'}}
-                                                onClick={refresh}
-                                            >
-                                                {isLoadingRefresh
-                                                    ? <div><Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> Refreshing...</div>
-                                                    : <span><BsArrowRepeat /> Refresh</span>}
-                                            </Button>
                                         </Card.Header>
-                                        <Card.Body>
+                                        <Card.Body style={{ fontSize: '13px' }}>
                                             <Tabs defaultActiveKey={defActiveKey} id="uncontrolled-tab-example" className="mb-3">
                                                 <Tab eventKey="sales" title="Sales" onClick={() => setDefActiveKey('sales')}>
                                                     <Card style={cardTools}>
@@ -345,29 +391,29 @@ export default function Home() {
                                                         </Card.Body>
                                                     </Card>
                                                     <br />
-                                                    <Table striped bordered hover size='sm' id='saleTable'>
+                                                    <Table bordered striped hover size='sm' id='saleTable' style={{ fontSize: '13px', width: '100%' }}>
                                                         <thead>
                                                             <tr>
-                                                                <th>Sale ID</th>
                                                                 <th>Sale Date</th>
                                                                 <th>Customer Name</th>
+                                                                <th>Item Number</th>
                                                                 <th>Item Name</th>
-                                                                <th>Discount</th>
                                                                 <th>Qty</th>
                                                                 <th>Unit Price</th>
+                                                                <th>Discount</th>
                                                                 <th>Total Price</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
                                                             {saleList.length >= 1 ? saleList.map((sale, index) => {
-                                                                return <tr key={index} style={{ fontSize: '14px' }}>
-                                                                    <td>{sale.saleId}</td>
+                                                                return <tr key={index} style={{ fontSize: '13px' }}>
                                                                     <td>{moment(sale.saleDate).format('MM/DD/YYYY')}</td>
                                                                     <td>{sale.customerName}</td>
+                                                                    <td>{sale.itemNumber}</td>
                                                                     <td>{sale.itemName}</td>
-                                                                    <td>{sale.discount === 0 ? '' : sale.discount + '%'}</td>
                                                                     <td>{sale.qty}</td>
                                                                     <td>{'₱ ' + (Math.round(sale.unitPrice * 100) / 100).toFixed(2)}</td>
+                                                                    <td>{sale.discount === 0 ? '' : sale.discount + '%'}</td>
                                                                     <td>{'₱ ' + (Math.round((sale.qty * sale.unitPrice) * 100) / 100).toFixed(2)}</td>
                                                                 </tr>
                                                             }): <tr>
@@ -402,10 +448,9 @@ export default function Home() {
                                                         </Card.Body>
                                                     </Card>
                                                     <br />
-                                                    <Table striped bordered hover size='sm' id='prodTable'>
+                                                    <Table striped bordered hover size='sm' id='prodTable' style={{ fontSize: '13px' }}>
                                                         <thead>
                                                             <tr>
-                                                                <th>Product ID</th>
                                                                 <th>Item No.</th>
                                                                 <th>Item Name</th>
                                                                 <th>Units</th>
@@ -417,8 +462,7 @@ export default function Home() {
                                                         </thead>
                                                         <tbody>
                                                             {prodList.length >= 1 ? prodList.map((prod, index) => {
-                                                                return <tr key={index} style={{ fontSize: '14px' }}>
-                                                                    <td>{prod.productId}</td>
+                                                                return <tr key={index} style={{ fontSize: '13px' }}>
                                                                     <td>{prod.itemNumber}</td>
                                                                     <td>{prod.itemName}</td>
                                                                     <td>{prod.units}</td>
@@ -428,7 +472,6 @@ export default function Home() {
                                                                     <td>{prod.description}</td>
                                                                 </tr>
                                                             }): <tr>
-                                                                    <td></td>
                                                                     <td></td>
                                                                     <td></td>
                                                                     <td></td>
@@ -459,31 +502,28 @@ export default function Home() {
                                                         </Card.Body>
                                                     </Card>
                                                     <br />
-                                                    <Table striped bordered hover size='sm' id='purTable'>
+                                                    <Table bordered striped hover size='sm' id='purTable' style={{ fontSize: '13px', width: '100%' }}>
                                                         <thead>
                                                             <tr>
-                                                                <th>Purchase ID</th>
+                                                                <th>Purchase Date</th>
                                                                 <th>Item No.</th>
                                                                 <th>Item Name</th>
                                                                 <th>Qty</th>
                                                                 <th>Unit Price</th>
                                                                 <th>Vendor Name</th>
-                                                                <th>Purchase Date</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
                                                             {purList.length >= 1 ? purList.map((pur, index) => {
-                                                                return <tr key={index} style={{ fontSize: '14px' }}>
-                                                                    <td>{pur.purchaseId}</td>
+                                                                return <tr key={index} style={{ fontSize: '13px' }}>
+                                                                    <td>{moment(pur.purchaseDate).format('MM/DD/YYYY')}</td>
                                                                     <td>{pur.itemNumber}</td>
                                                                     <td>{pur.itemName}</td>
                                                                     <td>{pur.quantity}</td>
                                                                     <td>{'₱ ' + (Math.round(pur.unitPrice * 100) / 100).toFixed(2)}</td>
                                                                     <td>{pur.vendorName}</td>
-                                                                    <td>{moment(pur.purchaseDate).format('MM/DD/YYYY')}</td>
                                                                 </tr>
                                                             }): <tr>
-                                                                    <td></td>
                                                                     <td></td>
                                                                     <td></td>
                                                                     <td></td>
@@ -513,11 +553,10 @@ export default function Home() {
                                                         </Card.Body>
                                                     </Card>
                                                     <br />
-                                                    <Table striped bordered hover size='sm' id='vendTable'>
+                                                    <Table striped bordered hover size='sm' id='vendTable' style={{ fontSize: '13px' }}>
                                                         <thead>
                                                             <tr>
-                                                                <th>Vendor ID</th>
-                                                                <th>Full Name</th>
+                                                                <th>Vendor Name</th>
                                                                 <th>Email Address</th>
                                                                 <th>Mobile No.</th>
                                                                 <th>Phone No.</th>
@@ -528,8 +567,7 @@ export default function Home() {
                                                         </thead>
                                                         <tbody>
                                                             {vendList.length >= 1 ? vendList.map((vend, index) => {
-                                                                return <tr key={index} style={{ fontSize: '14px' }}>
-                                                                    <td>{vend.vendorId}</td>
+                                                                return <tr key={index} style={{ fontSize: '13px' }}>
                                                                     <td>{vend.fullName}</td>
                                                                     <td>{vend.email}</td>
                                                                     <td>{vend.mobile}</td>
@@ -546,36 +584,34 @@ export default function Home() {
                                                                     <td></td>
                                                                     <td></td>
                                                                     <td></td>
-                                                                    <td></td>
                                                                 </tr>}
                                                         </tbody>
                                                     </Table>
                                                 </Tab>
-                                                <Tab eventKey="customer-database" title="Customer Database" onClick={() => setDefActiveKey('customer-database')}>
+                                                <Tab eventKey="customer-database" title="Patient Record Database" onClick={() => setDefActiveKey('customer-database')}>
                                                     <Card style={cardTools}>
                                                         <Card.Body>
                                                             <FormGroup>
-                                                                <Link to='/home/add-new-customer'><Button size="sm" variant="success" style={{ marginRight: '5px' }}><BsPlusCircleFill /> Add Customer</Button></Link>
-                                                                <Link to='/home/update-customer'><Button size="sm" variant="warning" style={{ marginRight: '5px' }}><BsPencilSquare /> Edit Customer</Button></Link>
-                                                                <Link to='/home/remove-customer'><Button size="sm" variant="outline-danger"><BsTrashFill /> Remove Customer</Button></Link>
+                                                                <Link to='/home/add-new-customer'><Button size="sm" variant="success" style={{ marginRight: '5px' }}><BsPlusCircleFill /> Add Record</Button></Link>
+                                                                <Link to='/home/update-customer'><Button size="sm" variant="warning" style={{ marginRight: '5px' }}><BsPencilSquare /> Edit Record</Button></Link>
+                                                                <Link to='/home/remove-customer'><Button size="sm" variant="outline-danger"><BsTrashFill /> Remove Record</Button></Link>
                                                                 <Dropdown size="sm" as={ButtonGroup} style={{ float: 'right' }}>
-                                                                    <Button variant="secondary" onClick={() => arrayToCsv(cxList, 'Customer Database')}><BsDownload /> Export Report</Button>
+                                                                    <Button variant="secondary" onClick={() => arrayToCsv(cxList, 'Patient Record Database')}><BsDownload /> Export Report</Button>
                                                                     <Dropdown.Toggle split variant="secondary" id="dropdown-custom-2" />
                                                                     <Dropdown.Menu>
-                                                                        <Dropdown.Item eventKey="1" onClick={() => arrayToCsv(cxList, 'Customer Database')}><BsFileEarmarkExcelFill color='#16A085' /> CSV</Dropdown.Item>
-                                                                        <Dropdown.Item eventKey="2" onClick={() => arrayToPDF(cxList, 'Customer Database')}><BsFileEarmarkPdfFill color='#D35400' /> PDF</Dropdown.Item>
+                                                                        <Dropdown.Item eventKey="1" onClick={() => arrayToCsv(cxList, 'Patient Record Database')}><BsFileEarmarkExcelFill color='#16A085' /> CSV</Dropdown.Item>
+                                                                        <Dropdown.Item eventKey="2" onClick={() => arrayToPDF(cxList, 'Patient Record Database')}><BsFileEarmarkPdfFill color='#D35400' /> PDF</Dropdown.Item>
                                                                     </Dropdown.Menu>
                                                                 </Dropdown>
                                                             </FormGroup>
                                                         </Card.Body>
                                                     </Card>
                                                     <br />
-                                                    <Table striped bordered hover size='sm' id='cxTable'>
+                                                    <Table striped bordered hover size='sm' id='cxTable' style={{ fontSize: '13px' }}>
                                                         <thead>
                                                             <tr>
-                                                                <th>Customer ID</th>
-                                                                <th>Full Name</th>
-                                                                <th>Illness</th>
+                                                                <th>Patient Name</th>
+                                                                <th>Chief Complaint</th>
                                                                 <th>Email Address</th>
                                                                 <th>Mobile No.</th>
                                                                 <th>Phone No.</th>
@@ -586,8 +622,7 @@ export default function Home() {
                                                         </thead>
                                                         <tbody>
                                                             {cxList.length >= 1 ? cxList.map((cx, index) => {
-                                                                return <tr key={index} style={{ fontSize: '14px' }}>
-                                                                    <td>{cx.customerId}</td>
+                                                                return <tr key={index} style={{ fontSize: '13px' }}>
                                                                     <td>{cx.fullName}</td>
                                                                     <td>{cx.illness}</td>
                                                                     <td>{cx.email}</td>
@@ -606,7 +641,6 @@ export default function Home() {
                                                                     <td></td>
                                                                     <td></td>
                                                                     <td></td>
-                                                                    <td></td>
                                                                 </tr>}
                                                         </tbody>
                                                     </Table>
@@ -617,7 +651,7 @@ export default function Home() {
                                 </CardGroup>
                             </Tab.Pane>
                             <Tab.Pane eventKey="second">
-                                <p>This page is not yet approved for display.</p>
+                                <Services />
                             </Tab.Pane>
                         </Tab.Content>
                     </Col>
