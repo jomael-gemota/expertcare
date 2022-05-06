@@ -192,8 +192,6 @@ export default function RemoveVendor() {
                                                         <Form.Control
                                                             style={formControl}
                                                             type="text"
-                                                            disabled={vendList.length > 0 ? false : true}
-                                                            placeholder={vendList.length > 0 ? "" : "Loading..."}
                                                             list="vendorName"
                                                             value={vendDetails.fullName}
                                                             onChange={e => handleVendorNameChange(e)}

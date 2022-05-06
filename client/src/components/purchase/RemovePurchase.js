@@ -261,8 +261,6 @@ export default function RemovePurchase() {
                                                                     style={formControl}
                                                                     type="text"
                                                                     list="vendorName"
-                                                                    disabled={vendList.length > 0 ? false : true}
-                                                                    placeholder={vendList.length > 0 ? "" : "Loading..."}
                                                                     value={vendorData.vendorName}
                                                                     onChange={e => handleVendorNameChange(e)}
                                                                 />

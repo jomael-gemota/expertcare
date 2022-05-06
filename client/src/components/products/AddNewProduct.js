@@ -149,8 +149,6 @@ export default function AddNewProduct() {
                                                         <Form.Control
                                                             style={formControl}
                                                             type="text"
-                                                            disabled={prodList.length > 0 ? false : true}
-                                                            placeholder={prodList.length > 0 ? "" : "Loading..."}
                                                             list="productName"
                                                             value={prodDetails.itemName}
                                                             onChange={e => setProdDetails({ ...prodDetails, itemName: e.target.value })}
@@ -167,8 +165,6 @@ export default function AddNewProduct() {
                                                         <Form.Control
                                                             style={formControl}
                                                             type="text"
-                                                            disabled={prodList.length > 0 ? false : true}
-                                                            placeholder={prodList.length > 0 ? "" : "Loading..."}
                                                             list="itemNumber"
                                                             value={prodDetails.itemNumber}
                                                             onChange={e => setProdDetails({ ...prodDetails, itemNumber: e.target.value })}

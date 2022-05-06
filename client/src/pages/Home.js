@@ -56,7 +56,7 @@ export default function Home() {
     const [cxList, setCxList] = useState([]);
     const [isUpdate, setIsUpdate] = useState(false);
     const [isLoadingRefresh, setIsLoadingRefresh] = useState(false);
-    const [defActiveKey, setDefActiveKey] = useState('sales');
+    const [defActiveKey, setDefActiveKey] = useState('products');
 
     window.alert = function () {};
     
@@ -372,63 +372,6 @@ export default function Home() {
                                         </Card.Header>
                                         <Card.Body style={{ fontSize: '13px' }}>
                                             <Tabs defaultActiveKey={defActiveKey} id="uncontrolled-tab-example" className="mb-3">
-                                                <Tab eventKey="sales" title="Sales" onClick={() => setDefActiveKey('sales')}>
-                                                    <Card style={cardTools}>
-                                                        <Card.Body>
-                                                            <FormGroup>
-                                                                <Link to='/home/add-new-sale'><Button size="sm" variant="success" style={{ marginRight: '5px' }}><BsPlusCircleFill /> Add Sale</Button></Link>
-                                                                <Link to='/home/update-sale'><Button size="sm" variant="warning" style={{ marginRight: '5px' }}><BsPencilSquare /> Edit Sale</Button></Link>
-                                                                <Link to='/home/remove-sale'><Button size="sm" variant="outline-danger" style={{ marginRight: '5px' }}><BsTrashFill /> Remove Sale</Button></Link>
-                                                                <Dropdown size="sm" as={ButtonGroup} style={{ float: 'right' }}>
-                                                                    <Button variant="secondary" onClick={() => arrayToCsv(saleList, 'Sales')}><BsDownload /> Export Report</Button>
-                                                                    <Dropdown.Toggle split variant="secondary" id="dropdown-custom-2" />
-                                                                    <Dropdown.Menu>
-                                                                        <Dropdown.Item eventKey="1" onClick={() => arrayToCsv(saleList, 'Sales')}><BsFileEarmarkExcelFill color='#16A085' /> CSV</Dropdown.Item>
-                                                                        <Dropdown.Item eventKey="2" onClick={() => arrayToPDF(saleList, 'Sales')}><BsFileEarmarkPdfFill color='#D35400' /> PDF</Dropdown.Item>
-                                                                    </Dropdown.Menu>
-                                                                </Dropdown>
-                                                            </FormGroup>
-                                                        </Card.Body>
-                                                    </Card>
-                                                    <br />
-                                                    <Table bordered striped hover size='sm' id='saleTable' style={{ fontSize: '13px', width: '100%' }}>
-                                                        <thead>
-                                                            <tr>
-                                                                <th>Sale Date</th>
-                                                                <th>Customer Name</th>
-                                                                <th>Item Number</th>
-                                                                <th>Item Name</th>
-                                                                <th>Qty</th>
-                                                                <th>Unit Price</th>
-                                                                <th>Discount</th>
-                                                                <th>Total Price</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            {saleList.length >= 1 ? saleList.map((sale, index) => {
-                                                                return <tr key={index} style={{ fontSize: '13px' }}>
-                                                                    <td>{moment(sale.saleDate).format('MM/DD/YYYY')}</td>
-                                                                    <td>{sale.customerName}</td>
-                                                                    <td>{sale.itemNumber}</td>
-                                                                    <td>{sale.itemName}</td>
-                                                                    <td>{sale.qty}</td>
-                                                                    <td>{'₱ ' + (Math.round(sale.unitPrice * 100) / 100).toFixed(2)}</td>
-                                                                    <td>{sale.discount === 0 ? '' : sale.discount + '%'}</td>
-                                                                    <td>{'₱ ' + (Math.round((sale.qty * sale.unitPrice) * 100) / 100).toFixed(2)}</td>
-                                                                </tr>
-                                                            }): <tr>
-                                                                    <td></td>
-                                                                    <td></td>
-                                                                    <td></td>
-                                                                    <td></td>
-                                                                    <td></td>
-                                                                    <td></td>
-                                                                    <td></td>
-                                                                    <td></td>
-                                                                </tr>}
-                                                        </tbody>
-                                                    </Table>
-                                                </Tab>
                                                 <Tab eventKey="products" title="Products" onClick={() => setDefActiveKey('products')}>
                                                     <Card style={cardTools}>
                                                         <Card.Body>
@@ -473,57 +416,6 @@ export default function Home() {
                                                                 </tr>
                                                             }): <tr>
                                                                     <td></td>
-                                                                    <td></td>
-                                                                    <td></td>
-                                                                    <td></td>
-                                                                    <td></td>
-                                                                    <td></td>
-                                                                    <td></td>
-                                                                </tr>}
-                                                        </tbody>
-                                                    </Table>
-                                                </Tab>
-                                                <Tab eventKey="purchase" title="Purchase" onClick={() => setDefActiveKey('purchase')}>
-                                                    <Card style={cardTools}>
-                                                        <Card.Body>
-                                                            <FormGroup>
-                                                                <Link to='/home/add-new-purchase'><Button size="sm" variant="success" style={{ marginRight: '5px' }}><BsPlusCircleFill /> Add Purchase</Button></Link>
-                                                                <Link to='/home/update-purchase'><Button size="sm" variant="warning" style={{ marginRight: '5px' }}><BsPencilSquare /> Edit Purchase</Button></Link>
-                                                                <Link to='/home/remove-purchase'><Button size="sm" variant="outline-danger"><BsTrashFill /> Remove Purchase</Button></Link>
-                                                                <Dropdown size="sm" as={ButtonGroup} style={{ float: 'right' }}>
-                                                                    <Button variant="secondary" onClick={() => arrayToCsv(purList, 'Purchases')}><BsDownload /> Export Report</Button>
-                                                                    <Dropdown.Toggle split variant="secondary" id="dropdown-custom-2" />
-                                                                    <Dropdown.Menu>
-                                                                        <Dropdown.Item eventKey="1" onClick={() => arrayToCsv(purList, 'Purchases')}><BsFileEarmarkExcelFill color='#16A085' /> CSV</Dropdown.Item>
-                                                                        <Dropdown.Item eventKey="2" onClick={() => arrayToPDF(purList, 'Purchases')}><BsFileEarmarkPdfFill color='#D35400' /> PDF</Dropdown.Item>
-                                                                    </Dropdown.Menu>
-                                                                </Dropdown>
-                                                            </FormGroup>
-                                                        </Card.Body>
-                                                    </Card>
-                                                    <br />
-                                                    <Table bordered striped hover size='sm' id='purTable' style={{ fontSize: '13px', width: '100%' }}>
-                                                        <thead>
-                                                            <tr>
-                                                                <th>Purchase Date</th>
-                                                                <th>Item No.</th>
-                                                                <th>Item Name</th>
-                                                                <th>Qty</th>
-                                                                <th>Unit Price</th>
-                                                                <th>Vendor Name</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            {purList.length >= 1 ? purList.map((pur, index) => {
-                                                                return <tr key={index} style={{ fontSize: '13px' }}>
-                                                                    <td>{moment(pur.purchaseDate).format('MM/DD/YYYY')}</td>
-                                                                    <td>{pur.itemNumber}</td>
-                                                                    <td>{pur.itemName}</td>
-                                                                    <td>{pur.quantity}</td>
-                                                                    <td>{'₱ ' + (Math.round(pur.unitPrice * 100) / 100).toFixed(2)}</td>
-                                                                    <td>{pur.vendorName}</td>
-                                                                </tr>
-                                                            }): <tr>
                                                                     <td></td>
                                                                     <td></td>
                                                                     <td></td>
@@ -588,6 +480,57 @@ export default function Home() {
                                                         </tbody>
                                                     </Table>
                                                 </Tab>
+                                                <Tab eventKey="purchase" title="Purchase" onClick={() => setDefActiveKey('purchase')}>
+                                                    <Card style={cardTools}>
+                                                        <Card.Body>
+                                                            <FormGroup>
+                                                                <Link to='/home/add-new-purchase'><Button size="sm" variant="success" style={{ marginRight: '5px' }}><BsPlusCircleFill /> Add Purchase</Button></Link>
+                                                                <Link to='/home/update-purchase'><Button size="sm" variant="warning" style={{ marginRight: '5px' }}><BsPencilSquare /> Edit Purchase</Button></Link>
+                                                                <Link to='/home/remove-purchase'><Button size="sm" variant="outline-danger"><BsTrashFill /> Remove Purchase</Button></Link>
+                                                                <Dropdown size="sm" as={ButtonGroup} style={{ float: 'right' }}>
+                                                                    <Button variant="secondary" onClick={() => arrayToCsv(purList, 'Purchases')}><BsDownload /> Export Report</Button>
+                                                                    <Dropdown.Toggle split variant="secondary" id="dropdown-custom-2" />
+                                                                    <Dropdown.Menu>
+                                                                        <Dropdown.Item eventKey="1" onClick={() => arrayToCsv(purList, 'Purchases')}><BsFileEarmarkExcelFill color='#16A085' /> CSV</Dropdown.Item>
+                                                                        <Dropdown.Item eventKey="2" onClick={() => arrayToPDF(purList, 'Purchases')}><BsFileEarmarkPdfFill color='#D35400' /> PDF</Dropdown.Item>
+                                                                    </Dropdown.Menu>
+                                                                </Dropdown>
+                                                            </FormGroup>
+                                                        </Card.Body>
+                                                    </Card>
+                                                    <br />
+                                                    <Table bordered striped hover size='sm' id='purTable' style={{ fontSize: '13px', width: '100%' }}>
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Purchase Date</th>
+                                                                <th>Item No.</th>
+                                                                <th>Item Name</th>
+                                                                <th>Qty</th>
+                                                                <th>Unit Price</th>
+                                                                <th>Vendor Name</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {purList.length >= 1 ? purList.map((pur, index) => {
+                                                                return <tr key={index} style={{ fontSize: '13px' }}>
+                                                                    <td>{moment(pur.purchaseDate).format('MM/DD/YYYY')}</td>
+                                                                    <td>{pur.itemNumber}</td>
+                                                                    <td>{pur.itemName}</td>
+                                                                    <td>{pur.quantity}</td>
+                                                                    <td>{'₱ ' + (Math.round(pur.unitPrice * 100) / 100).toFixed(2)}</td>
+                                                                    <td>{pur.vendorName}</td>
+                                                                </tr>
+                                                            }): <tr>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                </tr>}
+                                                        </tbody>
+                                                    </Table>
+                                                </Tab>
                                                 <Tab eventKey="customer-database" title="Patient Record Database" onClick={() => setDefActiveKey('customer-database')}>
                                                     <Card style={cardTools}>
                                                         <Card.Body>
@@ -631,6 +574,63 @@ export default function Home() {
                                                                     <td>{cx.address}</td>
                                                                     <td>{cx.city}</td>
                                                                     <td>{cx.district}</td>
+                                                                </tr>
+                                                            }): <tr>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                </tr>}
+                                                        </tbody>
+                                                    </Table>
+                                                </Tab>
+                                                <Tab eventKey="sales" title="Sales" onClick={() => setDefActiveKey('sales')}>
+                                                    <Card style={cardTools}>
+                                                        <Card.Body>
+                                                            <FormGroup>
+                                                                <Link to='/home/add-new-sale'><Button size="sm" variant="success" style={{ marginRight: '5px' }}><BsPlusCircleFill /> Add Sale</Button></Link>
+                                                                <Link to='/home/update-sale'><Button size="sm" variant="warning" style={{ marginRight: '5px' }}><BsPencilSquare /> Edit Sale</Button></Link>
+                                                                <Link to='/home/remove-sale'><Button size="sm" variant="outline-danger" style={{ marginRight: '5px' }}><BsTrashFill /> Remove Sale</Button></Link>
+                                                                <Dropdown size="sm" as={ButtonGroup} style={{ float: 'right' }}>
+                                                                    <Button variant="secondary" onClick={() => arrayToCsv(saleList, 'Sales')}><BsDownload /> Export Report</Button>
+                                                                    <Dropdown.Toggle split variant="secondary" id="dropdown-custom-2" />
+                                                                    <Dropdown.Menu>
+                                                                        <Dropdown.Item eventKey="1" onClick={() => arrayToCsv(saleList, 'Sales')}><BsFileEarmarkExcelFill color='#16A085' /> CSV</Dropdown.Item>
+                                                                        <Dropdown.Item eventKey="2" onClick={() => arrayToPDF(saleList, 'Sales')}><BsFileEarmarkPdfFill color='#D35400' /> PDF</Dropdown.Item>
+                                                                    </Dropdown.Menu>
+                                                                </Dropdown>
+                                                            </FormGroup>
+                                                        </Card.Body>
+                                                    </Card>
+                                                    <br />
+                                                    <Table bordered striped hover size='sm' id='saleTable' style={{ fontSize: '13px', width: '100%' }}>
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Sale Date</th>
+                                                                <th>Customer Name</th>
+                                                                <th>Item Number</th>
+                                                                <th>Item Name</th>
+                                                                <th>Qty</th>
+                                                                <th>Unit Price</th>
+                                                                <th>Discount</th>
+                                                                <th>Total Price</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {saleList.length >= 1 ? saleList.map((sale, index) => {
+                                                                return <tr key={index} style={{ fontSize: '13px' }}>
+                                                                    <td>{moment(sale.saleDate).format('MM/DD/YYYY')}</td>
+                                                                    <td>{sale.customerName}</td>
+                                                                    <td>{sale.itemNumber}</td>
+                                                                    <td>{sale.itemName}</td>
+                                                                    <td>{sale.qty}</td>
+                                                                    <td>{'₱ ' + (Math.round(sale.unitPrice * 100) / 100).toFixed(2)}</td>
+                                                                    <td>{sale.discount === 0 ? '' : sale.discount + '%'}</td>
+                                                                    <td>{'₱ ' + (Math.round((sale.qty * sale.unitPrice) * 100) / 100).toFixed(2)}</td>
                                                                 </tr>
                                                             }): <tr>
                                                                     <td></td>

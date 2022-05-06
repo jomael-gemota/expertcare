@@ -396,7 +396,7 @@ export default function AddNewSale() {
                                                             style={formControl}
                                                             type="text"
                                                             disabled={cxList.length > 0 ? false : true}
-                                                            placeholder={cxList.length > 0 ? "" : "Loading..."}
+                                                            placeholder={cxList.length > 0 ? "" : "No Patient Names to show."}
                                                             list="customerName"
                                                             value={addedCx.fullName}
                                                             onChange={e => handleCustomerNameChange(e)}
@@ -418,7 +418,7 @@ export default function AddNewSale() {
                                                             style={formControl}
                                                             type="text"
                                                             disabled={prodList.length > 0 ? false : true}
-                                                            placeholder={prodList.length > 0 ? "" : "Loading..."}
+                                                            placeholder={prodList.length > 0 ? "" : "No Products to show."}
                                                             list='itemName'
                                                             onChange={e => handleItemNameChange(e)}
                                                         />

@@ -144,8 +144,6 @@ export default function AddNewVendor() {
                                                         <Form.Control
                                                             style={formControl}
                                                             type="text"
-                                                            disabled={vendList.length > 0 ? false : true}
-                                                            placeholder={vendList.length > 0 ? "" : "Loading..."}
                                                             list="productName"
                                                             value={vendDetails.fullName}
                                                             onChange={e => setVendDetails({ ...vendDetails, fullName: e.target.value })}
@@ -204,7 +202,7 @@ export default function AddNewVendor() {
                                                     </Form.Group>
                                                 </Row>
                                                 <Row className="mb-3">
-                                                    <Form.Group as={Col} sm={3} className="mb-3">
+                                                    <Form.Group as={Col} sm={4} className="mb-3">
                                                         <Form.Label style={formLabel}>City <Badge bg="info">Optional</Badge></Form.Label>
                                                         <Form.Control
                                                             style={formControl}
@@ -214,7 +212,7 @@ export default function AddNewVendor() {
                                                             onChange={e => setVendDetails({ ...vendDetails, city: e.target.value })}
                                                         />
                                                     </Form.Group>
-                                                    <Form.Group as={Col} sm={3} className="mb-3">
+                                                    <Form.Group as={Col} sm={4} className="mb-3">
                                                         <Form.Label style={formLabel}>District <Badge bg="info">Optional</Badge></Form.Label>
                                                         <Form.Control
                                                             style={formControl}

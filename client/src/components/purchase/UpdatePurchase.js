@@ -259,8 +259,6 @@ export default function UpdatePurchase() {
                                                                     style={formControl}
                                                                     type="text"
                                                                     list="vendorName"
-                                                                    disabled={vendList.length > 0 ? false : true}
-                                                                    placeholder={vendList.length > 0 ? "" : "Loading..."}
                                                                     value={vendorData.vendorName}
                                                                     onChange={e => handleVendorNameChange(e)}
                                                                 />
@@ -336,8 +334,6 @@ export default function UpdatePurchase() {
                                                                 <Form.Control
                                                                     style={formControl}
                                                                     type="text"
-                                                                    disabled={prodList.length > 0 ? false : true}
-                                                                    placeholder={prodList.length > 0 ? "" : "Loading..."}
                                                                     list="itemName"
                                                                     value={purDetails.itemName}
                                                                     onChange={e => handleItemNameChange(e)}
@@ -407,8 +403,6 @@ export default function UpdatePurchase() {
                                                                 <Form.Control
                                                                     style={formControl}
                                                                     type="text"
-                                                                    disabled={vendList.length > 0 ? false : true}
-                                                                    placeholder={vendList.length > 0 ? "" : "Loading..."}
                                                                     list="vendorName"
                                                                     min={0}
                                                                     value={purDetails.vendorName}

@@ -172,8 +172,6 @@ export default function UpdateCustomer() {
                                                         <Form.Control
                                                             style={formControl}
                                                             type="text"
-                                                            disabled={cxList.length > 0 ? false : true}
-                                                            placeholder={cxList.length > 0 ? "" : "Loading..."}
                                                             list="customerName"
                                                             value={cxDetails.fullName}
                                                             onChange={e => handleCustomerNameChange(e)}
@@ -253,7 +251,7 @@ export default function UpdateCustomer() {
                                                     </Form.Group>
                                                 </Row>
                                                 <Row className="mb-3">
-                                                    <Form.Group as={Col} sm={3} className="mb-3">
+                                                    <Form.Group as={Col} sm={4} className="mb-3">
                                                         <Form.Label style={formLabel}>City <Badge bg="info">Optional</Badge></Form.Label>
                                                         <Form.Control
                                                             style={formControl}
@@ -263,7 +261,7 @@ export default function UpdateCustomer() {
                                                             onChange={e => setCxDetails({ ...cxDetails, city: e.target.value })}
                                                         />
                                                     </Form.Group>
-                                                    <Form.Group as={Col} sm={3} className="mb-3">
+                                                    <Form.Group as={Col} sm={4} className="mb-3">
                                                         <Form.Label style={formLabel}>District <Badge bg="info">Optional</Badge></Form.Label>
                                                         <Form.Control
                                                             style={formControl}

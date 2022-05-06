@@ -246,7 +246,7 @@ export default function RemoveSale() {
                                                                     type="text"
                                                                     list="customerName"
                                                                     disabled={salesList.length > 0 ? false : true}
-                                                                    placeholder={salesList.length > 0 ? "" : "Loading..."}
+                                                                    placeholder={salesList.length > 0 ? "" : "No Patient Names to show."}
                                                                     value={saleDetails.customerName}
                                                                     onChange={e => handleCustomerNameChange(e)}
                                                                 />

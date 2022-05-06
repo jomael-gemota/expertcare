@@ -164,8 +164,6 @@ export default function UpdateVendor() {
                                                         <Form.Control
                                                             style={formControl}
                                                             type="text"
-                                                            disabled={vendList.length > 0 ? false : true}
-                                                            placeholder={vendList.length > 0 ? "" : "Loading..."}
                                                             list="vendorName"
                                                             value={vendDetails.fullName}
                                                             onChange={e => handleVendorNameChange(e)}
@@ -234,7 +232,7 @@ export default function UpdateVendor() {
                                                     </Form.Group>
                                                 </Row>
                                                 <Row className="mb-3">
-                                                    <Form.Group as={Col} sm={3} className="mb-3">
+                                                    <Form.Group as={Col} sm={4} className="mb-3">
                                                         <Form.Label style={formLabel}>City <Badge bg="info">Optional</Badge></Form.Label>
                                                         <Form.Control
                                                             style={formControl}
@@ -244,7 +242,7 @@ export default function UpdateVendor() {
                                                             onChange={e => setVendDetails({ ...vendDetails, city: e.target.value })}
                                                         />
                                                     </Form.Group>
-                                                    <Form.Group as={Col} sm={3} className="mb-3">
+                                                    <Form.Group as={Col} sm={4} className="mb-3">
                                                         <Form.Label style={formLabel}>District <Badge bg="info">Optional</Badge></Form.Label>
                                                         <Form.Control
                                                             style={formControl}

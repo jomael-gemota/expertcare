@@ -207,8 +207,6 @@ export default function RemoveCustomer() {
                                                         <Form.Control
                                                             style={formControl}
                                                             type="text"
-                                                            disabled={cxList.length > 0 ? false : true}
-                                                            placeholder={cxList.length > 0 ? "" : "Loading..."}
                                                             list="customerName"
                                                             value={cxDetails.fullName}
                                                             onChange={e => handleCustomerNameChange(e)}
@@ -293,7 +291,7 @@ export default function RemoveCustomer() {
                                                     </Form.Group>
                                                 </Row>
                                                 <Row className="mb-3">
-                                                    <Form.Group as={Col} sm={3} className="mb-3">
+                                                    <Form.Group as={Col} sm={4} className="mb-3">
                                                         <Form.Label style={formLabel}>City</Form.Label>
                                                         <Form.Control
                                                             style={formControl}
@@ -304,7 +302,7 @@ export default function RemoveCustomer() {
                                                             onChange={e => setCxDetails({ ...cxDetails, city: e.target.value })}
                                                         />
                                                     </Form.Group>
-                                                    <Form.Group as={Col} sm={3} className="mb-3">
+                                                    <Form.Group as={Col} sm={4} className="mb-3">
                                                         <Form.Label style={formLabel}>District</Form.Label>
                                                         <Form.Control
                                                             style={formControl}

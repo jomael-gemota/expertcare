@@ -240,7 +240,7 @@ export default function UpdateSale() {
                                                                     type="text"
                                                                     list="customerName"
                                                                     disabled={salesList.length > 0 ? false : true}
-                                                                    placeholder={salesList.length > 0 ? "" : "Loading..."}
+                                                                    placeholder={salesList.length > 0 ? "" : "No Patient Names to show."}
                                                                     value={saleDetails.customerName}
                                                                     onChange={e => handleCustomerNameChange(e)}
                                                                 />
@@ -355,7 +355,6 @@ export default function UpdateSale() {
                                                                     style={formControl}
                                                                     type="text"
                                                                     disabled={prodList.length > 0 ? false : true}
-                                                                    placeholder={prodList.length > 0 ? "" : "Loading..."}
                                                                     list='itemName'
                                                                     value={saleDetails.itemName}
                                                                     onChange={e => handleItemNameChange(e)}

@@ -179,8 +179,6 @@ export default function UpdateProduct() {
                                                             style={formControl}
                                                             type="text"
                                                             list="itemName"
-                                                            disabled={prodList.length > 0 ? false : true}
-                                                            placeholder={prodList.length > 0 ? "" : "Loading..."}
                                                             value={prodDetails.itemName}
                                                             onChange={e => handleProductNameChange(e)}
                                                         />
