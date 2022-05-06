@@ -16,7 +16,7 @@ export default function SideBar() {
                 <span className='main-menu-title'>Main Menu</span>
                 <div style={{ border: '0px solid blue', padding: '0px 10px 10px 10px' }}>
                     <Nav.Item className='nav-item'>
-                        <Nav.Link href='/home' eventKey="first"><MdOutlineInventory2 size={30} color="#F1C40F" className='sidebar-icons' /> Inventory</Nav.Link>
+                        <Nav.Link href='/home' eventKey="first"><MdOutlineInventory2 size={30} color="#F1C40F" className='sidebar-icons' /> Pharmacy</Nav.Link>
                     </Nav.Item>
                     <Nav.Item className='nav-item'>
                         <Nav.Link

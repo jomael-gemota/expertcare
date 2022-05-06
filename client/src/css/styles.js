@@ -110,7 +110,6 @@ export const spanIms = {
     fontFamily: 'Sans-serif',
     fontName: 'Verdana',
     fontSize: '15px',
-    // marginLeft: '3%',
     color: 'white'
 };
 
